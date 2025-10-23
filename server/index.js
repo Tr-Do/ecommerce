@@ -4,6 +4,8 @@ console.log(typeof process.env.DATABASE_URL);
 const express = require('express');
 const dotenv = require('dotenv');
 const pool = require('./models/db');
+const checkoutRoutes = require('./routes/checkout');
+app.use('/api/checkout', checkoutRoutes);
 
 dotenv.config();
 const app = express();

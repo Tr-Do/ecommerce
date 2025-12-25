@@ -20,7 +20,9 @@
   "homepage": "https://github.com/Tr-Do/ecommerce#readme",
   "dependencies": {
     "ejs": "^3.1.10",
+    "ejs-mate": "^4.0.0",
     "express": "^5.1.0",
+    "method-override": "^3.0.0",
     "mongoose": "^8.19.2",
     "morgan": "^1.10.1"
   }

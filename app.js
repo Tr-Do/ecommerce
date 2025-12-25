@@ -2,6 +2,7 @@ const express = require('express');
 const ejsMate = require('ejs-mate');
 const path = require('path');
 const mongoose = require('mongoose');
+const methodOverride = require('method-override');
 const Design = require('./models/design');
 
 mongoose.connect('mongodb://localhost:27017/terrarium');
@@ -19,6 +20,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(methodOverride('_method'));
 
 app.get('/', async (req, res) => {
     const products = await Design.find({});
@@ -32,12 +34,23 @@ app.get('/product/new', (req, res) => {
 app.post('/product', async (req, res) => {
     const product = new Design(req.body.product);
     await product.save();
-    res.redirect(`product/${product._id}`);
+    res.redirect(`/product/${product._id}`);
 })
 
 app.get('/product/:id', async (req, res) => {
     const product = await Design.findById(req.params.id);
     res.render('designs/show', { product });
+})
+
+app.get('/product/:id/edit', async (req, res) => {
+    const product = await Design.findById(req.params.id);
+    res.render('designs/edit', { product });
+})
+
+app.put('/product/:id', async (req, res) => {
+    const { id } = req.params;
+    const product = await Design.findByIdAndUpdate(id, { ...req.body.product });
+    res.redirect(`/product/${product._id}`);
 })
 
 // app.use((req, res) => {

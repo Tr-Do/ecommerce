@@ -29,7 +29,9 @@
                                 <div class="text-center">
                                     <!-- Product name-->
                                     <h5 class="fw-bolder">
-                                        <%= designs[i].name %>
+                                        <a href="/design/<%=designs[i]._id%>">
+                                            <%= designs[i].name %>
+                                        </a>
                                     </h5>
                                     <!-- Product price-->
                                     <%= designs[i].price %>

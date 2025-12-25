@@ -24,15 +24,20 @@ app.get('/', async (req, res) => {
     res.render('home', { designs });
 })
 
+app.get('/design/:id', async (req, res) => {
+    const design = await Design.findById(req.params.id);
+    res.render('designs/show', { design });
+})
+
 app.get('/makedesign', async (req, res) => {
     const des = new Design({ title: 'Project 1', description: 'lorem epsum' });
     await des.save();
     res.send(des);
 })
 
-app.use((req, res) => {
-    res.send('404 NOT FOUND');
-})
+// app.use((req, res) => {
+//     res.send('404 NOT FOUND');
+// })
 
 app.listen(3000, () => {
     console.log('Serving port 3000')

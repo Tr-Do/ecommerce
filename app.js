@@ -17,22 +17,27 @@ const app = express();
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', async (req, res) => {
-    const designs = await Design.find({});
-    res.render('home', { designs });
+    const products = await Design.find({});
+    res.render('home', { products });
 })
 
-app.get('/design/:id', async (req, res) => {
-    const design = await Design.findById(req.params.id);
-    res.render('designs/show', { design });
+app.get('/product/new', (req, res) => {
+    res.render('designs/new');
 })
 
-app.get('/makedesign', async (req, res) => {
-    const des = new Design({ title: 'Project 1', description: 'lorem epsum' });
-    await des.save();
-    res.send(des);
+app.post('/product', async (req, res) => {
+    const product = new Design(req.body.product);
+    await product.save();
+    res.redirect(`product/${product._id}`);
+})
+
+app.get('/product/:id', async (req, res) => {
+    const product = await Design.findById(req.params.id);
+    res.render('designs/show', { product });
 })
 
 // app.use((req, res) => {

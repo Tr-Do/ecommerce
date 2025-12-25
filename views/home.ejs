@@ -18,7 +18,7 @@
     <section class="pt-5">
         <div class="container px-4 px-lg-5 mt-5">
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-                <% for (let i=0; i< designs.length && i<8; i++) { %>
+                <% for (let i=0; i< products.length && i<8; i++) { %>
                     <div class="col mb-5">
                         <div class="card h-100">
                             <!-- Product image-->
@@ -29,12 +29,12 @@
                                 <div class="text-center">
                                     <!-- Product name-->
                                     <h5 class="fw-bolder">
-                                        <a href="/design/<%=designs[i]._id%>">
-                                            <%= designs[i].name %>
+                                        <a href="/product/<%=products[i]._id%>">
+                                            <%= products[i].name %>
                                         </a>
                                     </h5>
                                     <!-- Product price-->
-                                    <%= designs[i].price %>
+                                    <%= products[i].price %>
                                 </div>
                             </div>
                             <!-- Product actions-->

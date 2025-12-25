@@ -6,12 +6,6 @@ const DesignSchema = new Schema({
         type: String,
         required: true
     },
-    number: {
-        type: Number,
-        required: true,
-        unique: true,
-        index: true
-    },
     price: {
         type: Number,
         required: true
@@ -34,6 +28,5 @@ const DesignSchema = new Schema({
         The digital files will automatically be sent to your email after checkout. Please confirm your email address is correct when purchasing.`
     }
 })
-
 
 module.exports = mongoose.model('Design', DesignSchema);

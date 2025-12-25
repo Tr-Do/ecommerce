@@ -17,9 +17,10 @@
     <p>
         <%=product.description%>
     </p>
-    <footer>
-        <a href="/product/<%=product._id%>/edit">Edit</a>
-    </footer>
+    <p><a href="/"><button>Home</button></a></p>
+    <p><a href="/product/<%=product._id%>/edit"><button>Edit</button></a></p>
+    <p>
+    <form action="/product/<%=product.id%>?_method=DELETE" method="POST"><button>Delete</button></form>
 </body>
 
 </html>

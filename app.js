@@ -53,6 +53,12 @@ app.put('/product/:id', async (req, res) => {
     res.redirect(`/product/${product._id}`);
 })
 
+app.delete('/product/:id', async (req, res) => {
+    const { id } = req.params;
+    await Design.findByIdAndDelete(id);
+    res.redirect('/');
+})
+
 // app.use((req, res) => {
 //     res.send('404 NOT FOUND');
 // })

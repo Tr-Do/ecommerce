@@ -2,18 +2,15 @@ const express = require('express');
 const ejsMate = require('ejs-mate');
 const path = require('path');
 const mongoose = require('mongoose');
+const Design = require('./models/design');
 
-// mongoose.connect('mongodb://localhost:27017/terrarium', {
-//     useNewUrlParser: true,
-//     useCreateIndex: true,
-//     useUnifiedTopology: true
-// });
+mongoose.connect('mongodb://localhost:27017/terrarium');
 
-// const db = mongoose.connection;
-// db.on('error', console.error.bind(console, 'connection error: '));
-// db.once('open', () => {
-//     console.log('Database connected');
-// });
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error: '));
+db.once('open', () => {
+    console.log('Database connected');
+});
 
 
 const app = express();
@@ -25,6 +22,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
     res.render('home')
 })
+
+app.get('/makedesign', async (req, res) => {
+    const des = new Design({ title: 'Project 1', description: 'lorem epsum' });
+    await des.save();
+    res.send(des);
+})
+
 app.use((req, res) => {
     res.send('404 NOT FOUND');
 })

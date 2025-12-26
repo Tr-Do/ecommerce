@@ -1,13 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+<% layout('layouts/boilerplate') %>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project</title>
-</head>
-
-<body>
     <h1>
         <%=product.name%>
     </h1>
@@ -21,6 +13,4 @@
     <p><a href="/product/<%=product._id%>/edit"><button>Edit</button></a></p>
     <p>
     <form action="/product/<%=product.id%>?_method=DELETE" method="POST"><button>Delete</button></form>
-</body>
-
-</html>
+    </body>

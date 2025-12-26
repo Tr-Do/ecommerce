@@ -32,6 +32,9 @@ app.get('/product/new', (req, res) => {
 })
 
 app.post('/product', async (req, res) => {
+    if (req.body.product.description = "") {
+        delete req.body.product.description;
+    }
     const product = new Design(req.body.product);
     await product.save();
     res.redirect(`/product/${product._id}`);
@@ -59,9 +62,9 @@ app.delete('/product/:id', async (req, res) => {
     res.redirect('/');
 })
 
-// app.use((req, res) => {
-//     res.send('404 NOT FOUND');
-// })
+app.use((req, res) => {
+    res.status(404).send('NOT FOUND');
+})
 
 app.listen(3000, () => {
     console.log('Serving port 3000')

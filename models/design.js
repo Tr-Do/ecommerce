@@ -15,7 +15,6 @@ const DesignSchema = new Schema({
     },
     description: {
         type: String,
-        required: true,
         default: `Create your own beautiful stained glass terrarium with this detailed digital pattern designed for hobbyists and professional glass artists. Perfect for DIY stained glass projects.
         Product Details:
         - Instant digital download (no physical product shipped)

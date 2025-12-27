@@ -1,17 +1,29 @@
 <% layout('layouts/boilerplate') %>
-
-    <h1>
-        <%=product.name%>
-    </h1>
-    <h5>
-        <%=product.price%>
-    </h5>
-    <img src="<%=product.image%>" alt="">
-    <p>
-        <%=product.description%>
-    </p>
-    <p><a href="/"><button>Home</button></a></p>
-    <p><a href="/product/<%=product._id%>/edit"><button>Edit</button></a></p>
-    <p>
-    <form action="/product/<%=product.id%>?_method=DELETE" method="POST"><button>Delete</button></form>
-    </body>
+    <div class="row">
+        <div class="d-flex justify-content-center">
+            <div class="col-6 mb-5">
+                <div class="card" style="width: 30rem;">
+                    <img src="<%=product.image%>" class="card-img-top">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <%=product.name%>
+                        </h5>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            $<%=product.price%>
+                        </li>
+                        <li class="list-group-item">
+                            <%=product.description%>
+                        </li>
+                    </ul>
+                    <div class="card-body">
+                        <a class="card-link btn btn-warning" href="/product/<%=product._id%>/edit">Edit</a>
+                        <form class="btn btn-danger" action="/product/<%=product.id%>?_method=DELETE" method="POST">
+                            Delete
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

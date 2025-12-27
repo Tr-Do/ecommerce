@@ -32,9 +32,6 @@ app.get('/product/new', (req, res) => {
 })
 
 app.post('/product', async (req, res) => {
-    if (req.body.product.description = "") {
-        delete req.body.product.description;
-    }
     const product = new Design(req.body.product);
     await product.save();
     res.redirect(`/product/${product._id}`);

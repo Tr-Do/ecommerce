@@ -23,9 +23,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 
 app.get('/', async (req, res) => {
-    const products = await Design.find({});
-    res.render('home', { products });
-})
+    const page = parseInt(req.query.page) || 1;
+    const limit = 8;
+    const skip = (page - 1) * limit;
+    const products = await Design.find({})
+        .skip(skip)
+        .limit(limit);
+    const totalProducts = await Design.countDocuments();
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    res.render('home', { products, currentPage: page, totalPages });
+});
 
 app.get('/product/new', (req, res) => {
     res.render('designs/new');

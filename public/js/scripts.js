@@ -1,7 +1,15 @@
-/*!
-* Start Bootstrap - Shop Homepage v5.0.6 (https://startbootstrap.com/template/shop-homepage)
-* Copyright 2013-2023 Start Bootstrap
-* Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-shop-homepage/blob/master/LICENSE)
-*/
-// This file is intentionally blank
-// Use this file to add JavaScript to your project
+document.addEventListener("DOMContentLoaded", () => {
+    const links = document.querySelectorAll(".pagination a");
+
+    links.forEach(link => {
+        link.addEventListener("click", () => {
+            sessionStorage.setItem("scrollY", window.scrollY);
+        });
+    });
+
+    const savedScroll = sessionStorage.getItem("scrollY");
+    if (savedScroll !== null) {
+        window.scrollTo(0, parseInt(savedScroll, 10));
+        sessionStorage.removeItem("scrollY");
+    }
+});

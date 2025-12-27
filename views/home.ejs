@@ -11,7 +11,7 @@
     <section class="pt-5">
         <div class="container px-4 px-lg-5 mt-5">
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-                <% for (let i=0; i< products.length && i<11; i++) { %>
+                <% for (let i=0; i< products.length; i++) { %>
                     <div class="col mb-5">
                         <div class="card h-100">
                             <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg"
@@ -37,12 +37,35 @@
             </div>
         </div>
     </section>
-    <nav aria-label="Page navigation" class="d-flex justify-content-center mt-0">
+    <nav aria-label="Page navigation" class="d-flex justify-content-center">
         <ul class="pagination">
-            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+
+            <!-- Previous -->
+            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                <a class="page-link" href="<%= currentPage === 1 ? '#' : '/?page=' + (currentPage - 1) %>"
+                    tabindex="<%= currentPage === 1 ? '-1' : '0' %>" aria-disabled="<%= currentPage === 1 %>">
+                    Previous
+                </a>
+            </li>
+
+            <!-- Page Numbers -->
+            <% for (let i=1; i <=totalPages; i++) { %>
+                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                    <a class="page-link" href="/?page=<%= i %>">
+                        <%= i %>
+                    </a>
+                </li>
+                <% } %>
+
+                    <!-- Next -->
+                    <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                        <a class="page-link"
+                            href="<%= currentPage === totalPages ? '#' : '/?page=' + (currentPage + 1) %>"
+                            tabindex="<%= currentPage === totalPages ? '-1' : '0' %>"
+                            aria-disabled="<%= currentPage === totalPages %>">
+                            Next
+                        </a>
+                    </li>
+
         </ul>
     </nav>

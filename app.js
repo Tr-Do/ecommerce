@@ -4,7 +4,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const Design = require('./models/design');
-const AppError = require('./AppError');
+const AppError = require('./utils/AppError');
 
 mongoose.connect('mongodb://localhost:27017/terrarium');
 

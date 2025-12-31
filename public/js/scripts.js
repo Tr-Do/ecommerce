@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const savedScroll = sessionStorage.getItem("scrollY");
     if (savedScroll !== null) {
-        window.scrollTo(0, parseInt(savedScroll, 10));
+        window.scrollTo(0, parseInt(savedScroll, 12));
         sessionStorage.removeItem("scrollY");
     }
 });

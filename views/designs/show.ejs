@@ -1,16 +1,16 @@
 <% layout('layouts/boilerplate') %>
     <div class="row">
         <div class="d-flex justify-content-center">
-            <div class="col-6 mb-5">
+            <div class="mb-5 mt-3">
                 <div class="card" style="width: 30rem;">
                     <img src="<%=product.image%>" class="card-img-top">
                     <div class="card-body">
-                        <h5 class="card-title">
+                        <h5 class="card-title text-center">
                             <%=product.name%>
                         </h5>
                     </div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
+                        <li class="list-group-item text-center">
                             $<%=product.price%>
                         </li>
                         <li class="list-group-item">

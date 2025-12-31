@@ -4,6 +4,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const Design = require('./models/design');
+const AppError = require('./AppError');
 
 mongoose.connect('mongodb://localhost:27017/terrarium');
 
@@ -13,12 +14,15 @@ db.once('open', () => {
     console.log('Database connected');
 });
 
+const sleep = ms => new Promise((resolve => {
+    setTimeout(resolve, ms);
+}))
 
 const app = express();
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
+app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 
@@ -47,11 +51,17 @@ app.post('/product', async (req, res) => {
 
 app.get('/product/:id', async (req, res) => {
     const product = await Design.findById(req.params.id);
+    if (!product) {
+        throw new AppError(404, "Product not found");
+    }
     res.render('designs/show', { product });
 })
 
 app.get('/product/:id/edit', async (req, res) => {
     const product = await Design.findById(req.params.id);
+    if (!product) {
+        throw new AppError(404, 'Product not found');
+    }
     res.render('designs/edit', { product });
 })
 
@@ -63,12 +73,20 @@ app.put('/product/:id', async (req, res) => {
 
 app.delete('/product/:id', async (req, res) => {
     const { id } = req.params;
-    await Design.findByIdAndDelete(id);
+    const product = await Design.findByIdAndDelete(id);
+    if (!product) {
+        throw new AppError(404, 'Product not found');
+    }
     res.redirect('/');
 })
 
 app.use((req, res) => {
     res.status(404).send('NOT FOUND');
+})
+
+app.use((err, req, res, next) => {
+    const { status = 500, message = 'Something went wrong' } = err;
+    res.status(status).send(message);
 })
 
 app.listen(3000, () => {

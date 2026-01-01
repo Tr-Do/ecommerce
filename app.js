@@ -45,6 +45,8 @@ app.get('/product/new', (req, res) => {
 })
 
 app.post('/product', async (req, res) => {
+    if (req.body.product)
+        throw new AppError('Invalid Data', 400);
     const product = new Design(req.body.product);
     await product.save();
     res.redirect(`/product/${product._id}`);
@@ -76,18 +78,13 @@ app.delete('/product/:id', async (req, res) => {
     res.redirect('/');
 })
 
-app.use((req, res) => {
-    res.status(404).send('NOT FOUND');
-})
-
-app.use((err, req, res, next) => {
-    console.log(err.name);
-    next(err);
+app.use((req, res, next) => {
+    next(new AppError('Page not found', 404));
 })
 
 app.use((err, req, res, next) => {
     const { status = 500, message = 'Something went wrong' } = err;
-    res.status(status).send(message);
+    res.status(status).render('error', { err });
 })
 
 app.listen(3000, () => {

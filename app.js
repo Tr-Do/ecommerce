@@ -1,11 +1,11 @@
 const express = require('express');
 const ejsMate = require('ejs-mate');
 const path = require('path');
-const Joi = require('joi');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const Design = require('./models/design');
 const AppError = require('./utils/AppError');
+const { productSchema } = require('./schemas.js')
 
 mongoose.connect('mongodb://localhost:27017/terrarium');
 
@@ -30,13 +30,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 
 const validateProduct = (req, res, next) => {
-    const productSchema = Joi.object({
-        product: Joi.object({
-            name: Joi.string().required(),
-            price: Joi.number().required().min(0),
-            description: Joi.string().required()
-        }).required()
-    })
     const { error } = productSchema.validate(req.body);
     if (error) {
         const msg = error.details.map(e => e.message).join(',')

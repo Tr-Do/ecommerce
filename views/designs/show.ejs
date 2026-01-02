@@ -19,8 +19,8 @@
                     </ul>
                     <div class="card-body">
                         <a class="card-link btn btn-warning" href="/product/<%=product._id%>/edit">Edit</a>
-                        <form class="btn btn-danger" action="/product/<%=product.id%>?_method=DELETE" method="POST">
-                            Delete
+                        <form action="/product/<%=product.id%>?_method=DELETE" method="POST" style="display:inline;">
+                            <button class="btn btn-danger">Delete</button>
                         </form>
                     </div>
                 </div>

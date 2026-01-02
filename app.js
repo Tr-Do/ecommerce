@@ -1,6 +1,7 @@
 const express = require('express');
 const ejsMate = require('ejs-mate');
 const path = require('path');
+const Joi = require('joi');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const Design = require('./models/design');
@@ -28,6 +29,24 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 
+const validateProduct = (req, res, next) => {
+    const productSchema = Joi.object({
+        product: Joi.object({
+            name: Joi.string().required(),
+            price: Joi.number().required().min(0),
+            description: Joi.string().required()
+        }).required()
+    })
+    const { error } = productSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(e => e.message).join(',')
+        throw new AppError(msg, 400);
+    }
+    else {
+        next();
+    }
+}
+
 app.get('/', async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 8;
@@ -44,9 +63,7 @@ app.get('/product/new', (req, res) => {
     res.render('designs/new');
 })
 
-app.post('/product', async (req, res) => {
-    if (req.body.product)
-        throw new AppError('Invalid Data', 400);
+app.post('/product', validateProduct, async (req, res) => {
     const product = new Design(req.body.product);
     await product.save();
     res.redirect(`/product/${product._id}`);
@@ -64,7 +81,7 @@ app.get('/product/:id/edit', async (req, res) => {
     res.render('designs/edit', { product });
 })
 
-app.put('/product/:id', async (req, res) => {
+app.put('/product/:id', validateProduct, async (req, res) => {
     const { id } = req.params;
     const product = await Design.findByIdAndUpdate(id, { ...req.body.product });
     throwError(product);

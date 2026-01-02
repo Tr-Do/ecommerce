@@ -5,5 +5,10 @@ class AppError extends Error {
         this.status = status;
     }
 }
+const throwError = (product) => {
+    if (!product) {
+        throw new AppError("Product not found", 404);
+    }
+}
 
-module.exports = AppError;
+module.exports = { AppError, throwError };

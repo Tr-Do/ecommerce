@@ -42,6 +42,7 @@ router.put('/:id', validateProduct, async (req, res) => {
     const { id } = req.params;
     const product = await Design.findByIdAndUpdate(id, { ...req.body.product });
     throwError(product);
+    req.flash('success', 'Update product sucessfully');
     res.redirect(`/product/${product._id}`);
 })
 
@@ -49,6 +50,7 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     const product = await Design.findByIdAndDelete(id);
     throwError(product);
+    req.flash('success', 'Delete product sucessfully');
     res.redirect('/');
 })
 

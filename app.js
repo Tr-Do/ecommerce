@@ -6,6 +6,7 @@ const methodOverride = require('method-override');
 const Design = require('./models/design');
 const { AppError } = require('./utils/AppError');
 const designs = require('./routes/design.js');
+const session = require('express-session');
 
 mongoose.connect('mongodb://localhost:27017/terrarium');
 
@@ -22,6 +23,19 @@ app.use(express.urlencoded({ extended: true }));
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
+
+const sessionConfig = {
+    secret: "thisisasecret",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        expires: Date.now() + 604800000,
+        maxAge: 604800000
+    }
+}
+app.use(session(sessionConfig));
+
 
 app.use('/product', designs);
 

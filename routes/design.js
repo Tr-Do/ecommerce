@@ -22,7 +22,7 @@ router.get('/new', (req, res) => {
 router.post('', validateProduct, async (req, res) => {
     const product = new Design(req.body.product);
     await product.save();
-    res.redirect(`/${product._id}`);
+    res.redirect(`/product/${product._id}`);
 })
 
 router.get('/:id', async (req, res) => {

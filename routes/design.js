@@ -22,6 +22,7 @@ router.get('/new', (req, res) => {
 router.post('', validateProduct, async (req, res) => {
     const product = new Design(req.body.product);
     await product.save();
+    req.flash('success', 'Add product sucessfully');
     res.redirect(`/product/${product._id}`);
 })
 

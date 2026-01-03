@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Tr-Do/ecommerce#readme",
   "dependencies": {
+    "connect-flash": "^0.1.1",
     "ejs": "^3.1.10",
     "ejs-mate": "^4.0.0",
     "express": "^5.1.0",

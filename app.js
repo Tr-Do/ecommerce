@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const Design = require('./models/design');
 const { AppError } = require('./utils/AppError');
-const designs = require('./routes/design.js');
+const designsRoute = require('./routes/design.js');
+const usersRoute = require('./routes/users.js');
 const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
@@ -54,7 +55,8 @@ app.use((req, res, next) => {
     next();
 })
 
-app.use('/product', designs);
+app.use('/', usersRoute);
+app.use('/product', designsRoute);
 
 app.get('/', async (req, res) => {
     const page = parseInt(req.query.page) || 1;

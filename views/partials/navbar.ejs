@@ -21,8 +21,9 @@
                     </ul>
 
                 </li>
-
-                <li class="nav-item"><a class="nav-link" href="/product/new">Add Desgin</a></li>
+                <% if (currentUser) { %>
+                    <li class="nav-item"><a class="nav-link" href="/product/new">Add Product</a></li>
+                    <% } %>
             </ul>
             <form class="d-flex">
                 <% if (!currentUser) {%>

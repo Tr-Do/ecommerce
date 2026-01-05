@@ -34,9 +34,9 @@ router.get('/logout', (req, res, next) => {
         if (err) {
             return next(err)
         }
+        req.flash('success', 'Good bye!');
+        res.redirect('/');
     });
-    req.flash('success', 'Good bye!');
-    res.redirect('/');
 })
 
 module.exports = router;

@@ -3,7 +3,6 @@ const ejsMate = require('ejs-mate');
 const path = require('path');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
-const Design = require('./models/design');
 const { AppError } = require('./utils/AppError');
 const designsRoute = require('./routes/design.js');
 const usersRoute = require('./routes/users.js');
@@ -12,6 +11,7 @@ const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user')
+const designs = require('./controllers/designs');
 
 mongoose.connect('mongodb://localhost:27017/terrarium');
 
@@ -59,17 +59,7 @@ app.use((req, res, next) => {
 app.use('/', usersRoute);
 app.use('/product', designsRoute);
 
-app.get('/', async (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 8;
-    const skip = (page - 1) * limit;
-    const products = await Design.find({})
-        .skip(skip)
-        .limit(limit);
-    const totalProducts = await Design.countDocuments();
-    const totalPages = Math.ceil(totalProducts / limit);
-    res.render('home', { products, currentPage: page, totalPages });
-});
+app.get('/', designs.index);
 
 app.use((req, res, next) => {
     next(new AppError('Page not found', 404));

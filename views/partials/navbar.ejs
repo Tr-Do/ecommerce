@@ -28,9 +28,9 @@
             <form class="d-flex">
                 <% if (!currentUser) {%>
                     <li class="navbar-nav nav-item"><a class="nav-link" href="/register">Register</a></li>
-                    <li class="navbar-nav nav-item"><a class="nav-link" href="/login">Sign in</a></li>
+                    <li class="navbar-nav nav-item me-3"><a class="nav-link" href="/login">Sign in</a></li>
                     <% } else { %>
-                        <li class="navbar-nav nav-item"><a class="nav-link" href="/logout">Sign out</a></li>
+                        <li class="navbar-nav nav-item me-3"><a class="nav-link" href="/logout">Sign out</a></li>
                         <% } %>
                             <button class="btn btn-outline-dark" type="submit">
                                 <i class="bi-cart-fill me-1"></i>

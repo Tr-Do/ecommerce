@@ -3,6 +3,7 @@ const router = express.Router();
 const { throwError, AppError } = require('../utils/AppError.js');
 const { productSchema } = require('../schemas.js');
 const Design = require('../models/design');
+const { isLoggedin } = require('../middleware');
 
 const validateProduct = (req, res, next) => {
     const { error } = productSchema.validate(req.body);
@@ -15,11 +16,7 @@ const validateProduct = (req, res, next) => {
     }
 }
 
-router.get('/new', (req, res) => {
-    if (!req.isAuthenticated()) {
-        req.flash('error', 'You must log in');
-        return res.redirect('/login');
-    }
+router.get('/new', isLoggedin, (req, res) => {
     res.render('designs/new');
 })
 
@@ -36,13 +33,13 @@ router.get('/:id', async (req, res) => {
     res.render('designs/show', { product });
 })
 
-router.get('/:id/edit', async (req, res) => {
+router.get('/:id/edit', isLoggedin, async (req, res) => {
     const product = await Design.findById(req.params.id);
     throwError(product);
     res.render('designs/edit', { product });
 })
 
-router.put('/:id', validateProduct, async (req, res) => {
+router.put('/:id', isLoggedin, validateProduct, async (req, res) => {
     const { id } = req.params;
     const product = await Design.findByIdAndUpdate(id, { ...req.body.product });
     throwError(product);
@@ -50,7 +47,7 @@ router.put('/:id', validateProduct, async (req, res) => {
     res.redirect(`/product/${product._id}`);
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', isLoggedin, async (req, res) => {
     const { id } = req.params;
     const product = await Design.findByIdAndDelete(id);
     throwError(product);

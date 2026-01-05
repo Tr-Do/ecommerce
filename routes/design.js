@@ -16,6 +16,10 @@ const validateProduct = (req, res, next) => {
 }
 
 router.get('/new', (req, res) => {
+    if (!req.isAuthenticated()) {
+        req.flash('error', 'You must log in');
+        return res.redirect('/login');
+    }
     res.render('designs/new');
 })
 

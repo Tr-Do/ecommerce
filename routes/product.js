@@ -21,7 +21,7 @@ router.get('/', products.index);
 
 router.get('/new', isLoggedin, products.renderNewForm);
 
-router.post('', validateProduct, products.createProduct);
+router.post('/', validateProduct, products.createProduct);
 
 router.get('/:id', products.showProduct);
 

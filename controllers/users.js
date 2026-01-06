@@ -21,6 +21,7 @@ module.exports.renderLogin = (req, res) => {
 }
 
 module.exports.login = (req, res) => {
+    req.flash('success', 'Welcome back');
     const redirectUrl = req.session.returnTo || '/products';
     delete req.session.returnTo;
     res.redirect(redirectUrl);
@@ -28,7 +29,6 @@ module.exports.login = (req, res) => {
 
 module.exports.logout = (req, res, next) => {
     const redirectUrl = req.headers.referer || '/products';
-
     req.logout(function (err) {
         if (err) {
             return next(err)

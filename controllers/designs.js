@@ -1,4 +1,5 @@
 const Design = require('../models/design');
+const { throwError } = require('../utils/AppError');
 
 module.exports.index = async (req, res) => {
     const page = parseInt(req.query.page) || 1;

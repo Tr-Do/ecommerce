@@ -68,6 +68,8 @@ app.use((err, req, res, next) => {
     res.status(status).render('error', { err });
 })
 
+
+
 app.listen(3000, () => {
     console.log('Serving port 3000')
 })

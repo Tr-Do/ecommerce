@@ -6,3 +6,5 @@ module.exports.isLoggedin = (req, res, next) => {
     }
     next();
 }
+
+// module.exports.lastPage = /

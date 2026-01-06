@@ -21,7 +21,7 @@ module.exports.createProduct = async (req, res) => {
     const product = new Design(req.body.product);
     await product.save();
     req.flash('success', 'Add product sucessfully');
-    res.redirect(`/product/${product._id}`);
+    res.redirect(`/products/${product._id}`);
 }
 
 module.exports.showProduct = async (req, res) => {
@@ -41,7 +41,7 @@ module.exports.updateProduct = async (req, res) => {
     const product = await Design.findByIdAndUpdate(id, { ...req.body.product });
     throwError(product);
     req.flash('success', 'Update product sucessfully');
-    res.redirect(`/product/${product._id}`);
+    res.redirect(`/products/${product._id}`);
 }
 
 module.exports.deleteProduct = async (req, res) => {
@@ -49,5 +49,5 @@ module.exports.deleteProduct = async (req, res) => {
     const product = await Design.findByIdAndDelete(id);
     throwError(product);
     req.flash('success', 'Delete product sucessfully');
-    res.redirect('/');
+    res.redirect('/products');
 }

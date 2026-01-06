@@ -19,8 +19,8 @@
                     </ul>
                     <% if (currentUser) { %>
                         <div class="card-body">
-                            <a class="card-link btn btn-warning" href="/product/<%=product._id%>/edit">Edit</a>
-                            <form action="/product/<%=product.id%>?_method=DELETE" method="POST"
+                            <a class="card-link btn btn-warning" href="/productS/<%=product._id%>/edit">Edit</a>
+                            <form action="/productS/<%=product.id%>?_method=DELETE" method="POST"
                                 style="display:inline;">
                                 <button class="btn btn-danger">Delete</button>
                             </form>

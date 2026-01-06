@@ -4,14 +4,14 @@ const path = require('path');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const { AppError } = require('./utils/AppError');
-const designsRoute = require('./routes/design.js');
+const productsRoute = require('./routes/product');
 const usersRoute = require('./routes/users.js');
 const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user')
-const designs = require('./controllers/designs');
+const products = require('./controllers/products');
 
 mongoose.connect('mongodb://localhost:27017/terrarium');
 
@@ -57,9 +57,7 @@ app.use((req, res, next) => {
 })
 
 app.use('/', usersRoute);
-app.use('/product', designsRoute);
-
-app.get('/', designs.index);
+app.use('/products', productsRoute);
 
 app.use((req, res, next) => {
     next(new AppError('Page not found', 404));

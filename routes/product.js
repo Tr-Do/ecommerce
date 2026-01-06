@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { throwError, AppError } = require('../utils/AppError.js');
 const { productSchema } = require('../schemas.js');
-const Product = require('../models/product.js');
-const { isLoggedin } = require('../middleware.js');
-const products = require('../controllers/products.js');
+const Design = require('../models/design');
+const { isLoggedin } = require('../middleware');
+const products = require('../controllers/products');
 
 const validateProduct = (req, res, next) => {
     const { error } = productSchema.validate(req.body);
@@ -16,6 +16,8 @@ const validateProduct = (req, res, next) => {
         next();
     }
 }
+
+router.get('/', products.index);
 
 router.get('/new', isLoggedin, products.renderNewForm);
 

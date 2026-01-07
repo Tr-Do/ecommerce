@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { throwError, AppError } = require('../utils/AppError.js');
+const { AppError } = require('../utils/AppError.js');
 const { productSchema } = require('../schemas.js');
-const Design = require('../models/design');
 const { isLoggedin } = require('../middleware');
 const products = require('../controllers/products');
+const multer = require('multer')
+const upload = multer({ dest: 'uploads/' })
+
 
 const validateProduct = (req, res, next) => {
     const { error } = productSchema.validate(req.body);
@@ -17,18 +19,17 @@ const validateProduct = (req, res, next) => {
     }
 }
 
-router.get('/', products.index);
+router.route('/')
+    .get(products.index)
+    .post(validateProduct, products.createProduct);
 
 router.get('/new', isLoggedin, products.renderNewForm);
 
-router.post('/', validateProduct, products.createProduct);
-
-router.get('/:id', products.showProduct);
+router.route('/:id')
+    .get(products.showProduct)
+    .put(isLoggedin, validateProduct, products.updateProduct)
+    .delete(isLoggedin, products.deleteProduct);
 
 router.get('/:id/edit', isLoggedin, products.editForm);
-
-router.put('/:id', isLoggedin, validateProduct, products.updateProduct);
-
-router.delete('/:id', isLoggedin, products.deleteProduct);
 
 module.exports = router;

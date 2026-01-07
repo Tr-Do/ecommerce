@@ -2,7 +2,7 @@
     <div class="row">
         <h1 class="text-center">New Design</h1>
         <div class="col-6 offset-3">
-            <form action="/products" method="POST" novalidate class="validated-form">
+            <form action="/products" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label class="form-label" for="name">Name</label>
                     <input class="form-control" type="text" id="name" name="product[name]" required>
@@ -19,14 +19,10 @@
                     </div>
                 </div>
                 <label class="form-label" for="image">Image</label>
-                <div>
-                    <input class="form-control" type="text" id="image" name="product[image]">
-
-                </div>
-                <!-- <div class="mb-3">
-                    <label class="form-label" for="image">Image</label>
+                <!-- <div>
                     <input class="form-control" type="text" id="image" name="product[image]">
                 </div> -->
+                <input type="file" name="product[image]" id="">
                 <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
                     <textarea class="form-control" style="height:300px;" name="product[description]" id="description"

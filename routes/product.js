@@ -5,7 +5,8 @@ const { productSchema } = require('../schemas.js');
 const { isLoggedin } = require('../middleware');
 const products = require('../controllers/products');
 const multer = require('multer')
-const upload = multer({ dest: 'uploads/' })
+const { storage } = require('../cloudinary');
+const upload = multer({ storage })
 
 
 const validateProduct = (req, res, next) => {
@@ -21,7 +22,7 @@ const validateProduct = (req, res, next) => {
 
 router.route('/')
     .get(products.index)
-    .post(validateProduct, products.createProduct);
+    .post(upload.array('image'), validateProduct, products.createProduct);
 
 router.get('/new', isLoggedin, products.renderNewForm);
 

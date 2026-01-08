@@ -10,9 +10,10 @@ const DesignSchema = new Schema({
         type: Number,
         required: true
     },
-    image: {
-        type: String,
-    },
+    images: [{
+        url: String,
+        filename: String
+    }],
     description: {
         type: String,
         required: true

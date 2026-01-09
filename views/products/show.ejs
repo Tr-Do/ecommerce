@@ -2,6 +2,7 @@
     <div class="row">
         <div class="d-flex justify-content-center">
             <div class="mb-5 mt-3">
+
                 <div id="carouselExample" class="carousel slide">
                     <div class="carousel-inner">
                         <% product.images.forEach((img, i)=> { %>
@@ -10,42 +11,44 @@
                             </div>
                             <%})%>
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample"
-                        data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExample"
-                        data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
+                    <% if(product.images.length>1){ %>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample"
+                            data-bs-slide="prev">
+                            <i class="bi bi-chevron-left text-dark fs-1"></i>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample"
+                            data-bs-slide="next">
+                            <i class="bi bi-chevron-right text-dark fs-1"></i>
+                            <span class="visually-hidden">Next</span>
+                        </button>
                 </div>
+                <%}%>
 
-                <div class="card" style="width: 30rem;">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">
-                            <%=product.name%>
-                        </h5>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item text-center">
-                            $<%=product.price%>
-                        </li>
-                        <li class="list-group-item">
-                            <%=product.description%>
-                        </li>
-                    </ul>
-                    <% if (currentUser) { %>
+                    <div class="card" style="width: 30rem;">
                         <div class="card-body">
-                            <a class="card-link btn btn-warning" href="/productS/<%=product._id%>/edit">Edit</a>
-                            <form action="/productS/<%=product.id%>?_method=DELETE" method="POST"
-                                style="display:inline;">
-                                <button class="btn btn-danger">Delete</button>
-                            </form>
+                            <h5 class="card-title text-center">
+                                <%=product.name%>
+                            </h5>
                         </div>
-                        <% } %>
-                </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item text-center">
+                                $<%=product.price%>
+                            </li>
+                            <li class="list-group-item">
+                                <%=product.description%>
+                            </li>
+                        </ul>
+                        <% if (currentUser) { %>
+                            <div class="card-body">
+                                <a class="card-link btn btn-warning" href="/productS/<%=product._id%>/edit">Edit</a>
+                                <form action="/productS/<%=product.id%>?_method=DELETE" method="POST"
+                                    style="display:inline;">
+                                    <button class="btn btn-danger">Delete</button>
+                                </form>
+                            </div>
+                            <% } %>
+                    </div>
             </div>
         </div>
     </div>

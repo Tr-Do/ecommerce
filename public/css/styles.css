@@ -15,7 +15,7 @@
   width: 100%;
   height: 200px;
   /* fixed height */
-  object-fit: cover;
+  object-fit: contain;
   /* crop, do not stretch */
 }
 

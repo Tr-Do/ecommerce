@@ -1,6 +1,20 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+
+const imageSchema = new Schema({
+    url: String,
+    filename: String
+})
+
+imageSchema.virtual('editThumbnail').get(function () {
+    return this.url.replace('/upload', '/upload/f_auto,q_auto,c_fit,w_200,h_200')
+});
+
+imageSchema.virtual('homepageThumbnail').get(function () {
+    return this.url.replace('/upload', '/upload/f_auto,q_auto,c_fit,h_300,w_450')
+});
+
 const DesignSchema = new Schema({
     name: {
         type: String,
@@ -10,10 +24,7 @@ const DesignSchema = new Schema({
         type: Number,
         required: true
     },
-    images: [{
-        url: String,
-        filename: String
-    }],
+    images: [imageSchema],
     description: {
         type: String,
         required: true

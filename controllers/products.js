@@ -1,5 +1,6 @@
 const Design = require('../models/design');
 const { throwError } = require('../utils/AppError');
+const { cloudinary } = require('../cloudinary');
 
 module.exports.index = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
@@ -39,14 +40,15 @@ module.exports.editForm = async (req, res) => {
 
 module.exports.updateProduct = async (req, res) => {
     const { id } = req.params;
-    console.log(req.body);
     const product = await Design.findByIdAndUpdate(id, { ...req.body.product });
     const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
     product.images.push(...imgs);
     await product.save();
     if (req.body.deleteImages) {
+        for (let filename of req.body.deleteImages) {
+            await cloudinary.uploader.destroy(filename);
+        }
         await product.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } })
-        console.log(product);
     }
     throwError(product);
     req.flash('success', 'Update product sucessfully');

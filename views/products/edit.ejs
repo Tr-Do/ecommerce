@@ -29,6 +29,15 @@
                     <input class="form-control" type="file" id="name" name="image" multiple>
                 </div>
                 <div class="mb-3">
+                    <% product.images.forEach(function(img, i) { %>
+                        <img src="<%=img.url%>" class="img-thumbnail" alt="">
+                        <div class="form-check-inline">
+                            <input type="checkbox" id="image-<%=i%>" name="deleteImages[]" value="<%=img.filename%>">
+                        </div>
+                        <label for="image-<%=i%>">Delete</label>
+                        <% })%>
+                </div>
+                <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
                     <textarea class="form-control" style="height:300px;" name="product[description]" id="description"
                         required><%=product.description%></textarea>

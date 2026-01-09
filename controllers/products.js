@@ -40,6 +40,9 @@ module.exports.editForm = async (req, res) => {
 module.exports.updateProduct = async (req, res) => {
     const { id } = req.params;
     const product = await Design.findByIdAndUpdate(id, { ...req.body.product });
+    const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    product.images.push(...imgs);
+    await product.save();
     throwError(product);
     req.flash('success', 'Update product sucessfully');
     res.redirect(`/products/${product._id}`);

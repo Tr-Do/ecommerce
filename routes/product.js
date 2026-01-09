@@ -28,7 +28,7 @@ router.get('/new', isLoggedin, products.renderNewForm);
 
 router.route('/:id')
     .get(products.showProduct)
-    .put(isLoggedin, validateProduct, products.updateProduct)
+    .put(isLoggedin, upload.array('image'), validateProduct, products.updateProduct)
     .delete(isLoggedin, products.deleteProduct);
 
 router.get('/:id/edit', isLoggedin, products.editForm);

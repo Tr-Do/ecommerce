@@ -21,7 +21,6 @@ module.exports.createProduct = async (req, res) => {
     const product = new Design(req.body.product);
     product.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     await product.save();
-    console.log(product);
     req.flash('success', 'Add product sucessfully');
     res.redirect(`/products/${product._id}`);
 }

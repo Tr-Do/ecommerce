@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-
 const imageSchema = new Schema({
     url: String,
     filename: String
@@ -13,6 +12,10 @@ imageSchema.virtual('editThumbnail').get(function () {
 
 imageSchema.virtual('homepageThumbnail').get(function () {
     return this.url.replace('/upload', '/upload/f_auto,q_auto,c_fit,h_300,w_450')
+});
+
+imageSchema.virtual('showPage').get(function () {
+    return this.url.replace('/upload', '/upload/f_auto,q_auto,c_fit,h_700,w_700');
 });
 
 const DesignSchema = new Schema({
@@ -28,6 +31,10 @@ const DesignSchema = new Schema({
     description: {
         type: String,
         required: true
+    },
+    size: {
+        type: [String],
+        default: []
     }
 })
 

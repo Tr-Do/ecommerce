@@ -21,6 +21,25 @@
                     <label for="image" class="form-label">Images:</label>
                     <input class="form-control" type="file" id="name" name="image" multiple>
                 </div>
+                <div class="mb-3 d-flex align-items-center gap-3">
+                    <label for="size" class="form-label d-block">Size:</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="product[size][]" id="size-s" value="S">
+                        <label for="size-s">S</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="product[size][]" id="size-m" value="M">
+                        <label for="size-m">M</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="product[size][]" id="size-l" value="L">
+                        <label for="size-l">L</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="product[size][]" id="size-xl" value="XL">
+                        <label for="size-xl">XL</label>
+                    </div>
+                </div>
                 <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
                     <textarea class="form-control" style="height:300px;" name="product[description]" id="description"

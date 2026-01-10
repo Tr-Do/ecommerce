@@ -34,8 +34,11 @@
                 <li class="list-group-item text-center">
                     <h5>$<%=product.price%>
                     </h5>
+                    <button class="btn btn-success mt-3 mb-3">Add to cart</button>
                 </li>
+                <li class="list-group-item">Product description</li>
                 <li class="list-group-item">
+
                     <% product.description.split('\n').forEach(p=> { %>
                         <% if (p.trim()) { %>
                             <p class="mb-2">

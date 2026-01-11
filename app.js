@@ -1,4 +1,5 @@
 require('dotenv').config();
+const sanitizeV5 = require('./utils/mongoSanitizeV5.js');
 const express = require('express');
 const ejsMate = require('ejs-mate');
 const path = require('path');
@@ -22,11 +23,13 @@ db.once('open', () => {
 });
 
 const app = express();
+app.set('query parser', 'extended');
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(sanitizeV5({ replaceWith: '_' }));
 app.use(methodOverride('_method'));
 
 const sessionConfig = {
@@ -58,6 +61,10 @@ app.use((req, res, next) => {
 
 app.use('/', usersRoute);
 app.use('/products', productsRoute);
+
+app.get('/', (req, res) => {
+    res.render('home');
+})
 
 app.use((req, res, next) => {
     next(new AppError('Page not found', 404));

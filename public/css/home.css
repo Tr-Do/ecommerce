@@ -1,0 +1,39 @@
+html,
+body {
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+body {
+    margin: 0;
+}
+
+/* force the carousel itself to have the same height as the slides */
+#carouselExampleFade {
+    width: min(700px, 100%);
+    height: 500px;
+    position: relative;
+}
+
+/* make inner + items inherit that height */
+#carouselExampleFade .carousel-inner,
+#carouselExampleFade .carousel-item {
+    height: 100%;
+}
+
+/* make images fill the 500px box */
+#carouselExampleFade .carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}

@@ -11,7 +11,7 @@ module.exports.index = async (req, res) => {
         .limit(limit);
     const totalProducts = await Design.countDocuments();
     const totalPages = Math.ceil(totalProducts / limit);
-    res.render('home', { products, currentPage: page, totalPages });
+    res.render('index', { products, currentPage: page, totalPages });
 }
 
 module.exports.renderNewForm = (req, res) => {

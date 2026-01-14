@@ -8,7 +8,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mx-auto mb-2 mb-lg-0 ">
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="/">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="/products">All Products</a></li>
+                <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
                 <li class="nav-item"><a class="nav-link" href="#!">About</a></li>
 
                 <% if (currentUser) { %>
@@ -22,10 +22,10 @@
                     <% } else { %>
                         <li class="navbar-nav nav-item me-3"><a class="nav-link" href="/logout">Sign out</a></li>
                         <% } %>
-                            <button class="btn btn-outline-dark" type="submit">
+                            <button class="btn btn-outline-dark" id="add-to-cart" type="submit">
                                 <i class="bi-cart-fill me-1"></i>
                                 Cart
-                                <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+                                <span class="badge bg-dark text-white ms-1 rounded-pill" id="cart-count">0</span>
                             </button>
             </form>
         </div>

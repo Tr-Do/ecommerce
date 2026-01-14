@@ -8,15 +8,16 @@
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="css/styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/home.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="/css/home.css">
 </head>
 
 <body>
     <%- include('./partials/navbar') %>
 
-        <main class="flex-grow-1 d-flex justify-content-center mt-5 pt-1">
+        <main class="flex-grow-1 d-flex flex-column align-items-center pt-md-3 pb-4 pb-lg-4">
+
             <div id="carouselExampleFade" class="carousel slide carousel-fade">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
@@ -42,6 +43,9 @@
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Next</span>
                 </button>
+            </div>
+            <div class="d-flex align-items-center mt-md-3">
+                <button class="btn btn-dark">View Products</button>
             </div>
         </main>
 

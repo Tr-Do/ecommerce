@@ -2,6 +2,7 @@ if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
 }
 
+const Design = require('./models/design');
 const sanitizeV5 = require('./utils/mongoSanitizeV5.js');
 const express = require('express');
 const ejsMate = require('ejs-mate');
@@ -72,6 +73,30 @@ app.get('/', (req, res) => {
     res.render('home');
 })
 
+app.post('/cart', (req, res) => {
+    const { size, productId } = req.body;
+    if (!productId || !size) return res.status(400).send('Invalid cart data');
+    if (!req.session.cart) req.session.cart = { items: [] };
+    const cart = req.session.cart.items;
+    const currentItem = cart.find(item => item.productId === productId && item.size === size);
+    if (currentItem) {
+        currentItem.quantity += 1
+    } else {
+        cart.push({ productId, size, quantity: 1 });
+    }
+    res.redirect('/cart');
+})
+
+app.get('/cart', async (req, res) => {
+    const cart = req.session.cart || { items: [] };
+    const productIds = cart.items.map(i => i.productId);
+    const products = await Design.find({ _id: { $in: productIds } });
+    const productMap = new Map(products.map(p => [String(p._id), p]));
+    const item = cart.items.map(i => ({ ...i, product: productMap.get(String(i.productId)) }));
+
+    res.render('cart/index', { cart: { items: item } });
+})
+
 app.use((req, res, next) => {
     next(new AppError('Page not found', 404));
 })
@@ -80,8 +105,6 @@ app.use((err, req, res, next) => {
     const { status = 500, message = 'Something went wrong' } = err;
     res.status(status).render('error', { err });
 })
-
-
 
 app.listen(3000, () => {
     console.log('Serving port 3000')

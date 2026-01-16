@@ -93,6 +93,21 @@ app.post('/cart', (req, res) => {
     res.redirect('/cart');
 })
 
+app.post('/cart/remove', async (req, res) => {
+    const { productId, size } = req.body;
+    if (!req.session.cart || !req.session.cart.items) return res.redirect('/cart');
+
+    const items = req.session.cart.items;
+    const updatedItems = [];
+    for (const item of items) {
+        if (item.productId !== productId || item.size !== size) {
+            updatedItems.push(item);
+        }
+    }
+    req.session.cart.items = updatedItems;
+    res.redirect('/cart');
+})
+
 app.get('/cart', async (req, res) => {
     const cart = req.session.cart || { items: [] };
     const productIds = cart.items.map(i => i.productId);

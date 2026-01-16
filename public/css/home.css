@@ -27,6 +27,7 @@ body {
 
 table tfoot tr:last-child td {
     border-bottom: none;
+    padding-top: 2rem;
 }
 
 /* force the carousel itself to have the same height as the slides */

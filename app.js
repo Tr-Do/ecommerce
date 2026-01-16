@@ -59,10 +59,16 @@ passport.use(new LocalStrategy(User.authenticate()))
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+
+
 app.use((req, res, next) => {
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
+
+    const cart = req.session.cart;
+    const cartCount = cart && Array.isArray(cart.items) ? cart.items.length : 0;
+    res.locals.cartCount = cartCount;
     next();
 })
 
@@ -80,10 +86,10 @@ app.post('/cart', (req, res) => {
     const cart = req.session.cart.items;
     const currentItem = cart.find(item => item.productId === productId && item.size === size);
     if (currentItem) {
-        currentItem.quantity += 1
-    } else {
-        cart.push({ productId, size, quantity: 1 });
+        req.flash('error', 'Product is already in cart');
+        return res.redirect(`/products/${productId}`);
     }
+    cart.push({ productId, size });
     res.redirect('/cart');
 })
 

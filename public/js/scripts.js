@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const sizeChosen = document.getElementById('size');
             const sizeSent = document.getElementById('selected-size');
             if (sizeChosen) {
-                sizeSent.value = sizeChosen;
+                sizeSent.value = sizeChosen.value;
             }
             const num = Number(cartCount.textContent) + 1;
             cartCount.textContent = String(num);

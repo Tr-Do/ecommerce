@@ -18,6 +18,10 @@ imageSchema.virtual('showPage').get(function () {
     return this.url.replace('/upload', '/upload/f_auto,q_auto,c_fit,h_700,w_700');
 });
 
+imageSchema.virtual('cartThumbnail').get(function () {
+    return this.url.replace('/upload', '/upload/f_auto,q_auto,c_fit,w_50,h_50')
+});
+
 const DesignSchema = new Schema({
     name: {
         type: String,

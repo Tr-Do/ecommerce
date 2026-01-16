@@ -93,7 +93,6 @@ app.get('/cart', async (req, res) => {
     const products = await Design.find({ _id: { $in: productIds } });
     const productMap = new Map(products.map(p => [String(p._id), p]));
     const item = cart.items.map(i => ({ ...i, product: productMap.get(String(i.productId)) }));
-
     res.render('cart/index', { cart: { items: item } });
 })
 

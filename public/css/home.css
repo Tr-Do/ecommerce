@@ -17,6 +17,18 @@ body {
     margin: 0;
 }
 
+#cart {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+}
+
+table tfoot tr:last-child td {
+    border-bottom: none;
+}
+
 /* force the carousel itself to have the same height as the slides */
 #carouselExampleFade {
     width: min(700px, 100%);
@@ -51,6 +63,7 @@ body {
     /* Center the whole column vertically */
     main {
         justify-content: center !important;
+
     }
 
     /* Optional: add controlled spacing between carousel and button */

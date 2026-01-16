@@ -78,6 +78,10 @@ app.get('/', (req, res) => {
     res.render('home');
 })
 
+app.get('/about', (req, res) => {
+    res.render('about');
+})
+
 app.use((req, res, next) => {
     next(new AppError('Page not found', 404));
 })

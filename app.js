@@ -32,7 +32,11 @@ const app = express();
 app.set('query parser', 'extended');
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
+
+
+app.use('/checkout', checkoutRoute);
 app.use(express.urlencoded({ extended: true }));
+
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(sanitizeV5({ replaceWith: '_' }));
@@ -74,7 +78,6 @@ app.use((req, res, next) => {
 app.use('/', usersRoute);
 app.use('/products', productsRoute);
 app.use('/cart', cartRoute);
-app.use('/checkout', checkoutRoute);
 
 app.get('/', (req, res) => {
     res.render('home');

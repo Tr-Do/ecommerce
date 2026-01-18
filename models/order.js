@@ -22,7 +22,7 @@ const orderSchema = new Schema(
                 },
                 size: {
                     type: String,
-                    require: true
+                    required: true
                 },
                 price: {
                     type: Number,
@@ -44,4 +44,4 @@ const orderSchema = new Schema(
     }
 );
 
-module.exports = mongoose.Model('Order', orderSchema);
+module.exports = mongoose.model('Order', orderSchema);

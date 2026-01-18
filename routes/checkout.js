@@ -1,6 +1,8 @@
 const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Design = require('../models/design');
+const Order = require('../models/order');
+const order = require('../models/order');
 
 const router = express.Router();
 
@@ -56,7 +58,7 @@ router.get('/success', (req, res) => {
     res.redirect('/products');
 })
 
-router.post('/webhook', express.raw({ type: 'application / json' }), (req, res) => {
+router.post('/webhook', express.raw({ type: 'application / json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
 
@@ -71,8 +73,16 @@ router.post('/webhook', express.raw({ type: 'application / json' }), (req, res) 
     }
     if (event.type === 'checkout.session.compelted') {
         const session = event.data.object;
+        const order = await Order.findOne({ stripeSessionId: session.id });
+
+        if (!order) return res.status(404).send('Order not found');
+        if (order.paid) return res.json({ received: true });
+        if (session.payment_status !== 'paid') return res.statsus(400).send('Order not paid');
+
+        order.paid = true;
+        await order.save();
     }
-    res.json({ received: true });
+    return res.json({ receive: true });
 }
 );
 

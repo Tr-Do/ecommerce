@@ -58,6 +58,8 @@ router.post('/create-session', async (req, res, next) => {
 
             orderItems.push({
                 productId: item.productId,
+                name: product.name,
+                image: product.images[0].showPage,
                 size: item.size,
                 price: unitAmount
             });
@@ -83,16 +85,22 @@ router.get('/success', async (req, res, next) => {
     try {
         const lastOrderId = req.session.lastOrderId;
         if (!lastOrderId) {
-            req.flash('success', 'Checkout finished.');
+            req.flash('error', 'Something went wrong');
             return res.redirect('/products');
         }
         const order = await Order.findById(lastOrderId);
+
+        if (!order) {
+            req.flash('error', 'Order not found')
+            return res.redirect('/cart');
+        }
+
         if (order && order.paid) {
             req.session.cart = { items: [] };
             delete req.session.lastOrderId;
             req.flash('success', 'Payment completed.');
         } else req.flash('success', 'Payment processing...');
-        return res.redirect('/products');
+        return res.render('order/show', { order });
     } catch (err) {
         return next(err);
     }
@@ -120,6 +128,8 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         if (session.payment_status !== 'paid') return res.status(400).send('Order not paid');
 
         order.paid = true;
+        order.email = session.customer_details.email;
+
         await order.save();
     }
     return res.json({ received: true });

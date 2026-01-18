@@ -13,6 +13,10 @@ const orderSchema = new Schema(
             ref: 'User',
             default: null
         },
+        email: {
+            type: String,
+            required: true
+        },
         items: [
             {
                 productId: {
@@ -20,6 +24,11 @@ const orderSchema = new Schema(
                     ref: 'Design',
                     required: true
                 },
+                name: {
+                    type: String,
+                    required: true
+                },
+                image: { type: String },
                 size: {
                     type: String,
                     required: true

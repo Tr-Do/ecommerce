@@ -12,6 +12,7 @@ const { AppError } = require('./utils/AppError');
 const productsRoute = require('./routes/product');
 const usersRoute = require('./routes/users.js');
 const cartRoute = require('./routes/cart.js');
+const checkoutRoute = require('./routes/checkout.js');
 const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
@@ -73,6 +74,7 @@ app.use((req, res, next) => {
 app.use('/', usersRoute);
 app.use('/products', productsRoute);
 app.use('/cart', cartRoute);
+app.use('/checkout', checkoutRoute);
 
 app.get('/', (req, res) => {
     res.render('home');

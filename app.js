@@ -44,7 +44,7 @@ app.use(methodOverride('_method'));
 
 const sessionConfig = {
     name: 'session',
-    secret: "thisisasecret",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {

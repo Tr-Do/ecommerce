@@ -1,8 +1,15 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const { customAlphabet } = require('nanoid');
+const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 6);
 
 const orderSchema = new Schema(
     {
+        orderNumber: {
+            type: String,
+            unique: true,
+            default: () => `ORD-${nanoid()}`
+        },
         stripeSessionId: {
             type: String,
             required: true,
@@ -15,7 +22,10 @@ const orderSchema = new Schema(
         },
         email: {
             type: String,
-            required: true
+            required: function () {
+                return this.paid === true;
+            },
+            default: null
         },
         items: [
             {

@@ -86,21 +86,29 @@ router.get('/success', async (req, res, next) => {
         const lastOrderId = req.session.lastOrderId;
         if (!lastOrderId) {
             req.flash('error', 'Something went wrong');
+            res.locals.error = req.flash('error');
             return res.redirect('/products');
         }
         const order = await Order.findById(lastOrderId);
 
         if (!order) {
-            req.flash('error', 'Order not found')
+            req.flash('error', 'Order not found');
+            res.locals.error = req.flash('error');
             return res.redirect('/cart');
         }
 
+        req.session.cart = { items: [] };
+        delete req.session.lastOrderId;
+        res.locals.cartCount = 0;
+
         if (order && order.paid) {
-            req.session.cart = { items: [] };
-            delete req.session.lastOrderId;
             req.flash('success', 'Payment completed.');
-        } else req.flash('success', 'Payment processing...');
-        return res.render('order/show', { order });
+            res.locals.success = req.flash('success');
+        } else {
+            req.flash('success', 'Payment processing...');
+            res.locals.success = req.flash('success');
+        }
+        return res.render('orders/show', { order });
     } catch (err) {
         return next(err);
     }

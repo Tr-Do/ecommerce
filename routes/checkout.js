@@ -63,7 +63,7 @@ router.post('/create-session', async (req, res, next) => {
             });
         }
 
-        await Order.create({
+        const order = await Order.create({
             stripeSessionId: session.id,
             user: req.user ? req.user._id : null,
             items: orderItems,
@@ -84,7 +84,7 @@ router.get('/success', async (req, res, next) => {
         const lastOrderId = req.session.lastOrderId;
         if (!lastOrderId) {
             req.flash('success', 'Checkout finished.');
-            return res.redirect('/product');
+            return res.redirect('/products');
         }
         const order = await Order.findById(lastOrderId);
         if (order && order.paid) {

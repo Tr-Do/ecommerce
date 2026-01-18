@@ -28,6 +28,7 @@ router.post('/create-session', async (req, res, next) => {
                     unit_amount: Math.round(Number(product.price) * 100),
                     product_data: {
                         name: product.name,
+                        images: [product.images[0].showPage],
                         metadata: {
                             productId: productId,
                             size: item.size
@@ -54,5 +55,25 @@ router.get('/success', (req, res) => {
     req.flash('success', 'Payment completed.');
     res.redirect('/products');
 })
+
+router.post('/webhook', express.raw({ type: 'application / json' }), (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
+
+    try {
+        event = stripe.webhooks.constructEvent(
+            req.body,
+            sig,
+            process.env.STRIPE_WEBHOOK_SECRET
+        );
+    } catch (err) {
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+    if (event.type === 'checkout.session.compelted') {
+        const session = event.data.object;
+    }
+    res.json({ received: true });
+}
+);
 
 module.exports = router;

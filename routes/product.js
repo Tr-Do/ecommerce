@@ -6,7 +6,7 @@ const { isLoggedin } = require('../middleware');
 const products = require('../controllers/products');
 const multer = require('multer')
 const { storage } = require('../cloudinary');
-const upload = multer({ storage })
+const uploadImage = multer({ storage })
 
 
 const validateProduct = (req, res, next) => {
@@ -22,13 +22,13 @@ const validateProduct = (req, res, next) => {
 
 router.route('/')
     .get(products.index)
-    .post(upload.array('image'), validateProduct, products.createProduct);
+    .post(uploadImage.array('image'), validateProduct, products.createProduct);
 
 router.get('/new', isLoggedin, products.renderNewForm);
 
 router.route('/:id')
     .get(products.showProduct)
-    .put(isLoggedin, upload.array('image'), validateProduct, products.updateProduct)
+    .put(isLoggedin, uploadImage.array('image'), validateProduct, products.updateProduct)
     .delete(isLoggedin, products.deleteProduct);
 
 router.get('/:id/edit', isLoggedin, products.editForm);

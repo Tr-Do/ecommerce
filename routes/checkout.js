@@ -1,7 +1,4 @@
 const express = require('express');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const Design = require('../models/design');
-const Order = require('../models/order');
 const checkout = require('../controllers/checkout');
 
 const router = express.Router();

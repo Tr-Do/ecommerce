@@ -19,10 +19,6 @@ module.exports.renderNewForm = (req, res) => {
 }
 
 module.exports.createProduct = async (req, res) => {
-    console.log('req.files:', req.files);
-    console.log('req.file:', req.file);
-    console.log('body keys:', Object.keys(req.body));
-
     const product = new Design(req.body.product);
     product.images = req.files.map(f => ({ url: f.secure_url || f.url, filename: f.public_id }));
     await product.save();

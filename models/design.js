@@ -6,6 +6,14 @@ const imageSchema = new Schema({
     filename: String
 })
 
+const fileSchema = new Schema({
+    bucket: { type: String, required: true },
+    key: { type: String, required: true },
+    originalName: String,
+    contentType: String,
+    size: Number
+}, { _id: false });
+
 imageSchema.virtual('editThumbnail').get(function () {
     if (!this.url) return '';
     return this.url.replace('/upload', '/upload/f_auto,q_auto,c_fit,w_200,h_200')
@@ -40,6 +48,7 @@ const DesignSchema = new Schema({
         type: String,
         required: true
     },
+    downloadFiles: { type: [fileSchema], default: [] },
     size: {
         type: [String],
         default: []

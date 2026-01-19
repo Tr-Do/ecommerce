@@ -10,7 +10,7 @@ const fileSchema = new Schema({
     bucket: { type: String, required: true },
     key: { type: String, required: true },
     originalName: String,
-    contentType: String,
+    contentType: { type: String, required: true },
     size: Number
 }, { _id: false });
 

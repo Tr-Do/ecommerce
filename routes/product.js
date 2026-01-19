@@ -6,7 +6,12 @@ const { isLoggedin } = require('../middleware');
 const products = require('../controllers/products');
 const multer = require('multer')
 const { storage } = require('../cloudinary');
-const uploadImage = multer({ storage })
+const uploadImages = multer({ storage });
+const uploadFiles = multer({
+    storage: multer.memoryStorage(),
+    // limits 10MB/file
+    limits: { fileSize: 10 * 1024 * 1024 }
+});
 
 
 const validateProduct = (req, res, next) => {
@@ -15,20 +20,41 @@ const validateProduct = (req, res, next) => {
         const msg = error.details.map(e => e.message).join(',')
         throw new AppError(msg, 400);
     }
-    else {
-        next();
-    }
+    else next();
 }
 
 router.route('/')
     .get(products.index)
-    .post(uploadImage.array('image'), validateProduct, products.createProduct);
+    .post(
+        uploadImages.array('image'),
+
+        (req, res, next) => {
+            req.cloudinaryImages = req.files || [];
+            // empty req body for multer to get design files
+            req.files = [];
+            next();
+        },
+        uploadFiles.array('designFile'),
+        validateProduct,
+        products.createProduct
+    );
 
 router.get('/new', isLoggedin, products.renderNewForm);
 
 router.route('/:id')
     .get(products.showProduct)
-    .put(isLoggedin, uploadImage.array('image'), validateProduct, products.updateProduct)
+    .put(
+        isLoggedin,
+        uploadImages.array('image'),
+        (req, res, next) => {
+            req.cloudinaryImages = req.files || [];
+            // empty req body for multer to get design files
+            req.files = [];
+            next();
+        },
+        uploadFiles.array('designFile'),
+        validateProduct,
+        products.updateProduct)
     .delete(isLoggedin, products.deleteProduct);
 
 router.get('/:id/edit', isLoggedin, products.editForm);

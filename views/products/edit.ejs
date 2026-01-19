@@ -26,9 +26,13 @@
                 </div>
                 <div class="mb-3">
                     <label for="image" class="form-label">Add Images:</label>
-                    <input class="form-control" type="file" id="name" name="image" multiple>
+                    <input class="form-control" type="file" id="image" name="image" multiple>
                 </div>
-                <div class="mb-3">
+                <div>
+                    <label for="file" class="form-label">Upload files:</label>
+                    <input class="form-control" type="file" name="designFile" multiple>
+                </div>
+                <div class="mb-3 mt-3">
                     <% product.images.forEach(function(img, i) { %>
                         <label class="d-inline-block me-3 text-center">
                             <img src="<%=img.editThumbnail%>" class="img-thumbnail mb-3" alt="">

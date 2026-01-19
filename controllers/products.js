@@ -1,6 +1,7 @@
 const Design = require('../models/design');
 const { throwError } = require('../utils/AppError');
 const { cloudinary } = require('../cloudinary');
+const { uploadToS3 } = require('../utils/s3Upload');
 
 module.exports.index = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
@@ -20,7 +21,32 @@ module.exports.renderNewForm = (req, res) => {
 
 module.exports.createProduct = async (req, res) => {
     const product = new Design(req.body.product);
-    product.images = req.files.map(f => ({ url: f.secure_url || f.url, filename: f.public_id }));
+
+    // map uploaded images url and filename
+    const cloudinaryImages = req.cloudinaryImages || [];
+    product.images = cloudinaryImages.map(f => ({
+        url: f.secure_url || f.url,
+        filename: f.public_id
+    }));
+
+    const designUploads = req.files || [];
+    for (const file of designUploads) {
+        const { bucket, key } = await uploadToS3({
+            buffer: file.buffer,
+            contentType: file.mimetype,
+            originalName: file.originalname,
+            prefix: `products/${product._id}`
+        });
+
+        product.downloadFiles.push({
+            bucket,
+            key,
+            originalName: file.originalname,
+            contentType: file.mimetype,
+            size: file.size
+        })
+    }
+
     await product.save();
     req.flash('success', 'Add product sucessfully');
     res.redirect(`/products/${product._id}`);
@@ -41,20 +67,26 @@ module.exports.editForm = async (req, res) => {
 module.exports.updateProduct = async (req, res) => {
     const { id } = req.params;
     const product = await Design.findByIdAndUpdate(id, { ...req.body.product });
-    const imgs = req.files.map(f => {
+
+    // map uploaded images url and filename
+    const imgs = (req.cloudinaryImages || []).map(f => {
         const url = f.secure_url || f.url;
         const filename = f.public_id;
-        if (!url) throw new Error('No url after upload');
+        if (!url) throw new Error('No URL after upload image');
         return { url, filename };
     });
+
     product.images.push(...imgs);
+
     await product.save();
+
     if (req.body.deleteImages) {
         for (let filename of req.body.deleteImages) {
             await cloudinary.uploader.destroy(filename);
         }
         await product.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } })
     }
+
     throwError(product);
     req.flash('success', 'Update product sucessfully');
     res.redirect(`/products/${product._id}`);
@@ -63,7 +95,9 @@ module.exports.updateProduct = async (req, res) => {
 module.exports.deleteProduct = async (req, res) => {
     const { id } = req.params;
     const product = await Design.findByIdAndDelete(id);
+
     throwError(product);
+
     req.flash('success', 'Delete product sucessfully');
     res.redirect('/products');
 }

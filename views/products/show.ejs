@@ -1,7 +1,6 @@
 <% layout('layouts/boilerplate') %>
     <div class="d-flex justify-content-between">
         <div class="col-12 col-lg-7 d-flex justify-content-center">
-
             <div id="carouselExample" class="carousel slide">
                 <div class="carousel-inner">
                     <% product.images.forEach((img, i)=> { %>
@@ -53,15 +52,11 @@
                             <input type="hidden" name="size" value="Standard">
                             <%}%>
                                 <input type="hidden" name="productId" value="<%=product._id%>">
-
                                 <button class="btn btn-success mt-3 mb-3" id="add-to-cart" data-id="<%=product._id%>"
                                     data-size="<%=product.size%>">Add to cart</button>
-
                 </form>
-
                 <li class="list-group-item fw-bold">Product description</li>
                 <li class="list-group-item">
-
                     <% product.description.split('\n').forEach(p=> { %>
                         <% if (p.trim()) { %>
                             <p class="mb-2">
@@ -70,7 +65,6 @@
                             <% } %>
                                 <% }) %>
                 </li>
-
             </ul>
             <% if (currentUser) { %>
                 <div class="card-body">

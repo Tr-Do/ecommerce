@@ -13,6 +13,11 @@ document.addEventListener("DOMContentLoaded", () => {
         sessionStorage.removeItem("scrollY");
     }
 
+    const copyBtn = document.querySelector('.bi-copy');
+    copyBtn.addEventListener('click', (e) => {
+        navigator.clipboard.writeText('terrarium@primewaytrading.net');
+    })
+
     const sub = document.getElementById('subtotal');
     const removeBtn = document.querySelectorAll('.removeProduct');
     removeBtn.forEach(btn => {

@@ -19,8 +19,12 @@ module.exports.renderNewForm = (req, res) => {
 }
 
 module.exports.createProduct = async (req, res) => {
+    console.log('req.files:', req.files);
+    console.log('req.file:', req.file);
+    console.log('body keys:', Object.keys(req.body));
+
     const product = new Design(req.body.product);
-    product.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    product.images = req.files.map(f => ({ url: f.secure_url || f.url, filename: f.public_id }));
     await product.save();
     req.flash('success', 'Add product sucessfully');
     res.redirect(`/products/${product._id}`);
@@ -41,7 +45,12 @@ module.exports.editForm = async (req, res) => {
 module.exports.updateProduct = async (req, res) => {
     const { id } = req.params;
     const product = await Design.findByIdAndUpdate(id, { ...req.body.product });
-    const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    const imgs = req.files.map(f => {
+        const url = f.secure_url || f.url;
+        const filename = f.public_id;
+        if (!url) throw new Error('No url after upload');
+        return { url, filename };
+    });
     product.images.push(...imgs);
     await product.save();
     if (req.body.deleteImages) {

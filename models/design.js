@@ -7,18 +7,22 @@ const imageSchema = new Schema({
 })
 
 imageSchema.virtual('editThumbnail').get(function () {
+    if (!this.url) return '';
     return this.url.replace('/upload', '/upload/f_auto,q_auto,c_fit,w_200,h_200')
 });
 
 imageSchema.virtual('homepageThumbnail').get(function () {
+    if (!this.url) return '';
     return this.url.replace('/upload', '/upload/f_auto,q_auto,c_fit,h_300,w_450')
 });
 
 imageSchema.virtual('showPage').get(function () {
+    if (!this.url) return '';
     return this.url.replace('/upload', '/upload/f_auto,q_auto,c_fit,h_700,w_700');
 });
 
 imageSchema.virtual('cartThumbnail').get(function () {
+    if (!this.url) return '';
     return this.url.replace('/upload', '/upload/f_auto,q_auto,c_fit,w_50,h_50')
 });
 

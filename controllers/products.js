@@ -36,6 +36,10 @@ module.exports.createProduct = async (req, res) => {
         });
         cloudinaryImages.push(result);
     }
+    product.images = cloudinaryImages.map(f => ({
+        url: f.secure_url || f.url,
+        filename: f.public_id
+    }));
 
     // upload designs to s3
     const designUploads = req.designFiles || [];
@@ -64,6 +68,7 @@ module.exports.createProduct = async (req, res) => {
 module.exports.showProduct = async (req, res) => {
     const product = await Design.findById(req.params.id);
     throwError(product);
+    // console.log(product);
     res.render('products/show', { product });
 };
 

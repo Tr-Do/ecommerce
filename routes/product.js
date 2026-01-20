@@ -20,6 +20,7 @@ const validateProduct = (req, res, next) => {
     } else next();
 };
 
+// Busboy of multer parses request stream once, file splitting is needed
 const splitFiles = (req, res, next) => {
     const imageFiles = req.files?.image || [];
     const designFiles = req.files?.designFile || [];

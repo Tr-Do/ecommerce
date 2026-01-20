@@ -8,7 +8,7 @@ const orderSchema = new Schema(
         orderNumber: {
             type: String,
             unique: true,
-            default: () => `ORD-${nanoid()}`
+            default: () => `ORD-${nanoid()}`        // create readable order #
         },
         stripeSessionId: {
             type: String,

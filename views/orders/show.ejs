@@ -1,16 +1,14 @@
 <% layout('layouts/boilerplate') %>
     <div class="d-flex flex-column align-items-center">
         <div class="mt-5 pt-5">
-            <h4>Order ID: <%=order.orderNumber%>
+            <h4>Thank you for shopping!</h4>
+            <h4 class="mt-5">Order ID: <%=order.orderNumber%>
             </h4>
         </div>
-        <div>Status: </div>
-        <div class="mt-5">
-            <h4>Thank you for shopping</h4>
+        <div>Order placed: <%=new Date(order.createdAt).toLocaleString()%>
         </div>
-        <div id="status">Checking payment status...</div>
-        <div>
-            <li class="downloadList"></li>
+        <div id="status" class="mt-5 pt-5">Order processing ...</div>
+        <div id="downloadList">
         </div>
         <div class="mt-3">
             <%=order.email%>
@@ -25,7 +23,7 @@
 
         const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-        async function pollPaid(maxSeconds = 60) {
+        async function pollPaid(maxSeconds = 5) {
             const deadline = Date.now() + maxSeconds * 1000;
             while (Date.now() < deadline) {
                 const result = await fetch(`/downloads/session/${encodeURIComponent(sessionId)}/status`);
@@ -49,7 +47,7 @@
                 li.className = 'd-flex justify-content-center align-items-center';
 
                 const productDiv = document.createElement('div');
-                productDiv.innerHTML = `<div>${file.productName}</div>`;
+                productDiv.innerHTML = `<div>${file.name}</div>`;
 
                 const a = document.createElement('a');
                 a.className = 'btn btn-primary btn-sm';
@@ -70,10 +68,10 @@
 
         (async () => {
             try {
-                const paid = await pollPaid(60);
+                const paid = await pollPaid(5);
                 if (!paid) {
-                    status.className = 'alert alert-warning';
-                    status.textContent = 'Payment processing... Please wait a bit.';
+                    status.className = 'alert alert-warning mt-5';
+                    status.textContent = 'Payment processing. Please wait ...';
                     return;
                 }
 

@@ -91,6 +91,7 @@ module.exports.paymentConfirmation = async (req, res, next) => {
         }
 
         const order = await Order.findOne({ stripeSessionId: sessionId });
+        console.log('status: ', 'order: ', order, 'paid: ', order.paid);
 
         if (!order) {
             req.flash('error', 'Order not found');
@@ -116,7 +117,8 @@ module.exports.paymentConfirmation = async (req, res, next) => {
 }
 
 module.exports.webhook = async (req, res) => {
-    const sigature = req.headers['stripe-signature'];
+    console.log('WEBHOOK HIT', req.headers['stripe-signature']);
+    const signature = req.headers['stripe-signature'];
     let event;
 
     try {
@@ -126,20 +128,26 @@ module.exports.webhook = async (req, res) => {
             process.env.STRIPE_WEBHOOK_SECRET
         );
     } catch (err) {
-        return res.status(400).send(`Webhook Error: ${err.message}`);
+        return res.status(400).send(`Webhook signature failed`);
     }
     if (event.type === 'checkout.session.completed') {
         const session = event.data.object;
-        const order = await Order.findOne({ stripeSessionId: session.id });
 
-        if (!order) return res.status(404).send('Order not found');
-        if (order.paid) return res.json({ received: true });
-        if (session.payment_status !== 'paid') return res.status(400).send('Order not paid');
+        try {
+            const order = await Order.findOne({ stripeSessionId: session.id });
 
-        order.paid = true;
-        order.email = session.customer_details.email;
+            if (!order) return res.status(404).send('Order not found');
+            if (order.paid) return res.json({ received: true });
+            if (session.payment_status !== 'paid') return res.status(400).send('Order not paid');
 
-        await order.save();
+            order.paid = true;
+            order.email = session.customer_details.email;
+
+            await order.save();
+        }
+        catch (err) {
+            return res.status(500).send('Internal error');
+        }
     }
     return res.json({ received: true });
 }

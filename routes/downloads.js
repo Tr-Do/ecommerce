@@ -12,6 +12,7 @@ router.get('/session/:sessionId/status', async (req, res, next) => {
     try {
         const { sessionId } = req.params;
         const order = await Order.findOne({ stripeSessionId: sessionId });
+        console.log('order paid: ', order.paid);
         // change undefined value to false
         res.json({ paid: !!order?.paid });
     } catch (e) { next(e) };
@@ -34,7 +35,7 @@ router.get('/session/:sessionId/files', async (req, res, next) => {
             for (const file of design.downloadFiles) {
                 const cmd = new GetObjectCommand({ Bucket: file.bucket, Key: file.key });
                 // expires in 12 hours
-                const url = await getSignedUrl(s3, cmd, { expires: 60 * 12 });
+                const url = await getSignedUrl(s3, cmd, { expires: 60 * 60 * 12 });
 
                 files.push({
                     name: design.name,

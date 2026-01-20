@@ -37,8 +37,14 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(sanitizeV5({ replaceWith: '_' }));
 app.use(methodOverride('_method'));
+
+const sanitizer = sanitizeV5({ replaceWith: '_' });
+
+app.use((req, res, next) => {
+    if (req.originalUrl.startsWith('/checkout/webhook')) return next();
+    return sanitizer(req, res, next);
+})
 
 const sessionConfig = {
     name: 'session',

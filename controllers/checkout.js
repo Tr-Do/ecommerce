@@ -81,45 +81,48 @@ module.exports.createSession = async (req, res, next) => {
 
 module.exports.paymentConfirmation = async (req, res, next) => {
     try {
-        const lastOrderId = req.session.lastOrderId;
-        if (!lastOrderId) {
+        const sessionId = req.query.session_id;
+
+        if (!sessionId) {
             req.flash('error', 'Something went wrong');
+            // display flash on order confimation page
             res.locals.error = req.flash('error');
             return res.redirect('/products');
         }
-        const order = await Order.findById(lastOrderId);
+
+        const order = await Order.findOne({ stripeSessionId: sessionId });
 
         if (!order) {
             req.flash('error', 'Order not found');
             res.locals.error = req.flash('error');
             return res.redirect('/cart');
         }
-
-        req.session.cart = { items: [] };
-        delete req.session.lastOrderId;
-        res.locals.cartCount = 0;
-
         if (order && order.paid) {
             req.flash('success', 'Payment completed.');
             res.locals.success = req.flash('success');
+
+            // reset cart count after payment confirmation
+            req.session.cart = { items: [] };
+            delete req.session.lastOrderId;
+            res.locals.cartCount = 0;
         } else {
             req.flash('success', 'Payment processing...');
-            res.locals.success = req.flash('success');
         }
-        return res.render('orders/show', { order });
+
+        return res.render('orders/show', { order, sessionId });
     } catch (err) {
         return next(err);
     }
 }
 
 module.exports.webhook = async (req, res) => {
-    const sig = req.headers['stripe-signature'];
+    const sigature = req.headers['stripe-signature'];
     let event;
 
     try {
         event = stripe.webhooks.constructEvent(
             req.body,
-            sig,
+            signature,
             process.env.STRIPE_WEBHOOK_SECRET
         );
     } catch (err) {

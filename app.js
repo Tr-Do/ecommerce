@@ -13,6 +13,7 @@ const productsRoute = require('./routes/product');
 const usersRoute = require('./routes/users.js');
 const cartRoute = require('./routes/cart.js');
 const checkoutRoute = require('./routes/checkout.js');
+const downloadRoute = require('./routes/downloads.js');
 const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
@@ -73,6 +74,7 @@ app.use((req, res, next) => {
 })
 
 app.use('/checkout', checkoutRoute);
+app.use('/downloads', downloadRoute);
 app.use('/', usersRoute);
 app.use('/products', productsRoute);
 app.use('/cart', cartRoute);

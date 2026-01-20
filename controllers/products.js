@@ -8,10 +8,13 @@ module.exports.index = async (req, res) => {
     const limit = 8;
     const skip = (page - 1) * limit;
     const products = await Design.find({})
+        .lean()
         .skip(skip)
         .limit(limit);
     const totalProducts = await Design.countDocuments();
     const totalPages = Math.ceil(totalProducts / limit);
+
+    // console.log(products.map(p => p.images?.[0]?.url ?? 'NO_IMAGE'));
     res.render('index', { products, currentPage: page, totalPages });
 }
 
@@ -68,7 +71,6 @@ module.exports.createProduct = async (req, res) => {
 module.exports.showProduct = async (req, res) => {
     const product = await Design.findById(req.params.id);
     throwError(product);
-    // console.log(product);
     res.render('products/show', { product });
 };
 

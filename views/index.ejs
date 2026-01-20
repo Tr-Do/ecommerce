@@ -15,7 +15,9 @@
                     <div class="col mb-5">
                         <div class="card h-100">
                             <a href="/products/<%=products[i]._id%>">
-                                <img class="card-img-top product-img" src="<%=products[i].images[0].url%>" alt="..." />
+                                <img class="card-img-top product-img"
+                                    src="<%=products[i].images[0]?products[i].images[0].url:'/assets/banner.png'%>"
+                                    alt="<%=products[i].name%>" />
                             </a>
                             <div class="card-body p-4">
                                 <div class="text-center">

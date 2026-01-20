@@ -14,7 +14,6 @@ module.exports.index = async (req, res) => {
     const totalProducts = await Design.countDocuments();
     const totalPages = Math.ceil(totalProducts / limit);
 
-    // console.log(products.map(p => p.images?.[0]?.url ?? 'NO_IMAGE'));
     res.render('index', { products, currentPage: page, totalPages });
 }
 
@@ -44,7 +43,7 @@ module.exports.createProduct = async (req, res) => {
         filename: f.public_id
     }));
 
-    // upload designs to s3
+    // upload design fies to s3
     const designUploads = req.designFiles || [];
     for (const file of designUploads) {
         const { bucket, key } = await uploadToS3({

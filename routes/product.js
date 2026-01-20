@@ -5,9 +5,7 @@ const { productSchema } = require('../schemas.js');
 const { isLoggedin } = require('../middleware');
 const products = require('../controllers/products');
 const multer = require('multer')
-const { storage } = require('../cloudinary');
-const uploadImages = multer({ storage });
-const uploadFiles = multer({
+const upload = multer({
     storage: multer.memoryStorage(),
     // limits 10MB/file
     limits: { fileSize: 10 * 1024 * 1024 }
@@ -19,22 +17,27 @@ const validateProduct = (req, res, next) => {
     if (error) {
         const msg = error.details.map(e => e.message).join(',')
         throw new AppError(msg, 400);
-    }
-    else next();
-}
+    } else next();
+};
+
+const splitFiles = (req, res, next) => {
+    const imageFiles = req.files?.image || [];
+    const designFiles = req.files?.designFile || [];
+
+    req.imageFiles = imageFiles;
+    req.designFiles = designFiles;
+
+    next();
+};
 
 router.route('/')
     .get(products.index)
-    .post(
-        uploadImages.array('image'),
-
-        (req, res, next) => {
-            req.cloudinaryImages = req.files || [];
-            // empty req body for multer to get design files
-            req.files = [];
-            next();
-        },
-        uploadFiles.array('designFile'),
+    .post(isLoggedin,
+        upload.fields([
+            { name: 'image', maxCount: 10 },
+            { name: 'designFile', maxCount: 5 }
+        ]),
+        splitFiles,
         validateProduct,
         products.createProduct
     );
@@ -45,14 +48,11 @@ router.route('/:id')
     .get(products.showProduct)
     .put(
         isLoggedin,
-        uploadImages.array('image'),
-        (req, res, next) => {
-            req.cloudinaryImages = req.files || [];
-            // empty req body for multer to get design files
-            req.files = [];
-            next();
-        },
-        uploadFiles.array('designFile'),
+        upload.fields([
+            { name: 'image', maxCount: 10 },
+            { name: 'designFile', maxCount: 5 }
+        ]),
+        splitFiles,
         validateProduct,
         products.updateProduct)
     .delete(isLoggedin, products.deleteProduct);

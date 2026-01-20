@@ -1,6 +1,6 @@
 const Design = require('../models/design');
 const { throwError } = require('../utils/AppError');
-const { cloudinary } = require('../cloudinary');
+const cloudinary = require('../cloudinary');
 const { uploadToS3 } = require('../utils/s3Upload');
 
 module.exports.index = async (req, res) => {
@@ -22,20 +22,29 @@ module.exports.renderNewForm = (req, res) => {
 module.exports.createProduct = async (req, res) => {
     const product = new Design(req.body.product);
 
-    // map uploaded images url and filename
-    const cloudinaryImages = req.cloudinaryImages || [];
-    product.images = cloudinaryImages.map(f => ({
-        url: f.secure_url || f.url,
-        filename: f.public_id
-    }));
+    // upload images to cloudinary
+    const imageUploads = req.imageFiles || [];
+    const cloudinaryImages = [];
 
-    const designUploads = req.files || [];
+    for (const file of imageUploads) {
+        const result = await new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+                { folder: 'product' },
+                (error, result) => (error ? reject(error) : resolve(result))
+            );
+            stream.end(file.buffer);
+        });
+        cloudinaryImages.push(result);
+    }
+
+    // upload designs to s3
+    const designUploads = req.designFiles || [];
     for (const file of designUploads) {
         const { bucket, key } = await uploadToS3({
             buffer: file.buffer,
             contentType: file.mimetype,
             originalName: file.originalname,
-            prefix: `products/${product._id}`
+            prefix: `products/${product.id}`
         });
 
         product.downloadFiles.push({
@@ -44,25 +53,25 @@ module.exports.createProduct = async (req, res) => {
             originalName: file.originalname,
             contentType: file.mimetype,
             size: file.size
-        })
+        });
     }
 
     await product.save();
     req.flash('success', 'Add product sucessfully');
     res.redirect(`/products/${product._id}`);
-}
+};
 
 module.exports.showProduct = async (req, res) => {
     const product = await Design.findById(req.params.id);
     throwError(product);
     res.render('products/show', { product });
-}
+};
 
 module.exports.editForm = async (req, res) => {
     const product = await Design.findById(req.params.id);
     throwError(product);
     res.render('products/edit', { product });
-}
+};
 
 module.exports.updateProduct = async (req, res) => {
     const { id } = req.params;
@@ -90,7 +99,7 @@ module.exports.updateProduct = async (req, res) => {
     throwError(product);
     req.flash('success', 'Update product sucessfully');
     res.redirect(`/products/${product._id}`);
-}
+};
 
 module.exports.deleteProduct = async (req, res) => {
     const { id } = req.params;
@@ -100,4 +109,4 @@ module.exports.deleteProduct = async (req, res) => {
 
     req.flash('success', 'Delete product sucessfully');
     res.redirect('/products');
-}
+};

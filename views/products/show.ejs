@@ -106,10 +106,13 @@
                             <p>
                                 Author: <%=review.author.username%>
                             </p>
-                            <form action="/products/<%=product._id%>/reviews/<%=review._id%>?_method=DELETE"
-                                method="POST">
-                                <button class="btn btn-sm btn-danger">Delete</button>
-                            </form>
+                            <% if (currentUser && review.author && review.author._id &&
+                                review.author._id.equals(currentUser._id)) {%>
+                                <form action="/products/<%=product._id%>/reviews/<%=review._id%>?_method=DELETE"
+                                    method="POST">
+                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                                <%}%>
                         </div>
                     </div>
                     <%}%>

@@ -20,14 +20,6 @@ const validateProduct = (req, res, next) => {
     } else next();
 };
 
-const validateReview = (req, res, next) => {
-    const { error } = reviewSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(e => e.message).join(',')
-        throw new AppError(msg, 400);
-    } else next();
-}
-
 // Busboy of multer parses request stream once, file splitting is needed
 const splitFiles = (req, res, next) => {
     const imageFiles = req.files?.image || [];
@@ -67,11 +59,5 @@ router.route('/:id')
     .delete(isLoggedin, products.deleteProduct);
 
 router.get('/:id/edit', isLoggedin, products.editForm);
-
-router.route('/:id/review', validateReview)
-    .post(products.reviewPost)
-
-router.route('/:id/review/:reviewId', validateReview)
-    .delete(products.reviewDelete);
 
 module.exports = router;

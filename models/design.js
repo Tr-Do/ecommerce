@@ -52,7 +52,13 @@ const DesignSchema = new Schema({
     size: {
         type: [String],
         default: []
-    }
+    },
+    review: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Review'
+        }
+    ]
 })
 
 module.exports = mongoose.model('Design', DesignSchema);

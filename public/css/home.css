@@ -13,7 +13,9 @@ main {
     flex: 1;
 }
 
-
+#banner {
+    background-image: '/css/banner2.png';
+}
 
 #cart {
     flex: 1;

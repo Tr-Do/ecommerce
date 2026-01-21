@@ -53,7 +53,7 @@ const DesignSchema = new Schema({
         type: [String],
         default: []
     },
-    review: [
+    reviews: [
         {
             type: Schema.Types.ObjectId,
             ref: 'Review'

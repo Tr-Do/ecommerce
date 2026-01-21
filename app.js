@@ -83,6 +83,7 @@ app.use('/checkout', checkoutRoute);
 app.use('/downloads', downloadRoute);
 app.use('/', usersRoute);
 app.use('/products', productsRoute);
+
 app.use('/cart', cartRoute);
 
 app.get('/', (req, res) => {

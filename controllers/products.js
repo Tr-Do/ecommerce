@@ -2,6 +2,7 @@ const Design = require('../models/design');
 const { throwError } = require('../utils/AppError');
 const cloudinary = require('../cloudinary');
 const { uploadToS3 } = require('../utils/s3Upload');
+const Review = require('../models/review');
 
 module.exports.index = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
@@ -116,3 +117,12 @@ module.exports.deleteProduct = async (req, res) => {
     req.flash('success', 'Delete product sucessfully');
     res.redirect('/products');
 };
+
+module.exports.review = async (req, res) => {
+    const product = await Design.findById(req.params.id);
+    const review = new Review(req.body.review);
+    product.reviews.push(review);
+    await review.save();
+    await product.save();
+    res.redirect(`products/${product._id}`);
+}

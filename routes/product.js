@@ -60,4 +60,7 @@ router.route('/:id')
 
 router.get('/:id/edit', isLoggedin, products.editForm);
 
+router.route('/:id/review')
+    .post(products.review);
+
 module.exports = router;

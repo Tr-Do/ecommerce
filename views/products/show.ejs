@@ -9,41 +9,18 @@
                         </div>
                         <%})%>
                 </div>
-                <h2>Leave a review</h2>
-                <form action="/products/<%=product._id%>/review" method="POST" class="mb-3 validated-form" novalidate>
-                    <div class="mb-3">
-                        <div class="mb-3">
-                            <label for="rating" class="form-label">Rating</label>
-                            <input class="form-range" type="range" min="1" max="5" id="rating" name="review[rating]">
-                        </div>
-                        <label for="body" class="form-label">Review</label>
-                        <textarea class="form-control" name="review[body]" id="body" required></textarea>
-                        <div class="valid-feedback">Looks good!</div>
-                    </div>
-
-                    <button class="btn btn-success">Submit</button>
-                </form>
-                <% for (const review of product.reviews) { %>
-                    <div class="mb-3">
-                        <p>Rating: <%=review.rating%>
-                        </p>
-                        <p>
-                            Review: <%=review.body%>
-                        </p>
-                    </div>
+                <% if(product.images.length>1){ %>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample"
+                        data-bs-slide="prev">
+                        <i class="bi bi-chevron-left text-dark fs-1"></i>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExample"
+                        data-bs-slide="next">
+                        <i class="bi bi-chevron-right text-dark fs-1"></i>
+                        <span class="visually-hidden">Next</span>
+                    </button>
                     <%}%>
-                        <% if(product.images.length>1){ %>
-                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample"
-                                data-bs-slide="prev">
-                                <i class="bi bi-chevron-left text-dark fs-1"></i>
-                                <span class="visually-hidden">Previous</span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample"
-                                data-bs-slide="next">
-                                <i class="bi bi-chevron-right text-dark fs-1"></i>
-                                <span class="visually-hidden">Next</span>
-                            </button>
-                            <%}%>
             </div>
         </div>
         <div class="col-12 col-lg-5 mb-5">
@@ -89,6 +66,7 @@
                                 <% }) %>
                 </li>
             </ul>
+
             <% if (currentUser) { %>
                 <div class="card-body">
                     <a class="card-link btn btn-warning" href="/products/<%=product._id%>/edit">Edit</a>
@@ -97,7 +75,37 @@
                         <button class="btn btn-danger">Delete</button>
                     </form>
                 </div>
-
                 <% } %>
+        </div>
+        <div class="row mt-5">
+            <div class="col-6">
+                <h2>Leave a review</h2>
+                <form action="/products/<%=product._id%>/review" method="POST" class="mb-3 validated-form" novalidate>
+                    <div class="mb-3">
+                        <div class="mb-3">
+                            <label for="rating" class="form-label">Rating</label>
+                            <input class="form-range" type="range" min="1" max="5" id="rating" name="review[rating]">
+                        </div>
+                        <label for="body" class="form-label">Review</label>
+                        <textarea class="form-control" rows="5" name="review[body]" id="body" required></textarea>
+                        <div class="valid-feedback">Looks good!</div>
+                    </div>
+                    <button class="btn btn-success">Submit</button>
+                </form>
+            </div>
+            <div class="col-6">
+                <% for (const review of product.reviews) { %>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                Rating: <%=review.rating%>
+                            </h5>
+                            <p>
+                                Review: <%=review.body%>
+                            </p>
+                        </div>
+                    </div>
+                    <%}%>
+            </div>
         </div>
     </div>

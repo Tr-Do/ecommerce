@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { AppError } = require('../utils/AppError.js');
-const { productSchema } = require('../schemas.js');
+const { productSchema, reviewSchema } = require('../schemas.js');
 const { isLoggedin } = require('../middleware');
 const products = require('../controllers/products');
 const multer = require('multer')
@@ -19,6 +19,14 @@ const validateProduct = (req, res, next) => {
         throw new AppError(msg, 400);
     } else next();
 };
+
+const validateReview = (req, res, next) => {
+    const { error } = reviewSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(e => e.message).join(',')
+        throw new AppError(msg, 400);
+    } else next();
+}
 
 // Busboy of multer parses request stream once, file splitting is needed
 const splitFiles = (req, res, next) => {
@@ -60,7 +68,7 @@ router.route('/:id')
 
 router.get('/:id/edit', isLoggedin, products.editForm);
 
-router.route('/:id/review')
+router.route('/:id/review', validateReview)
     .post(products.review);
 
 module.exports = router;

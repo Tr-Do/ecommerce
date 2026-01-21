@@ -10,15 +10,17 @@
                         <%})%>
                 </div>
                 <h2>Leave a review</h2>
-                <form action="/products/<%=product._id%>/review" method="POST" class="mb-3">
+                <form action="/products/<%=product._id%>/review" method="POST" class="mb-3 validated-form" novalidate>
                     <div class="mb-3">
                         <div class="mb-3">
                             <label for="rating" class="form-label">Rating</label>
                             <input class="form-range" type="range" min="1" max="5" id="rating" name="review[rating]">
                         </div>
                         <label for="body" class="form-label">Review</label>
-                        <textarea class="form-control" name="review[body]" id="body"></textarea>
+                        <textarea class="form-control" name="review[body]" id="body" required></textarea>
+                        <div class="valid-feedback">Looks good!</div>
                     </div>
+
                     <button class="btn btn-success">Submit</button>
                 </form>
                 <% if(product.images.length>1){ %>

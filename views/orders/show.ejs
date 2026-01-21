@@ -7,14 +7,10 @@
         </div>
         <div>Order placed: <%=new Date(order.createdAt).toLocaleString()%>
         </div>
-        <div id="status" class="mt-5 pt-5">Order processing ...</div>
+        <div id="status" class="mt-5 mb-3">Order processing ...</div>
         <div id="downloadList">
         </div>
-        <div class="mt-3">
-            <%=order.email%>
-        </div>
     </div>
-
 
     <script>
         const sessionId = '<%=sessionId%>';
@@ -44,15 +40,14 @@
             downloadList.innerHTML = '';
             for (const file of files) {
                 const li = document.createElement('li');
-                li.className = 'd-flex justify-content-center align-items-center';
+                li.className = 'd-flex justify-content-center align-items-center mt-3 gap-5';
 
                 const productDiv = document.createElement('div');
                 productDiv.innerHTML = `<div>${file.name}</div>`;
 
                 const a = document.createElement('a');
-                a.className = 'btn btn-primary btn-sm';
+                a.className = 'btn btn-success btn-sm';
                 a.href = file.url;
-
                 a.textContent = 'Download';
 
                 li.appendChild(productDiv);
@@ -61,30 +56,21 @@
             }
         }
 
-        async function autoDownload(files) {
-            if (!files.length) return;
-            window.location.href = files[0].url;
-        }
-
         (async () => {
             try {
                 const paid = await pollPaid(5);
                 if (!paid) {
-                    status.className = 'alert alert-warning mt-5';
                     status.textContent = 'Payment processing. Please wait ...';
                     return;
                 }
 
-                status.className = 'alert alert-success';
                 status.textContent = 'Payment confirmed. Generating download links...';
 
                 const { files } = await loadFiles();
                 renderLink(files);
 
-                status.textContent = 'Download ready!';
-                autoDownload(files);
+                status.textContent = 'Your files are ready for download. The link(s) will expire in 12 hours!';
             } catch (e) {
-                status.className = 'alert alert-danger';
                 status.textContent = 'Something went wrong. Please refresh the page';
             }
         })();

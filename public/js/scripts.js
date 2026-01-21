@@ -39,5 +39,4 @@ document.addEventListener("DOMContentLoaded", () => {
             sub.textContent = `$${subtotal}`;
         })
     })
-
 });

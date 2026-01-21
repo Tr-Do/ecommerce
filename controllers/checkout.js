@@ -91,7 +91,6 @@ module.exports.paymentConfirmation = async (req, res, next) => {
         }
 
         const order = await Order.findOne({ stripeSessionId: sessionId });
-        console.log('status: ', 'order: ', order, 'paid: ', order.paid);
 
         if (!order) {
             req.flash('error', 'Order not found');
@@ -117,7 +116,6 @@ module.exports.paymentConfirmation = async (req, res, next) => {
 }
 
 module.exports.webhook = async (req, res) => {
-    console.log('WEBHOOK HIT', req.headers['stripe-signature']);
     const signature = req.headers['stripe-signature'];
     let event;
 

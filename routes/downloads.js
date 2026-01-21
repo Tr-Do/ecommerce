@@ -12,7 +12,6 @@ router.get('/session/:sessionId/status', async (req, res, next) => {
     try {
         const { sessionId } = req.params;
         const order = await Order.findOne({ stripeSessionId: sessionId });
-        console.log('order paid: ', order.paid);
         // change undefined value to false
         res.json({ paid: !!order?.paid });
     } catch (e) { next(e) };

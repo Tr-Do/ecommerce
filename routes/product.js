@@ -69,6 +69,9 @@ router.route('/:id')
 router.get('/:id/edit', isLoggedin, products.editForm);
 
 router.route('/:id/review', validateReview)
-    .post(products.review);
+    .post(products.reviewPost)
+
+router.route('/:id/review/:reviewId', validateReview)
+    .delete(products.reviewDelete);
 
 module.exports = router;

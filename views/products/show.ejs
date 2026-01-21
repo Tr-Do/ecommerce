@@ -23,18 +23,27 @@
 
                     <button class="btn btn-success">Submit</button>
                 </form>
-                <% if(product.images.length>1){ %>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample"
-                        data-bs-slide="prev">
-                        <i class="bi bi-chevron-left text-dark fs-1"></i>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExample"
-                        data-bs-slide="next">
-                        <i class="bi bi-chevron-right text-dark fs-1"></i>
-                        <span class="visually-hidden">Next</span>
-                    </button>
+                <% for (const review of product.reviews) { %>
+                    <div class="mb-3">
+                        <p>Rating: <%=review.rating%>
+                        </p>
+                        <p>
+                            Review: <%=review.body%>
+                        </p>
+                    </div>
                     <%}%>
+                        <% if(product.images.length>1){ %>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample"
+                                data-bs-slide="prev">
+                                <i class="bi bi-chevron-left text-dark fs-1"></i>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample"
+                                data-bs-slide="next">
+                                <i class="bi bi-chevron-right text-dark fs-1"></i>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                            <%}%>
             </div>
         </div>
         <div class="col-12 col-lg-5 mb-5">

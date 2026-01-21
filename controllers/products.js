@@ -69,7 +69,7 @@ module.exports.createProduct = async (req, res) => {
 };
 
 module.exports.showProduct = async (req, res) => {
-    const product = await Design.findById(req.params.id);
+    const product = await Design.findById(req.params.id).populate('reviews');
     throwError(product);
     res.render('products/show', { product });
 };

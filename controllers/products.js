@@ -2,7 +2,7 @@ const Design = require('../models/design');
 const { throwError } = require('../utils/AppError');
 const cloudinary = require('../cloudinary');
 const { uploadToS3 } = require('../utils/s3Upload');
-const Review = require('../models/review');
+const User = require('../models/user');
 
 module.exports.index = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
@@ -69,9 +69,13 @@ module.exports.createProduct = async (req, res) => {
 };
 
 module.exports.showProduct = async (req, res) => {
-    const product = await Design.findById(req.params.id).populate('reviews');
+    const product = await Design.findById(req.params.id)
+        .populate({ path: 'reviews', populate: { path: 'author' } });
+    const usernames = product.reviews
+        .map(review => review.author?.username)
+        .filter(Boolean);
     throwError(product);
-    res.render('products/show', { product });
+    res.render('products/show', { product, usernames });
 };
 
 module.exports.editForm = async (req, res) => {

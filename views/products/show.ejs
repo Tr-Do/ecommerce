@@ -103,6 +103,9 @@
                             <p>
                                 Review: <%=review.body%>
                             </p>
+                            <p>
+                                Author: <%=review.author.username%>
+                            </p>
                             <form action="/products/<%=product._id%>/reviews/<%=review._id%>?_method=DELETE"
                                 method="POST">
                                 <button class="btn btn-sm btn-danger">Delete</button>

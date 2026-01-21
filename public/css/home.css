@@ -4,7 +4,7 @@ body {
 }
 
 body {
-    min-height: 100vh;
+    height: 100%;
     display: flex;
     flex-direction: column;
 }
@@ -13,9 +13,7 @@ main {
     flex: 1;
 }
 
-body {
-    margin: 0;
-}
+
 
 #cart {
     flex: 1;

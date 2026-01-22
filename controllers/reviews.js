@@ -14,7 +14,18 @@ module.exports.reviewPost = async (req, res) => {
 
 module.exports.reviewDelete = async (req, res) => {
     const { id, reviewId } = req.params;
-    await Design.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
-    await Review.findOneAndDelete(reviewId);
+
+    const review = await Review.findById(reviewId);
+    if (!review) {
+        req.flash('error', 'Unauthorized');
+        return res.redirect(`/products/${id}`);
+    }
+
+    const isOwner = req.user && review.author && review.author.equals(req.user._id)
+    if (isOwner) {
+        await Design.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+        await Review.findByIdAndDelete(reviewId);
+    }
+
     res.redirect(`/products/${id}`);
 }

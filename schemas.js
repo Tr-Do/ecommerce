@@ -23,6 +23,7 @@ const extension = (joi) => ({
 
 const Joi = BaseJoi.extend(extension);
 
+// validation and prevent XSS with Joi
 module.exports.productSchema = Joi.object({
     product: Joi.object({
         name: Joi.string().required().escapeHTML(),
@@ -40,4 +41,3 @@ module.exports.reviewSchema = Joi.object({
         body: Joi.string().required()
     }).required()
 })
-

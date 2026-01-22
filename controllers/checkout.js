@@ -17,13 +17,13 @@ module.exports.createSession = async (req, res, next) => {
             const productId = String(item.productId);
             const product = productMap.get(productId);
 
-            if (!product) {
-                throw new AppError('Product is missing', 404);
-            }
+            if (!product) throw new AppError('Product is missing', 404);
+
             const lineItem = {
                 quantity: 1,
                 price_data: {
                     currency: 'usd',
+                    //javascript has only floating point and base 2
                     unit_amount: Math.round(Number(product.price) * 100),
                     product_data: {
                         name: product.name,
@@ -34,9 +34,11 @@ module.exports.createSession = async (req, res, next) => {
                         }
                     }
                 }
-            }
+            };
+
             line_items.push(lineItem);
         }
+
         const session = await stripe.checkout.sessions.create({
             mode: 'payment',
             line_items,
@@ -128,24 +130,21 @@ module.exports.webhook = async (req, res) => {
     } catch (err) {
         return res.status(400).send(`Webhook signature failed`);
     }
-    if (event.type === 'checkout.session.completed') {
-        const session = event.data.object;
 
-        try {
-            const order = await Order.findOne({ stripeSessionId: session.id });
-
-            if (!order) return res.status(404).send('Order not found');
-            if (order.paid) return res.json({ received: true });
-            if (session.payment_status !== 'paid') return res.status(400).send('Order not paid');
-
-            order.paid = true;
-            order.email = session.customer_details.email;
-
-            await order.save();
-        }
-        catch (err) {
-            return res.status(500).send('Internal error');
-        }
+    if (event.type !== 'checkout.session.completed') {
+        return res.json({ received: true });
     }
+
+    const session = event.data.object; // checkout.session
+    const sessionId = session.id;
+
+    const order = await Order.findOne({ stripeSessionId: sessionId });
+
+    if (!order || order.paid) return res.json({ received: true });
+
+    order.paid = true;
+    order.email = session.customer_details?.email || order.email;
+    await order.save();
+
     return res.json({ received: true });
 }

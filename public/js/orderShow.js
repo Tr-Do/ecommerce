@@ -1,10 +1,10 @@
 const sessionId = document.getElementById('download-root').dataset.sessionId;
-const status = document.getElementById('status');
+let fileStatus = document.getElementById('status');
 const downloadList = document.getElementById('downloadList');
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-async function pollPaid(maxSeconds = 5) {
+async function pollPaid(maxSeconds = 60) {
     const deadline = Date.now() + maxSeconds * 1000;
     while (Date.now() < deadline) {
         const result = await fetch(`/downloads/session/${encodeURIComponent(sessionId)}/status`);
@@ -43,19 +43,19 @@ function renderLink(files) {
 
 (async () => {
     try {
-        const paid = await pollPaid(5);
+        const paid = await pollPaid(60);
         if (!paid) {
-            status.textContent = 'Payment processing. Please wait ...';
+            fileStatus.textContent = 'Payment processing. Please wait ...';
             return;
         }
 
-        status.textContent = 'Payment confirmed. Generating download links...';
+        fileStatus.textContent = 'Payment confirmed. Generating download links...';
 
-        const { files } = await loadFiles();
+        const files = await loadFiles();
         renderLink(files);
 
-        status.textContent = 'Your files are ready for download. The link(s) will expire in 12 hours!';
+        fileStatus.textContent = 'Your files are ready for download. The link(s) will expire in 12 hours!';
     } catch (e) {
-        status.textContent = 'Something went wrong. Please refresh the page';
+        fileStatus.textContent = 'Something went wrong. Please refresh the page';
     }
 })();

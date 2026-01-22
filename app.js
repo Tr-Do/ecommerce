@@ -35,7 +35,7 @@ app.set('query parser', 'extended');
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 
-app.use(express.urlencoded({ extended: true }));
+
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
@@ -43,9 +43,13 @@ app.use(methodOverride('_method'));
 const sanitizer = sanitizeV5({ replaceWith: '_' });
 
 app.use((req, res, next) => {
-    if (req.originalUrl.startsWith('/checkout/webhook')) return next();
+    if (req.originalUrl.startsWith('/checkout/webhook') || req.originalUrl.startsWith('/downloads')) {
+        return next()
+    };
     return sanitizer(req, res, next);
 })
+
+app.use(express.urlencoded({ extended: true }));
 
 const sessionConfig = {
     name: 'session',
@@ -58,14 +62,14 @@ const sessionConfig = {
         maxAge: 604800000
     }
 }
+
 app.use(session(sessionConfig));
 app.use(flash());
 app.use(helmet({ contentSecurityPolicy: false }));
-
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()))
 
+passport.use(new LocalStrategy(User.authenticate()))
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
@@ -85,8 +89,9 @@ app.use('/downloads', downloadRoute);
 app.use('/', usersRoute);
 app.use('/products', productsRoute);
 app.use('/products/:id/reviews', reviewRoute);
-
 app.use('/cart', cartRoute);
+
+
 
 app.get('/', (req, res) => {
     res.render('home');

@@ -1,4 +1,6 @@
 <% layout('layouts/boilerplate') %>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
     <div class="row">
         <div class="d-flex justify-content-center align-items-center" id="registerForm">
             <div class="card shadow">
@@ -20,7 +22,8 @@
                             </div>
                             <div class="invalid-feedback">Required</div>
                         </div>
-                        <button class="btn btn-success w-100 mb-5">Register</button>
+                        <div class="cf-turnstile" data-sitekey="0x4AAAAAACOFjC_zbncU7Qrj"></div>
+                        <button class="btn btn-success w-100">Register</button>
                     </form>
                 </div>
             </div>

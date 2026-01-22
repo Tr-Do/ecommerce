@@ -1,6 +1,7 @@
 <% layout('layouts/boilerplate') %>
     <link rel="stylesheet" href="/css/starability-grow.css">
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script src="/js/turnstile.js"></script>
 
     <div class="row">
         <div class="col-12 col-lg-7 mt-5">
@@ -104,8 +105,10 @@
                             <div class="invalid-feedback">Required</div>
                         </div>
                         <div class="d-flex flex-column align-items-center">
-                            <div class="cf-turnstile" data-sitekey="0x4AAAAAACOFjC_zbncU7Qrj"></div>
-                            <button class="btn btn-success">Submit</button>
+                            <div class="cf-turnstile" data-sitekey="0x4AAAAAACOFjC_zbncU7Qrj" data-theme="auto"
+                                data-size="flexible" data-callback="onTurnstileSuccess"
+                                data-error-callback="onTurnstileError" data-expired-callback="onTurnstileExpired"></div>
+                            <button class="btn btn-success" id="submit-btn" disabled>Submit</button>
                         </div>
                     </form>
                     <%}%>

@@ -111,30 +111,32 @@
             <div class="col-0 col-lg-3">
             </div>
             <div class="col-12 col-lg-4 d-flex flex-column">
-                <h4 class="mb-3 fw-bold">Reviews</h4>
-                <div class="mb-5">
-                    <% for (const review of product.reviews) { %>
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <%=review.author.username%>
-                                </h5>
-                                <p class="starability-result" data-rating="<%=review.rating%>">
-                                </p>
-                                <p>
-                                    Review: <%=review.body%>
-                                </p>
-                                <% if (currentUser && review.author && review.author._id &&
-                                    review.author._id.equals(currentUser._id)) {%>
-                                    <form action="/products/<%=product._id%>/reviews/<%=review._id%>?_method=DELETE"
-                                        method="POST">
-                                        <button class="btn btn-sm btn-danger">Delete</button>
-                                    </form>
-                                    <%}%>
+                <% if (product.reviews.length>0) { %>
+                    <h4 class="mb-3 fw-bold">Reviews</h4>
+                    <div class="mb-5">
+                        <% for (const review of product.reviews) { %>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <%=review.author.username%>
+                                    </h5>
+                                    <p class="starability-result" data-rating="<%=review.rating%>">
+                                    </p>
+                                    <p>
+                                        Review: <%=review.body%>
+                                    </p>
+                                    <% if (currentUser && review.author && review.author._id &&
+                                        review.author._id.equals(currentUser._id)) {%>
+                                        <form action="/products/<%=product._id%>/reviews/<%=review._id%>?_method=DELETE"
+                                            method="POST">
+                                            <button class="btn btn-sm btn-danger">Delete</button>
+                                        </form>
+                                        <%}%>
+                                </div>
                             </div>
-                        </div>
-                        <%}%>
-                </div>
+                            <%}%>
+                    </div>
+                    <%}%>
             </div>
         </div>
     </div>

@@ -13,6 +13,24 @@ document.addEventListener("DOMContentLoaded", () => {
         sessionStorage.removeItem("scrollY");
     }
 
+    // hide/show password
+    const eye = document.getElementById('eyeIcon');
+    const password = document.getElementById('password');
+    if (eye) {
+        eye.addEventListener('click', () => {
+            if (password.type === 'password') {
+                password.type = 'text';
+                eye.classList.remove('bi-eye-slash-fill');
+                eye.classList.add('bi-eye-fill');
+            } else {
+                password.type = 'password';
+                eye.classList.remove('bi-eye-fill');
+                eye.classList.add('bi-eye-slash-fill');
+            }
+        })
+    }
+
+    // copy button on About page
     const copyBtn = document.querySelector('.bi-copy');
     if (!copyBtn) return;
     else {
@@ -21,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
     }
 
+    // cart count logic
     const sub = document.getElementById('subtotal');
     const removeBtn = document.querySelectorAll('.removeProduct');
     removeBtn.forEach(btn => {

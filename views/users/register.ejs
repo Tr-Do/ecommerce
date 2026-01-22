@@ -1,32 +1,27 @@
 <% layout('layouts/boilerplate') %>
-    <div class="container d-flex justify-content-center mt-5 pt-5">
-        <div class="row">
-            <div class="mt-5 pt-5">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-center">
-                            <h5 class="card-title">Register</h5>
-                        </div>
-                        <form action="/register" method="POST" class="validated-form" novalidate>
-                            <div class="mb-3">
-                                <label class="form-label" for="username">Username</label>
-                                <input class="form-control" type="text" id="username" name="username" required
-                                    autofocus>
-                                <div class="invalid-feedback">Required</div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label" for="email">Email</label>
-                                <input class="form-control" type="email" id="email" name="email" required>
-                                <div class="invalid-feedback">Required</div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label" for="password">Password</label>
-                                <input class="form-control" type="password" id="password" name="password" required>
-                                <div class="invalid-feedback">Required</div>
-                            </div>
-                            <button class="btn btn-success w-100 mb-5">Register</button>
-                        </form>
+    <div class="row">
+        <div class="d-flex justify-content-center align-items-center" id="registerForm">
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-center">
+                        <h5 class="card-title">Register</h5>
                     </div>
+                    <form action="/register" method="POST" class="validated-form" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label" for="username">Username</label>
+                            <input class="form-control" type="text" id="username" name="username" required autofocus>
+                            <div class="invalid-feedback">Required</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="password">Password</label>
+                            <div class="input-group">
+                                <input class="form-control" type="password" id="password" name="password" required>
+                                <span class="input-group-text"><i class="bi bi-eye-slash-fill" id="eyeIcon"></i></span>
+                            </div>
+                            <div class="invalid-feedback">Required</div>
+                        </div>
+                        <button class="btn btn-success w-100 mb-5">Register</button>
+                    </form>
                 </div>
             </div>
         </div>

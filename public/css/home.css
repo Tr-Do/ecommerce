@@ -26,6 +26,14 @@ table tfoot tr:last-child td {
     padding-top: 2rem;
 }
 
+#registerForm {
+    height: 70vh;
+}
+
+#signinForm {
+    height: 70vh;
+}
+
 /* force the carousel itself to have the same height as the slides */
 #carouselExampleFade {
     width: min(700px, 100%);

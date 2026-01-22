@@ -1,4 +1,6 @@
 <% layout('layouts/boilerplate') %>
+    <link rel="stylesheet" href="/css/starability-grow.css">
+
     <div class="row">
         <div class="col-12 col-lg-7 mt-5">
             <div id="carouselExample" class="carousel slide">
@@ -55,7 +57,7 @@
                                 <button class="btn btn-success mt-3 mb-3" id="add-to-cart" data-id="<%=product._id%>"
                                     data-size="<%=product.size%>">Add to cart</button>
                 </form>
-                <li class="list-group-item fw-bold">Product description</li>
+                <li class="list-group-item fw-bold mt-4">Product description</li>
                 <li class="list-group-item">
                     <% product.description.split('\n').forEach(p=> { %>
                         <% if (p.trim()) { %>
@@ -66,7 +68,6 @@
                                 <% }) %>
                 </li>
             </ul>
-
             <% if (currentUser) { %>
                 <div class="card-body">
                     <a class="card-link btn btn-warning" href="/products/<%=product._id%>/edit">Edit</a>
@@ -78,44 +79,62 @@
                 <% } %>
         </div>
         <div class="row mt-5">
-            <div class="col-6">
-                <h2>Leave a review</h2>
-                <form action="/products/<%=product._id%>/reviews" method="POST" class="mb-3 validated-form" novalidate>
-                    <div class="mb-3">
-                        <div class="mb-3">
-                            <label for="rating" class="form-label">Rating</label>
-                            <input class="form-range" type="range" min="1" max="5" id="rating" name="review[rating]">
+            <div class="col-12 col-lg-5">
+                <% if (currentUser) { %>
+                    <h2>Leave a review</h2>
+                    <form action="/products/<%=product._id%>/reviews" method="POST" class="mb-3 validated-form mb-5"
+                        novalidate>
+                        <div class="mb-2">
+                            <fieldset class="starability-grow">
+                                <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1"
+                                    checked aria-label="No rating." />
+                                <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                                <label for="first-rate1" title="Terrible">1 star</label>
+                                <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                                <label for="first-rate2" title="Not good">2 stars</label>
+                                <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                                <label for="first-rate3" title="Average">3 stars</label>
+                                <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                                <label for="first-rate4" title="Very good">4 stars</label>
+                                <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                                <label for="first-rate5" title="Amazing">5 stars</label>
+                            </fieldset>
+                            <textarea class="form-control" rows="5" name="review[body]" id="body" required></textarea>
+                            <div class="valid-feedback">Looks good!</div>
                         </div>
-                        <label for="body" class="form-label">Review</label>
-                        <textarea class="form-control" rows="5" name="review[body]" id="body" required></textarea>
-                        <div class="valid-feedback">Looks good!</div>
-                    </div>
-                    <button class="btn btn-success">Submit</button>
-                </form>
-            </div>
-            <div class="col-6">
-                <% for (const review of product.reviews) { %>
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                Rating: <%=review.rating%>
-                            </h5>
-                            <p>
-                                Review: <%=review.body%>
-                            </p>
-                            <p>
-                                Author: <%=review.author.username%>
-                            </p>
-                            <% if (currentUser && review.author && review.author._id &&
-                                review.author._id.equals(currentUser._id)) {%>
-                                <form action="/products/<%=product._id%>/reviews/<%=review._id%>?_method=DELETE"
-                                    method="POST">
-                                    <button class="btn btn-sm btn-danger">Delete</button>
-                                </form>
-                                <%}%>
+                        <div class="d-flex justify-content-center">
+                            <button class="btn btn-success">Submit</button>
                         </div>
-                    </div>
+                    </form>
                     <%}%>
+            </div>
+            <div class="col-0 col-lg-3">
+            </div>
+            <div class="col-12 col-lg-4 d-flex flex-column">
+                <h4 class="mb-3 fw-bold">Reviews</h4>
+                <div class="mb-5">
+                    <% for (const review of product.reviews) { %>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <%=review.author.username%>
+                                </h5>
+                                <p class="starability-result" data-rating="<%=review.rating%>">
+                                </p>
+                                <p>
+                                    Review: <%=review.body%>
+                                </p>
+                                <% if (currentUser && review.author && review.author._id &&
+                                    review.author._id.equals(currentUser._id)) {%>
+                                    <form action="/products/<%=product._id%>/reviews/<%=review._id%>?_method=DELETE"
+                                        method="POST">
+                                        <button class="btn btn-sm btn-danger">Delete</button>
+                                    </form>
+                                    <%}%>
+                            </div>
+                        </div>
+                        <%}%>
+                </div>
             </div>
         </div>
     </div>

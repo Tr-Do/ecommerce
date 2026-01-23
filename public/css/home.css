@@ -27,7 +27,8 @@ table tfoot tr:last-child td {
 }
 
 #registerForm,
-#signinForm {
+#signinForm,
+#about {
     height: 70vh;
 }
 

@@ -1,12 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const links = document.querySelectorAll(".pagination a");
 
+    // pagination
+    const links = document.querySelectorAll(".pagination a");
     links.forEach(link => {
         link.addEventListener("click", () => {
             sessionStorage.setItem("scrollY", window.scrollY);
         });
     });
-
     const savedScroll = sessionStorage.getItem("scrollY");
     if (savedScroll !== null) {
         window.scrollTo(0, parseInt(savedScroll, 10));
@@ -32,30 +32,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // copy button on About page
     const copyBtn = document.querySelector('.bi-copy');
-    if (!copyBtn) return;
-    else {
+    if (copyBtn) {
         copyBtn.addEventListener('click', (e) => {
             navigator.clipboard.writeText('terrarium@primewaytrading.net');
         })
     }
 
     // cart count logic
+    const cartCount = document.getElementById('cartCount');
     const sub = document.getElementById('subtotal');
     const removeBtn = document.querySelectorAll('.removeProduct');
-    removeBtn.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const row = e.target.closest('tr');
-            if (!row) return;
-            const price = Number(e.target.dataset.price);
-            row.remove()
-            let num = Number(cartCount.textContent) || 0;
-            if (num > 0) num -= 1;
-            cartCount.textContent = String(num);
-            sessionStorage.setItem('cartCount', String(num));
-            let subtotal = Number(sub.textContent.replace('$', '')) || 0;
-            subtotal = Math.max(0, subtotal - price);
-            sub.textContent = `$${subtotal}`;
+    if (cartCount && sub && removeBtn.length) {
+        removeBtn.forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();     // Stops default action
+
+                const row = e.currentTarget.closest('tr');     // Choose the closest tr tag
+                if (!row) return;
+
+                const price = Number(e.currentTarget.dataset.price) || 0;
+                const productId = e.currentTarget.dataset.productId;
+                if (!productId) return;
+
+
+                // send data to server without reloading page
+                const res = await fetch('/cart/remove', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    // use stringify to preserve data, String({productId}) destroys data, String for display, JSON.stringify for transport
+                    body: JSON.stringify({ productId, size })
+                })
+                if (!res.ok) return;        // true if HTTP from 200-299
+
+                const data = await res.json();
+
+                row.remove();
+
+                cartCount.textContent = String(data.cartCount);
+                sub.textContent = `$${data.subtotal}`;
+            })
         })
-    })
+    }
 });

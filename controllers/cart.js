@@ -6,8 +6,8 @@ module.exports.addToCart = (req, res) => {
     if (!productId || !size) return res.status(400).send('Invalid cart data');
     if (!req.session.cart) req.session.cart = { items: [] };
     const cart = req.session.cart.items;
-    const currentItem = cart.find(item => item.productId === productId && item.size === size);
-    if (currentItem) {
+    const itemInCart = cart.find(item => item.productId === productId && item.size === size);
+    if (itemInCart) {
         req.flash('error', 'Product is already in cart');
         return res.redirect(`/products/${productId}`);
     }
@@ -17,17 +17,27 @@ module.exports.addToCart = (req, res) => {
 
 module.exports.removeProduct = async (req, res) => {
     const { productId, size } = req.body;
-    if (!req.session.cart || !req.session.cart.items) return res.redirect('/cart');
+    if (!req.session.cart || !req.session.cart.items) return res.status(400).json({ error: 'Cart is empty' });
 
     const items = req.session.cart.items;
+
     const updatedItems = [];
     for (const item of items) {
         if (item.productId !== productId || item.size !== size) {
             updatedItems.push(item);
         }
     }
+
     req.session.cart.items = updatedItems;
-    res.redirect('/cart');
+
+    const cartCount = updatedItems.length;
+
+    let subtotal = 0;
+    for (let i = 0; i < updatedItems.length; i++) {
+        subtotal += Number(updatedItems[i].price) || 0;
+    }
+
+    res.json({ cartCount, subtotal });      // AJAX response
 }
 
 module.exports.renderCart = async (req, res) => {

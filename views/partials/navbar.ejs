@@ -16,21 +16,23 @@
                     <% } %>
             </ul>
             <form class="d-flex">
-                <% if (!currentUser) {%>
-                    <ul class="navbar-nav mb-2 mb-lg-0">
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <% if (!currentUser) {%>
                         <li class="navbar-nav nav-item"><a class="nav-link" href="/register">Register</a></li>
                         <li class="navbar-nav nav-item me-3"><a class="nav-link" href="/login">Sign in</a></li>
-                        <li class="navbar-nav nav-item me-3"><a href="/cart" class="btn btn-outline-dark" type="submit">
-                                <i class="bi-cart-fill me-1"></i>
-                                Cart
-                                <span class="badge bg-dark text-white ms-1 rounded-pill" id="cart-count">
-                                    <%=cartCount%>
-                                </span>
-                            </a></li>
-                    </ul>
-                    <% } else { %>
-                        <li class="navbar-nav nav-item me-3"><a class="nav-link" href="/logout">Sign out</a></li>
-                        <% } %>
+                        <% } else { %>
+                            <li class="navbar-nav nav-item me-3"><a class="nav-link" href="/logout">Sign out</a></li>
+                            <% } %>
+                                <li class="navbar-nav nav-item me-3">
+                                    <a href="/cart" class="btn btn-outline-dark" type="submit">
+                                        <i class="bi-cart-fill me-1"></i>Cart
+                                        <span class="badge bg-dark text-white ms-1 rounded-pill" id="cartCount">
+                                            <%=cartCount%>
+                                        </span>
+                                    </a>
+                                </li>
+                </ul>
+
             </form>
         </div>
     </div>

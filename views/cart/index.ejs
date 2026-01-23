@@ -38,7 +38,8 @@
                                 </td>
                                 <td class="text-end">
                                     <form action="/cart/remove" method="POST" class="d-inline">
-                                        <input type="hidden" name="productId" value="<%= p.product._id %>">
+                                        <input type="hidden" name="productId" value="<%= p.product._id %>"
+                                            data-product-id="<%=p.product._id%>">
                                         <input type="hidden" name="size" value="<%= p.size %>">
                                         <button type="submit" class="btn border-0">
                                             <i class="bi bi-x-circle-fill"></i>

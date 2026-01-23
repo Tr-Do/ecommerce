@@ -25,8 +25,9 @@
                                 <td>
                                     <img src="<%=p.product.images[0].cartThumbnail%>" alt="">
                                 </td>
-                                <td>
-                                    <%=p.product.name%>
+                                <td><a href="/products/<%=p.product._id%>" style="text-decoration: none; color:black;">
+                                        <%=p.product.name%>
+                                    </a>
                                 </td>
                                 <td>
                                     <%=p.product.size%>

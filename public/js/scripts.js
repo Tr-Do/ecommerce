@@ -82,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const row = e.currentTarget.closest('tr');     // Choose the closest tr tag
                 if (!row) return;
 
+                // set default price is 5 if not found
                 const price = Number(e.currentTarget.dataset.price) || 5;
                 const size = e.currentTarget.dataset.size;
                 const productId = e.currentTarget.dataset.productId;
@@ -94,6 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     // use stringify to preserve data, String({productId}) destroys data, String for display, JSON.stringify for transport
                     body: JSON.stringify({ productId, size })
                 })
+
                 if (!res.ok) return;        // true if HTTP from 200-299
 
                 const data = await res.json();

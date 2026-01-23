@@ -29,7 +29,7 @@
                                     <%=p.product.name%>
                                 </td>
                                 <td>
-                                    <%=p.size%>
+                                    <%=p.product.size%>
                                 </td>
                                 <td>
 
@@ -38,10 +38,11 @@
                                 </td>
                                 <td class="text-end">
                                     <form action="/cart/remove" method="POST" class="d-inline">
-                                        <input type="hidden" name="productId" value="<%= p.product._id %>"
+                                        <input type="hidden" name="productId" value="<%= p.product._id %>">
+                                        <input type="hidden" name="size" value="<%= p.size[0] %>">
+                                        <button type="submit" class="btn border-0 removeProduct"
+                                            data-price="<%=p.price%>" data-size="<%=p.size%>"
                                             data-product-id="<%=p.product._id%>">
-                                        <input type="hidden" name="size" value="<%= p.size %>">
-                                        <button type="submit" class="btn border-0">
                                             <i class="bi bi-x-circle-fill"></i>
                                         </button>
                                     </form>

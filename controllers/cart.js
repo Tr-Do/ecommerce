@@ -1,18 +1,26 @@
 const Design = require('../models/design');
 
 
-module.exports.addToCart = (req, res) => {
+module.exports.addToCart = async (req, res) => {
     const { size, productId } = req.body;
     if (!productId || !size) return res.status(400).send('Invalid cart data');
+
+    // if there is no cart, initialize an empty one
     if (!req.session.cart) req.session.cart = { items: [] };
     const cart = req.session.cart.items;
+
+    // pull information from db instead of relying on req.body
+    const product = await Design.findById(productId);
+    if (!product) return res.status(404).json({ error: 'Item not found' });
+    const price = product.price;
+
+    // prevent adding the same item to cart
     const itemInCart = cart.find(item => item.productId === productId && item.size === size);
-    if (itemInCart) {
-        req.flash('error', 'Product is already in cart');
-        return res.redirect(`/products/${productId}`);
-    }
-    cart.push({ productId, size });
-    res.redirect('/cart');
+    if (itemInCart) return res.status(409).json({ error: 'Item already in cart' });
+
+    cart.push({ productId, size, price });
+
+    return res.status(201).json({ productId, size, cartCount: cart.length });
 }
 
 module.exports.removeProduct = async (req, res) => {
@@ -37,7 +45,7 @@ module.exports.removeProduct = async (req, res) => {
         subtotal += Number(updatedItems[i].price) || 0;
     }
 
-    res.json({ cartCount, subtotal });      // AJAX response
+    return res.json({ cartCount, subtotal });      // AJAX response
 }
 
 module.exports.renderCart = async (req, res) => {
@@ -46,5 +54,6 @@ module.exports.renderCart = async (req, res) => {
     const products = await Design.find({ _id: { $in: productIds } });
     const productMap = new Map(products.map(p => [String(p._id), p]));
     const item = cart.items.map(i => ({ ...i, product: productMap.get(String(i.productId)) }));
+
     res.render('cart/index', { cart: { items: item } });
 }

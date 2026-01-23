@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    const cartCount = document.getElementById('cartCount');
+
     // pagination
     const links = document.querySelectorAll(".pagination a");
     links.forEach(link => {
@@ -30,6 +32,37 @@ document.addEventListener("DOMContentLoaded", () => {
         })
     }
 
+    // add to cart logic
+    const addToCartForm = document.getElementById('addToCartForm');
+    if (addToCartForm) {
+        addToCartForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(addToCartForm);
+            const productId = formData.get('productId');
+            const size = formData.get('size');
+
+            const res = await fetch('/cart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId, size })
+            });
+
+            // show error on duplicate
+            if (res.status === 409) {
+                const cartHelp = document.getElementById('cartHelp');
+                if (cartHelp) cartHelp.classList.remove('d-none');
+            }
+
+            if (!res.ok) return;
+
+            // update cart ocunt
+            const data = await res.json();
+            if (cartCount) cartCount.textContent = String(data.cartCount);
+        })
+    }
+
+
     // copy button on About page
     const copyBtn = document.querySelector('.bi-copy');
     if (copyBtn) {
@@ -38,8 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
     }
 
-    // cart count logic
-    const cartCount = document.getElementById('cartCount');
+    // remove item from cart
     const sub = document.getElementById('subtotal');
     const removeBtn = document.querySelectorAll('.removeProduct');
     if (cartCount && sub && removeBtn.length) {
@@ -50,10 +82,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 const row = e.currentTarget.closest('tr');     // Choose the closest tr tag
                 if (!row) return;
 
-                const price = Number(e.currentTarget.dataset.price) || 0;
+                const price = Number(e.currentTarget.dataset.price) || 5;
+                const size = e.currentTarget.dataset.size;
                 const productId = e.currentTarget.dataset.productId;
                 if (!productId) return;
-
 
                 // send data to server without reloading page
                 const res = await fetch('/cart/remove', {

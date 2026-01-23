@@ -60,3 +60,12 @@ module.exports.validateUser = (req, res, next) => {
         throw new AppError(msg, 400);
     } else next();
 }
+
+module.exports.isNotLoggedin = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        req.flash('error', 'You already logged in');
+        return res.redirect('/');
+    }
+
+    next();
+}

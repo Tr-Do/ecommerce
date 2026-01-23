@@ -12,14 +12,15 @@
                     <form action="/register" method="POST" class="validated-form" novalidate>
                         <div class="mb-3">
                             <label class="form-label" for="username">Username</label>
-                            <input class="form-control" type="text" id="username" name="username" required autofocus>
+                            <input class="form-control" type="text" id="username" name="user[username]" minlength="4"
+                                required autofocus>
                             <div class="invalid-feedback">Username must be at least 4 characters</div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="password">Password</label>
                             <div class="input-group">
                                 <input class="form-control" type="password" minlength="6" maxlength="20" id="password"
-                                    name="password" required>
+                                    name="user[password]" required>
                                 <span class="input-group-text"><i class="bi bi-eye-slash-fill" id="eyeIcon"></i></span>
                                 <div class="invalid-feedback" id="passwordHelp">Password must be 6-20
                                     characters

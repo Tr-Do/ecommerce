@@ -23,7 +23,9 @@
                         <%cart.items.forEach(p=> {%>
                             <tr>
                                 <td>
-                                    <img src="<%=p.product.images[0].cartThumbnail%>" alt="">
+                                    <a href="/products/<%=p.product._id%>">
+                                        <img src="<%=p.product.images[0].cartThumbnail%>" alt="">
+                                    </a>
                                 </td>
                                 <td><a href="/products/<%=p.product._id%>" style="text-decoration: none; color:black;">
                                         <%=p.product.name%>

@@ -4,7 +4,7 @@
 
     <div class="row">
         <div class="d-flex justify-content-center align-items-center" id="signinForm">
-            <div class="card shadow">
+            <div class="card shadow" id="signinCard">
                 <div class="card-body">
                     <div class="d-flex justify-content-center">
                         <h5 class="card-title">Login</h5>
@@ -13,19 +13,25 @@
                         <div class="mb-3">
                             <label class="form-label" for="username">Username</label>
                             <input class="form-control" type="text" id="username" name="username" required autofocus>
-                            <div class="invalid-feedback">Required</div>
+                            <div class="invalid-feedback">Username must be at least 4 characters</div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="password">Password</label>
                             <div class="input-group">
-                                <input class="form-control" type="password" id="password" name="password" required>
+                                <input class="form-control" type="password" minlength="6" maxlength="20" id="password"
+                                    name="password" required>
                                 <span class="input-group-text"><i class="bi bi-eye-slash-fill" id="eyeIcon"></i></span>
+                                <div class="invalid-feedback" id="passwordHelp">Password must be 6-20
+                                    characters
+                                </div>
                             </div>
-                            <div class="invalid-feedback">Required</div>
                         </div>
-                        <div class="cf-turnstile" data-sitekey="0x4AAAAAACOFjC_zbncU7Qrj" data-theme="auto"
-                            data-size="flexible" data-callback="onTurnstileSuccess"
-                            data-error-callback="onTurnstileError" data-expired-callback="onTurnstileExpired"></div>
+                        <div class="turnstile-wrapper">
+                            <div class="cf-turnstile" data-sitekey="0x4AAAAAACOFjC_zbncU7Qrj" data-theme="auto"
+                                data-size="flexible" data-callback="onTurnstileSuccess"
+                                data-error-callback="onTurnstileError" data-expired-callback="onTurnstileExpired">
+                            </div>
+                        </div>
                         <button class="btn btn-success w-100 mt-3" id="submit-btn" disabled>Login</button>
                     </form>
                 </div>

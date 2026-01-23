@@ -35,6 +35,13 @@ module.exports.productSchema = Joi.object({
     deleteImages: Joi.array(),
 })
 
+module.exports.userSchema = Joi.object({
+    user: Joi.object({
+        username: Joi.string().required().min(4).escapeHTML(),
+        password: Joi.string().required().min(6).max(20)
+    }).required()
+})
+
 module.exports.reviewSchema = Joi.object({
     review: Joi.object({
         rating: Joi.number().required().min(1).max(5),

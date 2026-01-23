@@ -1,5 +1,5 @@
 const Review = require('./models/review');
-const { productSchema, reviewSchema } = require('./schemas.js');
+const { productSchema, reviewSchema, userSchema } = require('./schemas.js');
 const { AppError } = require('./utils/AppError')
 
 module.exports.isLoggedin = (req, res, next) => {
@@ -27,14 +27,6 @@ module.exports.isAuthor = async (req, res, next) => {
     return res.redirect(`/products/${id}`)
 };
 
-module.exports.validateProduct = (req, res, next) => {
-    const { error } = productSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(e => e.message).join(',')
-        throw new AppError(msg, 400);
-    } else next();
-};
-
 // Busboy of multer parses request stream once, file splitting is needed
 module.exports.splitFiles = (req, res, next) => {
     const imageFiles = req.files?.image || [];
@@ -45,10 +37,26 @@ module.exports.splitFiles = (req, res, next) => {
     next();
 };
 
-module.exports.validateReview = (req, res, next) => {
-    const { error } = reviewSchema.validate(req.body);
+module.exports.validateProduct = (req, res, next) => {
+    const { error } = productSchema.validate(req.body);
     if (error) {
-        const msg = error.details.map(e => e.message).join(',')
+        const msg = error.details.map(e => e.message).join(',');
         throw new AppError(msg, 400);
     } else next();
 };
+
+module.exports.validateReview = (req, res, next) => {
+    const { error } = reviewSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(e => e.message).join(',');
+        throw new AppError(msg, 400);
+    } else next();
+};
+
+module.exports.validateUser = (req, res, next) => {
+    const { error } = userSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(e => e.message).join(',');
+        throw new AppError(msg, 400);
+    } else next();
+}

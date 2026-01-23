@@ -26,12 +26,19 @@ table tfoot tr:last-child td {
     padding-top: 2rem;
 }
 
-#registerForm {
+#registerForm,
+#signinForm {
     height: 70vh;
 }
 
-#signinForm {
-    height: 70vh;
+#registerCard,
+#signinCard {
+    width: 350px;
+}
+
+.turnstile-wrapper {
+    min-height: 80px;
+    min-width: auto;
 }
 
 /* force the carousel itself to have the same height as the slides */

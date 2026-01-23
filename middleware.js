@@ -1,6 +1,7 @@
 const Review = require('./models/review');
 const { productSchema, reviewSchema, userSchema } = require('./schemas.js');
-const { AppError } = require('./utils/AppError')
+const { AppError } = require('./utils/AppError');
+const User = require('./models/user.js');
 
 module.exports.isLoggedin = (req, res, next) => {
     if (!req.isAuthenticated()) {
@@ -59,7 +60,7 @@ module.exports.validateUser = (req, res, next) => {
         const msg = error.details.map(e => e.message).join(',');
         throw new AppError(msg, 400);
     } else next();
-}
+};
 
 module.exports.isNotLoggedin = (req, res, next) => {
     if (req.isAuthenticated()) {
@@ -68,4 +69,12 @@ module.exports.isNotLoggedin = (req, res, next) => {
     }
 
     next();
-}
+};
+
+module.exports.isAdmin = (req, res, next) => {
+    if (req.isAuthenticated()) return res.status(401).send('Unauthenticated');
+
+    if (req.user.role !== 'admin') return res.status(403).send('Forbidden');
+
+    next();
+};

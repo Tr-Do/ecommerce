@@ -13,7 +13,7 @@ router.route('/login')
     .post(passport.authenticate('local', { failureFlash: true, failureRedirect: '/login', keepSessionInfo: true }),
         users.login);
 
-router.get('/logout', users.logout);
+router.get('/logout', previousPage, users.logout);
 
 router.route('/update')
     .get(previousPage, requireLogin, users.renderUpdate)

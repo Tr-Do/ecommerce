@@ -21,13 +21,14 @@ document.addEventListener("DOMContentLoaded", () => {
     eyes.forEach(eye => {
         eye.addEventListener('click', () => {
             const input = eye.closest('.input-group').querySelector('.password');
+            const icon = eye.querySelector('i');
 
             if (input.type === 'password') {
                 input.type = 'text';
-                eye.classList.replace('bi-eye-slash-fill', 'bi-eye-fill')
+                icon.classList.replace('bi-eye-slash-fill', 'bi-eye-fill')
             } else {
                 input.type = 'password';
-                eye.classList.replace('bi-eye-fill', 'bi-eye-slash-fill');
+                icon.classList.replace('bi-eye-fill', 'bi-eye-slash-fill');
             }
         })
     })

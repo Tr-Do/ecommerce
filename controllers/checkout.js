@@ -2,6 +2,9 @@ const { AppError } = require('../utils/AppError.js');
 const Design = require('../models/design');
 const Order = require('../models/order');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { sendEmail } = require('../utils/mailgun');
+const { buildDownloadEmail } = require('../utils/emailTemplate');
+const { GetObjectCommand } = require('@aws-sdk/client-s3');
 
 module.exports.createSession = async (req, res, next) => {
     try {
@@ -145,6 +148,43 @@ module.exports.webhook = async (req, res) => {
     order.paid = true;
     order.email = session.customer_details?.email || order.email;
     await order.save();
+
+    if (!ordre.emailSentAt && order.email) {
+        const productIds = order.items.map(i => i.productId);
+        const designs = await Design.find({ _id: { $in: productids } });
+
+        const files = [];
+
+        for (const design of designs) {
+            for (file of design.downloadFiles) {
+                const cmd = new GetObjectCommand({
+                    Bucket: file.bucket,
+                    Key: file.key,
+                });
+
+                const url = await getSignedUrl(s3, cmd, { expiresIn: 60 * 60 * 12 });
+
+                files.push({
+                    name: design.name,
+                    size: design.size,
+                    url,
+                })
+            }
+        }
+        const html = buildDownloadEmail({
+            orderNumber: order.orderNumber,
+            files
+        });
+
+        await sendEmail({
+            to: order.email,
+            subject: `You Terrarium Files - ${order.orderNumber}`,
+            html
+        });
+
+        order.emailSentAt = new Date();
+        await order.save();
+    }
 
     return res.json({ received: true });
 }

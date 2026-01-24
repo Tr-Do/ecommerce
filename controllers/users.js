@@ -44,3 +44,7 @@ module.exports.logout = (req, res, next) => {
         res.redirect(redirectUrl);
     });
 }
+
+module.exports.update = (req, res) => {
+    res.render('users/update');
+}

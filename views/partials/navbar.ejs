@@ -16,15 +16,19 @@
                     <% } %>
             </ul>
             <form class="d-flex">
-                <ul class="navbar-nav mb-2 mb-lg-0">
+                <ul class="navbar-nav mb-2 mb-lg-0 gap-2">
                     <% if (!currentUser) {%>
                         <li class="navbar-nav nav-item"><a class="nav-link" href="/register">Register</a></li>
                         <li class="navbar-nav nav-item me-3"><a class="nav-link" href="/login">Sign in</a></li>
                         <% } else { %>
-                            <li class="navbar-nav nav-item me-3 nav-link">
-                                Hi, <%=currentUser.username%>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">Hi, <%=currentUser.username%></a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="/update">Change password</a></li>
+                                    <li><a class="dropdown-item" href="/logout">Sign out</a></li>
+                                </ul>
                             </li>
-                            <li class="navbar-nav nav-item me-3"><a class="nav-link" href="/logout">Sign out</a></li>
                             <% } %>
                                 <li class="navbar-nav nav-item me-3">
                                     <a href="/cart" class="btn btn-outline-dark" type="submit">
@@ -35,7 +39,6 @@
                                     </a>
                                 </li>
                 </ul>
-
             </form>
         </div>
     </div>

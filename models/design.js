@@ -52,7 +52,7 @@ const DesignSchema = new Schema({
     downloadFiles: { type: [fileSchema], default: [] },
     size: {
         type: [String],
-        default: []
+        default: ['Standard']
     },
     reviews: [
         {

@@ -14,4 +14,6 @@ router.route('/login')
 
 router.get('/logout', users.logout);
 
+router.get('/update', users.update);
+
 module.exports = router;

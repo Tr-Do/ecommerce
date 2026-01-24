@@ -1,6 +1,5 @@
 const Design = require('../models/design');
 
-
 module.exports.addToCart = async (req, res) => {
     const { size, productId } = req.body;
     if (!productId || !size) return res.status(400).send('Invalid cart data');

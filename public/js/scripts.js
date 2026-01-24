@@ -16,21 +16,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // hide/show password
-    const eye = document.getElementById('eyeIcon');
-    const password = document.getElementById('password');
-    if (eye) {
+    const eyes = document.querySelectorAll('.eyeIcon');
+    const password = document.querySelectorAll('.password');
+    eyes.forEach(eye => {
         eye.addEventListener('click', () => {
-            if (password.type === 'password') {
-                password.type = 'text';
-                eye.classList.remove('bi-eye-slash-fill');
-                eye.classList.add('bi-eye-fill');
+            const input = eye.closest('.input-group').querySelector('.password');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                eye.classList.replace('bi-eye-slash-fill', 'bi-eye-fill')
             } else {
-                password.type = 'password';
-                eye.classList.remove('bi-eye-fill');
-                eye.classList.add('bi-eye-slash-fill');
+                input.type = 'password';
+                eye.classList.replace('bi-eye-fill', 'bi-eye-slash-fill');
             }
         })
-    }
+    })
 
     // add to cart logic
     const addToCartForm = document.getElementById('addToCartForm');

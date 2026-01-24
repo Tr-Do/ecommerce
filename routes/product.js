@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { isLoggedin, validateProduct, splitFiles } = require('../middleware');
+const { isLoggedin, isAdmin, validateProduct, splitFiles } = require('../middleware');
 const products = require('../controllers/products');
 const multer = require('multer')
 const upload = multer({
@@ -12,6 +12,7 @@ const upload = multer({
 router.route('/')
     .get(products.index)
     .post(isLoggedin,
+        isAdmin,
         upload.fields([
             { name: 'image', maxCount: 10 },
             { name: 'designFile', maxCount: 5 }
@@ -21,12 +22,13 @@ router.route('/')
         products.createProduct
     );
 
-router.get('/new', isLoggedin, products.renderNewForm);
+router.get('/new', isLoggedin, isAdmin, products.renderNewForm);
 
 router.route('/:id')
     .get(products.showProduct)
     .put(
         isLoggedin,
+        isAdmin,
         upload.fields([
             { name: 'image', maxCount: 10 },
             { name: 'designFile', maxCount: 5 }
@@ -34,8 +36,8 @@ router.route('/:id')
         splitFiles,
         validateProduct,
         products.updateProduct)
-    .delete(isLoggedin, products.deleteProduct);
+    .delete(isLoggedin, isAdmin, products.deleteProduct);
 
-router.get('/:id/edit', isLoggedin, products.editForm);
+router.get('/:id/edit', isLoggedin, isAdmin, products.editForm);
 
 module.exports = router;

@@ -134,7 +134,7 @@
                                     <p>
                                         Review: <%=review.body%>
                                     </p>
-                                    <% if currentUser && (( review.author && review.author._id &&
+                                    <% if (currentUser && ( review.author && review.author._id &&
                                         review.author._id.equals(currentUser._id)) || currentUser.role==='admin' ) {%>
                                         <form action="/products/<%=product._id%>/reviews/<%=review._id%>?_method=DELETE"
                                             method="POST"

@@ -6,13 +6,15 @@ module.exports.renderRegister = (req, res) => {
 
 module.exports.register = async (req, res, next) => {
     try {
+        const redirectUrl = req.session.returnTo;
+
         const { username, password } = req.body.user;
         const user = new User({ username });
         const registeredUser = await User.register(user, password);
         req.login(registeredUser, (err) => {
             if (err) return next(err);
             req.flash('success', 'Welcome');
-            res.redirect('/products');
+            res.redirect(redirectUrl);
         })
     } catch (e) {
         req.flash('error', e.message);
@@ -27,7 +29,7 @@ module.exports.renderLogin = (req, res) => {
 
 module.exports.login = (req, res) => {
     req.flash('success', 'Welcome Back!');
-    const redirectUrl = req.session.returnTo || '/';
+    const redirectUrl = req.session.returnTo;
 
     delete req.session.returnTo;
     console.log('POST /login', 'sid=', req.sessionID, 'returnTo=', req.session.returnTo);
@@ -36,11 +38,13 @@ module.exports.login = (req, res) => {
 }
 
 module.exports.logout = (req, res, next) => {
-    const redirectUrl = req.headers.referer || '/products';
+    const redirectUrl = req.session.returnTo;
+
     req.logout(function (err) {
         if (err) {
             return next(err)
         }
+
         req.flash('success', 'Good Bye!');
         res.redirect(redirectUrl);
     });
@@ -53,6 +57,7 @@ module.exports.renderUpdate = (req, res) => {
 module.exports.update = async (req, res, next) => {
     try {
         const { password, confirmPassword } = req.body;
+        const redirectUrl = req.session.returnTo;
 
         if (!password || password.length < 6 || password.length > 20) {
             req.flash('error', 'Invalid password');
@@ -69,7 +74,7 @@ module.exports.update = async (req, res, next) => {
         await user.save();
 
         req.flash('success', 'Update password successfully!');
-        return res.redirect('/');
+        return res.redirect(redirectUrl);
     } catch (e) {
         next(e);
     }

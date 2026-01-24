@@ -81,14 +81,8 @@ module.exports.isAdmin = (req, res, next) => {
 };
 
 module.exports.previousPage = (req, res, next) => {
-    if (!req.isAuthenticated() && !req.session.returnTo) {
-        const referer = req.headers.referer;
-        if (referer && !referer.includes('/login') && !referer.includes('/register')) {
-            req.session.returnTo = referer;
-            console.log('GET /login', 'sid=', req.sessionID, 'returnTo=', req.session.returnTo, 'referer=', req.get('Referer'));
-
-        } else req.session.returnTo = '/';
-    }
+    const rt = req.query.returnTo;
+    if (rt) req.session.returnTo = rt;
 
     next();
 };

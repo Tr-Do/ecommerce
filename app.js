@@ -49,6 +49,12 @@ app.use((req, res, next) => {
     return sanitizer(req, res, next);
 })
 
+// store previous url in express storage -> pass it into url query -> pass it into middleware variable -> redirect to previous url
+app.use((req, res, next) => {
+    res.locals.currentUrl = req.originalUrl;
+    next();
+});
+
 app.use(express.urlencoded({ extended: true }));
 
 const sessionConfig = {

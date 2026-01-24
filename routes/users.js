@@ -5,7 +5,7 @@ const users = require('../controllers/users');
 const { validateUser, requireGuest, requireLogin, previousPage } = require('../middleware');
 
 router.route('/register')
-    .get(requireGuest, users.renderRegister)
+    .get(previousPage, requireGuest, users.renderRegister)
     .post(requireGuest, validateUser, users.register);
 
 router.route('/login')
@@ -16,7 +16,7 @@ router.route('/login')
 router.get('/logout', users.logout);
 
 router.route('/update')
-    .get(requireLogin, users.renderUpdate)
+    .get(previousPage, requireLogin, users.renderUpdate)
     .post(requireLogin, users.update);
 
 module.exports = router;

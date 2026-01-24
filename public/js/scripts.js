@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const feedback2 = document.querySelector('#feedback2');
     const form = document.querySelector('#form');
     const btn = document.querySelector('#submit-btn');
-    btn.disabled = true;
+    if (btn) btn.disabled = true;
 
     function match() {
         const a = pw1.value;
@@ -75,13 +75,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    pw1.addEventListener('input', match);       // rerun the function if password is changed after matched
-    pw2.addEventListener('input', match);
-
-    form.addEventListener('submit', (e) => {
-        match();
-        if (!form.checkValidity()) e.preventDefault();
-    });
+    if (pw1) {
+        pw1.addEventListener('input', match);       // rerun the function if password is changed after matched
+        pw2.addEventListener('input', match);
+        form.addEventListener('submit', (e) => {
+            match();
+            if (!form.checkValidity()) e.preventDefault();
+        })
+    };
 
     // add to cart logic
     const addToCartForm = document.getElementById('addToCartForm');

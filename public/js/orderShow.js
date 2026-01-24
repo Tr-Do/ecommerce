@@ -54,7 +54,7 @@ function renderLink(files) {
         const files = await loadFiles();
         renderLink(files);
 
-        fileStatus.textContent = 'Your files are ready for download. The link(s) will expire in 12 hours!';
+        fileStatus.textContent = 'Your dowload is ready. The link(s) will expire in 12 hours!';
     } catch (e) {
         fileStatus.textContent = 'Something went wrong. Please refresh the page';
     }

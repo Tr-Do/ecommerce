@@ -10,10 +10,11 @@ function buildDownloadEmail({ orderNumber, files }) {
     return `
 <h2>Thank you for your purchase</h2>
 <p>Order ID: <strong>${orderNumber}</strong></p>
-<p>Your download link(s) will expire in 12 hours:</p>
-<ul>${row}</ul>
-<p>Contact us if you have any question</p>
+<p>Your download link(s) will expire in 12 hours!</p>
+<ul>${rows}</ul>
+<p>Contact us if you have any questions</p>
+<p>contact@primewaytrading.net</p>
 `;
 }
 
-module.epxorts = { buildDownloadEmail }
+module.exports = { buildDownloadEmail };

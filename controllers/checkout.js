@@ -2,6 +2,8 @@ const { AppError } = require('../utils/AppError.js');
 const Design = require('../models/design');
 const Order = require('../models/order');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const { s3 } = require('../s3');
 const { sendEmail } = require('../utils/mailgun');
 const { buildDownloadEmail } = require('../utils/emailTemplate');
 const { GetObjectCommand } = require('@aws-sdk/client-s3');
@@ -149,14 +151,14 @@ module.exports.webhook = async (req, res) => {
     order.email = session.customer_details?.email || order.email;
     await order.save();
 
-    if (!ordre.emailSentAt && order.email) {
+    if (!order.emailSentAt && order.email) {
         const productIds = order.items.map(i => i.productId);
-        const designs = await Design.find({ _id: { $in: productids } });
+        const designs = await Design.find({ _id: { $in: productIds } });
 
         const files = [];
 
         for (const design of designs) {
-            for (file of design.downloadFiles) {
+            for (const file of design.downloadFiles) {
                 const cmd = new GetObjectCommand({
                     Bucket: file.bucket,
                     Key: file.key,
@@ -178,7 +180,7 @@ module.exports.webhook = async (req, res) => {
 
         await sendEmail({
             to: order.email,
-            subject: `You Terrarium Files - ${order.orderNumber}`,
+            subject: `Your Terrarium Files - ${order.orderNumber}`,
             html
         });
 

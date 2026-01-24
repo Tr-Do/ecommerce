@@ -21,6 +21,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const helmet = require('helmet');
+const checkout = require('./controllers/checkout.js');
 
 mongoose.connect('mongodb://localhost:27017/terrarium');
 
@@ -55,7 +56,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(express.urlencoded({ extended: true }));
+
 
 const sessionConfig = {
     name: 'session',
@@ -69,7 +70,15 @@ const sessionConfig = {
     }
 }
 
-app.use(express.json())
+app.post(
+    '/checkout/webhook',
+    express.raw({ type: 'application/json' }),
+    checkout.webhook
+);
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 app.use(session(sessionConfig));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -108,12 +117,19 @@ app.get('/about', (req, res) => {
     res.render('about');
 })
 
+
+
 app.use((req, res, next) => {
     next(new AppError('Page not found', 404));
 })
 
 app.use((err, req, res, next) => {
     const { status = 500, message = 'Something went wrong' } = err;
+    if (req.originalUrl.startsWith('/checkout/webhook')) {
+        console.error('WEBHOOK ERROR', err);
+        return res.status(200).json({ received: true });
+    }
+
     res.status(status).render('error', { err });
 })
 

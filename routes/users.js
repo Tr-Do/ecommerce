@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const users = require('../controllers/users');
-const { validateUser, isNotLoggedin } = require('../middleware');
+const { validateUser, isNotLoggedin, isLoggedin } = require('../middleware');
 
 router.route('/register')
     .get(isNotLoggedin, users.renderRegister)
@@ -14,6 +14,8 @@ router.route('/login')
 
 router.get('/logout', users.logout);
 
-router.get('/update', users.update);
+router.route('/update')
+    .get(isLoggedin, users.renderUpdate)
+    .post(isLoggedin, users.update);
 
 module.exports = router;

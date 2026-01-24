@@ -3,30 +3,7 @@ const { productSchema, reviewSchema, userSchema } = require('./schemas.js');
 const { AppError } = require('./utils/AppError');
 const User = require('./models/user.js');
 
-module.exports.isLoggedin = (req, res, next) => {
-    if (!req.isAuthenticated()) {
-        req.session.returnTo = req.originalUrl;
-        req.flash('error', 'You must log in first');
-        return res.redirect('/login');
-    }
 
-    next();
-};
-
-module.exports.isAuthorOrAdmin = async (req, res, next) => {
-    const { id, reviewId } = req.params;
-
-    const review = await Review.findById(reviewId);
-    if (!review) {
-        req.flash('error', 'Review not found');
-        return res.redirect(`/products/${id}`);
-    }
-
-    if ((review.author && review.author.equals(req.user._id)) || req.user.role === 'admin') return next();
-
-    req.flash('error', 'Unauthorized');
-    return res.redirect(`/products/${id}`)
-};
 
 // Busboy of multer parses request stream once, file splitting is needed
 module.exports.splitFiles = (req, res, next) => {
@@ -69,6 +46,31 @@ module.exports.isNotLoggedin = (req, res, next) => {
     }
 
     next();
+};
+
+module.exports.isLoggedin = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        req.session.returnTo = req.originalUrl;
+        req.flash('error', 'You must log in first');
+        return res.redirect('/login');
+    }
+
+    next();
+};
+
+module.exports.isAuthorOrAdmin = async (req, res, next) => {
+    const { id, reviewId } = req.params;
+
+    const review = await Review.findById(reviewId);
+    if (!review) {
+        req.flash('error', 'Review not found');
+        return res.redirect(`/products/${id}`);
+    }
+
+    if ((review.author && review.author.equals(req.user._id)) || req.user.role === 'admin') return next();
+
+    req.flash('error', 'Unauthorized');
+    return res.redirect(`/products/${id}`)
 };
 
 module.exports.isAdmin = (req, res, next) => {

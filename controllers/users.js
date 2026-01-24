@@ -28,7 +28,7 @@ module.exports.renderLogin = (req, res) => {
 }
 
 module.exports.login = (req, res) => {
-    req.flash('success', 'Welcome back');
+    req.flash('success', 'Welcome Back');
     const redirectUrl = req.session.returnTo || '/products';
     delete req.session.returnTo;
     res.redirect(redirectUrl);
@@ -40,11 +40,36 @@ module.exports.logout = (req, res, next) => {
         if (err) {
             return next(err)
         }
-        req.flash('success', 'Good bye!');
+        req.flash('success', 'Good Bye!');
         res.redirect(redirectUrl);
     });
 }
 
-module.exports.update = (req, res) => {
+module.exports.renderUpdate = (req, res) => {
     res.render('users/update');
 }
+
+module.exports.update = async (req, res, next) => {
+    try {
+        const { password, confirmPassword } = req.body;
+
+        if (!password || password.length < 6 || password.length > 20) {
+            req.flash('error', 'Invalid password');
+            return res.redirect('/update');
+        }
+
+        if (password !== confirmPassword) {
+            req.flash('error', 'Passwords do not match')
+            return res.redirect('/update');
+        }
+
+        const user = req.user;
+        await user.setPassword(password);
+        await user.save();
+
+        req.flash('success', 'Update password successfully!');
+        return res.redirect('/');
+    } catch (e) {
+        next(e);
+    }
+};

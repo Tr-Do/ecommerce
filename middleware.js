@@ -3,8 +3,6 @@ const { productSchema, reviewSchema, userSchema } = require('./schemas.js');
 const { AppError } = require('./utils/AppError');
 const User = require('./models/user.js');
 
-
-
 // Busboy of multer parses request stream once, file splitting is needed
 module.exports.splitFiles = (req, res, next) => {
     const imageFiles = req.files?.image || [];
@@ -39,18 +37,19 @@ module.exports.validateUser = (req, res, next) => {
     } else next();
 };
 
-module.exports.isNotLoggedin = (req, res, next) => {
+module.exports.requireGuest = (req, res, next) => {
     if (req.isAuthenticated()) {
         req.flash('error', 'You already logged in');
-        return res.redirect('/');
+        return res.redirect(req.session.returnTo || req.headers.referer || '/');
     }
 
     next();
 };
 
-module.exports.isLoggedin = (req, res, next) => {
+module.exports.requireLogin = (req, res, next) => {
     if (!req.isAuthenticated()) {
         req.session.returnTo = req.originalUrl;
+
         req.flash('error', 'You must log in first');
         return res.redirect('/login');
     }
@@ -77,6 +76,19 @@ module.exports.isAdmin = (req, res, next) => {
     if (req.isAuthenticated()) return res.status(401).send('Unauthenticated');
 
     if (req.user.role !== 'admin') return res.status(403).send('Forbidden');
+
+    next();
+};
+
+module.exports.previousPage = (req, res, next) => {
+    if (!req.isAuthenticated() && !req.session.returnTo) {
+        const referer = req.headers.referer;
+        if (referer && !referer.includes('/login') && !referer.includes('/register')) {
+            req.session.returnTo = referer;
+            console.log('GET /login', 'sid=', req.sessionID, 'returnTo=', req.session.returnTo, 'referer=', req.get('Referer'));
+
+        } else req.session.returnTo = '/';
+    }
 
     next();
 };

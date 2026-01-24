@@ -21,16 +21,17 @@ module.exports.register = async (req, res, next) => {
 }
 
 module.exports.renderLogin = (req, res) => {
-    if (!req.session.returnTo && req.headers.referer) {
-        req.session.returnTo = new URL(req.headers.referer).pathname;
-    }
+
     res.render('users/login');
 }
 
 module.exports.login = (req, res) => {
-    req.flash('success', 'Welcome Back');
-    const redirectUrl = req.session.returnTo || '/products';
+    req.flash('success', 'Welcome Back!');
+    const redirectUrl = req.session.returnTo || '/';
+
     delete req.session.returnTo;
+    console.log('POST /login', 'sid=', req.sessionID, 'returnTo=', req.session.returnTo);
+
     res.redirect(redirectUrl);
 }
 

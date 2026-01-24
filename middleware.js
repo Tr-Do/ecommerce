@@ -13,7 +13,7 @@ module.exports.isLoggedin = (req, res, next) => {
     next();
 };
 
-module.exports.isAuthor = async (req, res, next) => {
+module.exports.isAuthorOrAdmin = async (req, res, next) => {
     const { id, reviewId } = req.params;
 
     const review = await Review.findById(reviewId);
@@ -22,7 +22,7 @@ module.exports.isAuthor = async (req, res, next) => {
         return res.redirect(`/products/${id}`);
     }
 
-    if (review.author && review.author.equals(req.user._id)) return next();
+    if ((review.author && review.author.equals(req.user._id)) || req.user.role === 'admin') return next();
 
     req.flash('error', 'Unauthorized');
     return res.redirect(`/products/${id}`)

@@ -33,6 +33,24 @@ table tfoot tr:last-child td {
     height: 70vh;
 }
 
+#imgGrid {
+    height: auto;
+    width: auto;
+    /* background-color: black; */
+}
+
+.smdiv,
+#addImg {
+    height: 100px;
+    width: 100px;
+}
+
+.delImg,
+#addImg {
+    cursor: pointer;
+}
+
+
 #registerCard,
 #signinCard {
     width: 350px;

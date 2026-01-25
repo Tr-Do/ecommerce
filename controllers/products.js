@@ -86,13 +86,37 @@ module.exports.editForm = async (req, res) => {
 
 module.exports.updateProduct = async (req, res) => {
     const { id } = req.params;
-    const product = await Design.findByIdAndUpdate(id, { ...req.body.product });
 
-    // map uploaded images url and filename
+    const product = await Design.findByIdAndUpdate(
+        id,
+        { ...req.body.product },
+        { new: true, runValidators: true }
+    );
+
+    if (!product) {
+        req.flash('error', 'Product not found');
+        return res.redirect('/products');
+    };
+
+    // preupload images for display before submitting the form
+    const preUploaded = req.body.preUploadedImages;
+    let imagesArray = [];
+
+    if (preUploaded) {
+        if (Array.isArray(preUploaded)) {
+            imagesArray = preUploaded;
+        } else imagesArray.push(preUploaded);
+    };
+
+    for (const s of imagesArray) {
+        const parsedImages = JSON.parse(s);
+        product.images.push(parsedImages);
+    };
+
     const imgs = (req.cloudinaryImages || []).map(f => {
-        const url = f.secure_url || f.url;
+        const url = f.secureurl || f.url;
         const filename = f.public_id;
-        if (!url) throw new Error('No URL after upload image');
+        if (!url) throw new Error('No url found');
         return { url, filename };
     });
 
@@ -107,7 +131,6 @@ module.exports.updateProduct = async (req, res) => {
         await product.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } })
     }
 
-    throwError(product);
     req.flash('success', 'Update product sucessfully');
     res.redirect(`/products/${product._id}`);
 };

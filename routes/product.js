@@ -22,6 +22,26 @@ router.route('/')
         products.createProduct
     );
 
+router.post('/products/:id/images', upload.array('images'), async (req, res) => {
+    const files = req.files || [];
+    const uploaded = [];
+
+    for (const file of files) {
+        const result = await new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+                { folder: 'product' },
+                (err, r) => (err ? reject(err) : resolve(r))
+            );
+            stream.end(file.buffer);
+        });
+        uploaded.push({
+            url: result.secure_url || result.url,
+            filename: result.public_id
+        });
+    }
+    res.json({ images: uploaded });
+});
+
 router.get('/new', requireLogin, isAdmin, products.renderNewForm);
 
 router.route('/:id')

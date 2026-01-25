@@ -73,9 +73,9 @@ module.exports.isAuthorOrAdmin = async (req, res, next) => {
 };
 
 module.exports.isAdmin = (req, res, next) => {
-    if (req.isAuthenticated()) return res.status(401).send('Unauthenticated');
+    if (!req.isAuthenticated()) return res.status(401).send('Unauthenticated');
 
-    if (req.user.role !== 'admin') return res.status(403).send('Forbidden');
+    if (req.isAuthenticated() && req.user.role !== 'admin') return res.status(403).send('Forbidden');
 
     next();
 };

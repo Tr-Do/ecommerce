@@ -98,7 +98,20 @@ module.exports.updateProduct = async (req, res) => {
         return res.redirect('/products');
     };
 
-    const imgs = (req.cloudinaryImages || []).map(f => {
+    // image upload logic
+    const imageUploads = req.imageFiles || [];
+    const cloudinaryImages = [];
+    for (const file of imageUploads) {
+        const result = await new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+                { folder: 'product' },
+                (error, result) => (error ? reject(error) : resolve(result))
+            );
+            stream.end(file.buffer);
+        });
+        cloudinaryImages.push(result);
+    }
+    const imgs = cloudinaryImages.map(f => {
         const url = f.secure_url || f.url;
         const filename = f.public_id;
         if (!url) throw new Error('No url found');

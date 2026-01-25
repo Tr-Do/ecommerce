@@ -7,28 +7,17 @@ const orderInput = document.getElementById('imageOrder');
 addImg.addEventListener('click', () => picker.click());
 
 function syncOrder() {
-    const items = [];
+    const filenames = [];
     const tiles = imgTile.querySelectorAll('.smdiv');
 
-    for (let i = 0; i < tiles.length; i++) {
-        const el = tiles[i];
-
-        // compare reference if pointing to the same object
+    for (const el of tiles) {
         if (el === addImg) continue;
-
-        if (el.dataset.existing === '1') {
-            items.push({
-                type: 'existing',
-                filename: el.dataset.filename
-            });
-        } else {
-            items.push({
-                type: 'new',
-                clientId: el.dataset.clientId
-            });
+        if (el.classList.contains('d-none')) continue;        // hidden = deleted existing image
+        if (el.dataset.existing === '1' && el.dataset.filename) {
+            filenames.push(el.dataset.filename);
         }
     }
-    orderInput.value = JSON.stringify(items);
+    orderInput.value = filenames.join(",");
 }
 
 picker.addEventListener('change', async () => {
@@ -39,6 +28,7 @@ picker.addEventListener('change', async () => {
         const clientId = crypto.randomUUID();       // name newly uploaded images
 
         const tile = document.createElement('div')
+        tile.setAttribute('draggable', 'true');
         tile.className = 'smdiv mt-2 mb-3 ms-2 border position-relative';
         tile.dataset.existing = '0';
         tile.dataset.clientId = clientId;
@@ -82,24 +72,37 @@ imgTile.addEventListener('click', (e) => {
 
 syncOrder();
 
+
+
+// drag image logic
 let dragging = null;
 
+document.querySelectorAll('.smdiv').forEach(el => {
+    if (el !== addImg) el.setAttribute('draggable', 'true');
+});
+
 imgTile.addEventListener('dragstart', (e) => {
-    const tile = e.target.closest('smdiv');
-    if (!tile) return;
-    if (tile === addImg) return;
+    const tile = e.target.closest('.smdiv');
+    if (!tile || tile === addImg) return;
+    if (tile.dataset.existing !== '1') return;
 
     dragging = tile;
+    tile.classList.add('opacity-50');
     e.dataTransfer.effectAllowed = 'move';
-})
+});
+
+imgTile.addEventListener('dragend', () => {
+    if (dragging) dragging.classList.remove('opacity-50');
+    dragging = null;
+    syncOrder();
+});
 
 imgTile.addEventListener('dragover', (e) => {
+    if (!dragging) return;
     e.preventDefault();
 
     const over = e.target.closest('.smdiv');
-    if (!over) return;
-    if (over === addImg) return;
-    if (over === dragging) return;
+    if (!over || over === addImg || over === dragging) return;
 
     const rect = over.getBoundingClientRect();
     const before = (e.clientY - rect.top) < rect.height / 2;
@@ -109,11 +112,9 @@ imgTile.addEventListener('dragover', (e) => {
     } else {
         imgTile.insertBefore(dragging, over.nextSibling);
     }
-
-    syncOrder();
 });
 
 imgTile.addEventListener('drop', (e) => {
     e.preventDefault();
-    dragging = null;
+    syncOrder();
 });

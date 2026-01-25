@@ -87,6 +87,12 @@ module.exports.editForm = async (req, res) => {
 module.exports.updateProduct = async (req, res) => {
     const { id } = req.params;
 
+    if (req.body.product?.imageOrder && typeof req.body.product.imageOrder === "string") {
+        req.body.product.imageOrder = req.body.product.imageOrder
+            .split(",")
+            .filter(Boolean);
+    }
+
     const product = await Design.findByIdAndUpdate(
         id,
         { ...req.body.product },
@@ -97,6 +103,7 @@ module.exports.updateProduct = async (req, res) => {
         req.flash('error', 'Product not found');
         return res.redirect('/products');
     };
+
 
     // image upload logic
     const imageUploads = req.imageFiles || [];
@@ -140,6 +147,21 @@ module.exports.updateProduct = async (req, res) => {
     }
 
     product.images = keptImages;
+    const order = req.body.product?.imageOrder; // after your split() this is an array
+    if (Array.isArray(order) && order.length) {
+        const byFilename = new Map(product.images.map(img => [img.filename, img]));
+
+        const ordered = order
+            .map(fn => byFilename.get(fn))
+            .filter(Boolean);
+
+        // Append any remaining images not listed in order (e.g., newly uploaded ones)
+        const orderedSet = new Set(order);
+        const remaining = product.images.filter(img => !orderedSet.has(img.filename));
+
+        product.images = [...ordered, ...remaining];
+    }
+
     await product.save();
 
     req.flash('success', 'Update product sucessfully');

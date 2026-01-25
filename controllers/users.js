@@ -32,7 +32,6 @@ module.exports.login = (req, res) => {
     const redirectUrl = req.session.returnTo;
 
     delete req.session.returnTo;
-    console.log('POST /login', 'sid=', req.sessionID, 'returnTo=', req.session.returnTo);
 
     res.redirect(redirectUrl);
 }

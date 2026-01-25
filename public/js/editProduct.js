@@ -81,3 +81,39 @@ imgTile.addEventListener('click', (e) => {
 })
 
 syncOrder();
+
+let dragging = null;
+
+imgTile.addEventListener('dragstart', (e) => {
+    const tile = e.target.closest('smdiv');
+    if (!tile) return;
+    if (tile === addImg) return;
+
+    dragging = tile;
+    e.dataTransfer.effectAllowed = 'move';
+})
+
+imgTile.addEventListener('dragover', (e) => {
+    e.preventDefault();
+
+    const over = e.target.closest('.smdiv');
+    if (!over) return;
+    if (over === addImg) return;
+    if (over === dragging) return;
+
+    const rect = over.getBoundingClientRect();
+    const before = (e.clientY - rect.top) < rect.height / 2;
+
+    if (before) {
+        imgTile.insertBefore(dragging, over);
+    } else {
+        imgTile.insertBefore(dragging, over.nextSibling);
+    }
+
+    syncOrder();
+});
+
+imgTile.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dragging = null;
+});

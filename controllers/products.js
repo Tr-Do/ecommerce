@@ -98,38 +98,36 @@ module.exports.updateProduct = async (req, res) => {
         return res.redirect('/products');
     };
 
-    // preupload images for display before submitting the form
-    const preUploaded = req.body.preUploadedImages;
-    let imagesArray = [];
-
-    if (preUploaded) {
-        if (Array.isArray(preUploaded)) {
-            imagesArray = preUploaded;
-        } else imagesArray.push(preUploaded);
-    };
-
-    for (const s of imagesArray) {
-        const parsedImages = JSON.parse(s);
-        product.images.push(parsedImages);
-    };
-
     const imgs = (req.cloudinaryImages || []).map(f => {
-        const url = f.secureurl || f.url;
+        const url = f.secure_url || f.url;
         const filename = f.public_id;
         if (!url) throw new Error('No url found');
         return { url, filename };
     });
-
     product.images.push(...imgs);
 
-    await product.save();
-
+    // delete images in deleteImage array
+    let deleteImages = [];
     if (req.body.deleteImages) {
-        for (let filename of req.body.deleteImages) {
-            await cloudinary.uploader.destroy(filename);
+        if (Array.isArray(req.body.deleteImages)) {
+            deleteImages = req.body.deleteImages;
+        } else {
+            deleteImages = [req.body.deleteImages];
         }
-        await product.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } })
     }
+    for (const filename of deleteImages) {
+        await cloudinary.uploader.destroy(filename);
+    }
+
+    // loop through product[image] array because it hasn't been saved
+    const keptImages = [];
+    for (let i = 0; i < product.images.length; i++) {
+        const img = product.images[i];
+        if (!deleteImages.includes(img.filename)) keptImages.push(img);
+    }
+
+    product.images = keptImages;
+    await product.save();
 
     req.flash('success', 'Update product sucessfully');
     res.redirect(`/products/${product._id}`);

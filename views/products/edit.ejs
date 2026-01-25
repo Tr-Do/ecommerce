@@ -34,7 +34,7 @@
                         <% product.images.forEach(function(img, i) { %>
 
                             <div class="smdiv mt-2 mb-3 ms-2 border mb-2 position-relative" data-existing="1"
-                                data-filename="<%=img.filename%>">
+                                data-filename="<%=img.filename%>" draggable="true">
                                 <i class="delImg bi bi-x-circle position-absolute top-0 end-0 m-1"
                                     value="<%=img.filename%>"></i><img src="<%=img.editThumbnail%>"
                                     class="w-100 h-100 mb-3" alt="">
@@ -47,7 +47,7 @@
                                 <input type="file" id="imagePicker" name="image" accept="image/*" class="d-none"
                                     multiple>
                     </div>
-                    <input type="hidden" name="imageOrder" id="imageOrder">
+                    <input type="hidden" name="[productImageOrder]" id="imageOrder">
                 </div>
             </div>
             <div class="mb-3">

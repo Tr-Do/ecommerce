@@ -17,11 +17,21 @@
                         <div class="valid-feedback">Looks good!</div>
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label for="image" class="form-label">Upload images:</label>
-                    <input class="form-control" type="file" name="image" multiple>
+
+                <div id="imgGrid">
+                    <div class="row">
+                        <div class="d-flex flex-wrap border" id="imgTile">
+                            <div id="addImg"
+                                class="smdiv mt-2 ms-2 border border-dark mb-2 d-flex justify-content-center align-items-center">
+                                <i class="bi bi-plus-square-dotted fs-1"></i>
+                            </div>
+                            <input type="file" id="imagePicker" name="image" accept="image/*" class="d-none" multiple>
+                        </div>
+                        <input type="hidden" name="product[imageOrder]" id="imageOrder">
+                    </div>
                 </div>
-                <div class="mb-3 d-flex align-items-center gap-3">
+
+                <div class="mt-3 mb-3 d-flex align-items-center gap-3">
                     <label for="size" class="form-label d-block">Size:</label>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="product[size][]" id="size-s" value="S">
@@ -69,3 +79,7 @@
             </form>
         </div>
     </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    <script src="/js/editProduct.js"></script>

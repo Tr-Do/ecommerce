@@ -75,46 +75,10 @@ syncOrder();
 
 
 // drag image logic
-let dragging = null;
-
-document.querySelectorAll('.smdiv').forEach(el => {
-    if (el !== addImg) el.setAttribute('draggable', 'true');
-});
-
-imgTile.addEventListener('dragstart', (e) => {
-    const tile = e.target.closest('.smdiv');
-    if (!tile || tile === addImg) return;
-    if (tile.dataset.existing !== '1') return;
-
-    dragging = tile;
-    tile.classList.add('opacity-50');
-    e.dataTransfer.effectAllowed = 'move';
-});
-
-imgTile.addEventListener('dragend', () => {
-    if (dragging) dragging.classList.remove('opacity-50');
-    dragging = null;
-    syncOrder();
-});
-
-imgTile.addEventListener('dragover', (e) => {
-    if (!dragging) return;
-    e.preventDefault();
-
-    const over = e.target.closest('.smdiv');
-    if (!over || over === addImg || over === dragging) return;
-
-    const rect = over.getBoundingClientRect();
-    const before = (e.clientY - rect.top) < rect.height / 2;
-
-    if (before) {
-        imgTile.insertBefore(dragging, over);
-    } else {
-        imgTile.insertBefore(dragging, over.nextSibling);
-    }
-});
-
-imgTile.addEventListener('drop', (e) => {
-    e.preventDefault();
-    syncOrder();
+Sortable.create(imgTile, {
+    animation: 150,
+    draggable: '.smdiv:not(#addImg)',
+    onEnd: () => {
+        syncOrder(); // same function you already wrote
+    },
 });

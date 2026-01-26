@@ -104,7 +104,6 @@ module.exports.updateProduct = async (req, res) => {
         return res.redirect('/products');
     };
 
-
     // image upload logic
     const imageUploads = req.imageFiles || [];
     const cloudinaryImages = [];

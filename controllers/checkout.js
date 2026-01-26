@@ -11,6 +11,7 @@ const { GetObjectCommand } = require('@aws-sdk/client-s3');
 module.exports.createSession = async (req, res, next) => {
     try {
         const line_items = [];
+        const ip = req.ip;
 
         const cart = req.session.cart || { items: [] };
         if (!Array.isArray(cart.items) || cart.items.length === 0) return res.redirect('/cart');
@@ -58,13 +59,13 @@ module.exports.createSession = async (req, res, next) => {
             const product = productMap.get(String(item.productId));
             if (!product) throw new AppError('Missing product for order', 404);
 
+            // js only has base 2 and floating point
             const unitAmount = Math.round(Number(product.price) * 100);
             amountTotal += unitAmount;
 
             orderItems.push({
                 productId: item.productId,
                 name: product.name,
-                image: product.images[0].showPage,
                 size: item.size,
                 price: unitAmount
             });
@@ -72,6 +73,7 @@ module.exports.createSession = async (req, res, next) => {
 
         const order = await Order.create({
             stripeSessionId: session.id,
+            ip: ip,
             user: req.user ? req.user._id : null,
             items: orderItems,
             amountTotal,

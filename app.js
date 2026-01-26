@@ -50,6 +50,9 @@ app.use((req, res, next) => {
     return sanitizer(req, res, next);
 })
 
+// get user's IP
+app.set('trust proxy', 1);
+
 // store previous url in express storage -> pass it into url query -> pass it into middleware variable -> redirect to previous url
 app.use((req, res, next) => {
     res.locals.currentUrl = req.originalUrl;

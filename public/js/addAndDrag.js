@@ -72,8 +72,6 @@ imgTile.addEventListener('click', (e) => {
 
 syncOrder();
 
-
-
 // drag image logic
 Sortable.create(imgTile, {
     animation: 150,

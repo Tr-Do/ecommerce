@@ -15,7 +15,11 @@ router.route('/')
         isAdmin,
         upload.fields([
             { name: 'image', maxCount: 10 },
-            { name: 'designFile', maxCount: 5 }
+            { name: 'designFileStandard', maxCount: 4 },
+            { name: 'designFileS', maxCount: 3 },
+            { name: 'designFileM', maxCount: 3 },
+            { name: 'designFileX', maxCount: 3 },
+            { name: 'designFileXL', maxCount: 3 },
         ]),
         splitFiles,
         validateProduct,

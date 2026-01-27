@@ -3,6 +3,7 @@ const { throwError } = require('../utils/AppError');
 const cloudinary = require('../cloudinary');
 const { uploadToS3 } = require('../utils/s3Upload');
 const User = require('../models/user');
+const Variant = require('../models/variant');
 
 module.exports.index = async (req, res) => {
     const page = parseInt(req.query.page) || 1;

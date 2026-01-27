@@ -5,6 +5,27 @@ const { uploadToS3 } = require('../utils/s3Upload');
 const User = require('../models/user');
 const Variant = require('../models/variant');
 
+const mkS3Files = async (files, prefix) => {
+    const out = [];
+    for (const file of (files || [])) {
+        const { bucket, key } = await uploadToS3({
+            buffer: file.buffer,
+            contentType: file.mimetype,
+            originalName: file.originalname,
+            prefix
+        });
+
+        out.push({
+            bucket,
+            key,
+            originalName: file.original.name,
+            contentType: file.mimetype,
+            size: file.size
+        });
+    }
+    return out;
+};
+
 module.exports.index = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 8;
@@ -25,6 +46,7 @@ module.exports.renderNewForm = (req, res) => {
 
 module.exports.createProduct = async (req, res) => {
     const product = new Design(req.body.product);
+    if (!product) throwError(product);
 
     // upload images to cloudinary
     const imageUploads = req.imageFiles || [];
@@ -65,6 +87,29 @@ module.exports.createProduct = async (req, res) => {
     }
 
     await product.save();
+
+    const prefix = `products/${product._id}`;
+    const standardFiles = await mkS3Files(req.designFileByField.designFileStandard, prefix);
+    await Variant.create({
+        productId: product._id,
+        size: 'Standard',
+        price: product.price,
+        files: standardFiles
+    });
+
+    const sizes = Array.isArray(req.body.product?.size) ? req.body.product.size : [];
+    for (const size of sizes) {
+        const fieldName = `designFile${size}`;
+        const files = await mkS3Files(req.designFilesByField[fieldName], prefix);
+
+        await Variant.create({
+            productId: product._id,
+            size: size,
+            price: product.price,
+            files
+        });
+    }
+
     req.flash('success', 'Add product sucessfully');
     res.redirect(`/products/${product._id}`);
 };

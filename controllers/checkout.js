@@ -1,4 +1,4 @@
-const { AppError } = require('../utils/AppError.js');
+const { AppError, throwError } = require('../utils/AppError.js');
 const Design = require('../models/design');
 const Order = require('../models/order');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -7,6 +7,7 @@ const { s3 } = require('../s3');
 const { sendEmail } = require('../utils/mailgun');
 const { buildDownloadEmail } = require('../utils/emailTemplate');
 const { GetObjectCommand } = require('@aws-sdk/client-s3');
+const Variant = require('../models/variant.js');
 
 module.exports.createSession = async (req, res, next) => {
     try {
@@ -15,34 +16,58 @@ module.exports.createSession = async (req, res, next) => {
 
         const cart = req.session.cart || { items: [] };
         if (!Array.isArray(cart.items) || cart.items.length === 0) return res.redirect('/cart');
+
         const productIds = cart.items.map(i => i.productId);
         const products = await Design.find({ _id: { $in: productIds } });
         const productMap = new Map(products.map(p => [String(p._id), p]));
 
+        const variants = await Variant.find({
+            productId: { $in: productIds },
+            size: { $in: cart.items.map(i => i.size) }
+        }).lean();
+
+        const variantKey = v => `${String(v.productId)}-${v.size}`;
+        const variantMap = new Map(variants.map(v => [variantKey(v), v]));
+
+        let amountTotalCents = 0;
+        const orderItems = [];
+
         for (const item of cart.items) {
             const productId = String(item.productId);
             const product = productMap.get(productId);
-
             if (!product) throw new AppError('Product is missing', 404);
 
-            const lineItem = {
+            const variant = variantMap.get(`${productId}-${item.size}`);
+            if (!variant) throw new AppError(`Variant missing ${productId} size ${item.size}`, 404);
+
+            //javascript has only floating point and base 2
+            const unitAmount = Math.round(Number(variant.price) * 100);
+            amountTotalCents += unitAmount;
+
+            line_items.push({
                 quantity: 1,
                 price_data: {
                     currency: 'usd',
-                    //javascript has only floating point and base 2
-                    unit_amount: Math.round(Number(product.price) * 100),
+                    unit_amount: unitAmount,
                     product_data: {
-                        name: product.name,
-                        images: [product.images[0].showPage],
+                        name: `${product.name} (${variant.size})`,
+                        images: product.images?.length ? [product.images[0].showPage] : [],
                         metadata: {
                             productId: productId,
+                            variantId: String(variant._id),
                             size: item.size
                         }
                     }
                 }
-            };
-
-            line_items.push(lineItem);
+            });
+            orderItems.push({
+                productId: item.productId,
+                variantId: variant._id,
+                name: product.name,
+                size: variant.size,
+                price: variant.price,
+                fileSnapshot: variant.files || []
+            });
         }
 
         const session = await stripe.checkout.sessions.create({
@@ -52,36 +77,16 @@ module.exports.createSession = async (req, res, next) => {
             cancel_url: `${process.env.BASE_URL}/cart`,
         });
 
-        let amountTotal = 0;
-        const orderItems = [];
-
-        for (const item of cart.items) {
-            const product = productMap.get(String(item.productId));
-            if (!product) throw new AppError('Missing product for order', 404);
-
-            // js only has base 2 and floating point
-            const unitAmount = Math.round(Number(product.price) * 100);
-            amountTotal += unitAmount;
-
-            orderItems.push({
-                productId: item.productId,
-                name: product.name,
-                size: item.size,
-                price: unitAmount
-            });
-        }
-
         const order = await Order.create({
             stripeSessionId: session.id,
-            ip: ip,
+            ip,
             user: req.user ? req.user._id : null,
             items: orderItems,
-            amountTotal,
+            amountTotal: amountTotalCents,
             paid: false,
         });
 
         req.session.lastOrderId = order._id;
-
         return res.redirect(303, session.url);
     } catch (err) {
         return next(err);
@@ -154,27 +159,25 @@ module.exports.webhook = async (req, res) => {
     await order.save();
 
     if (!order.emailSentAt && order.email) {
-        const productIds = order.items.map(i => i.productId);
-        const designs = await Design.find({ _id: { $in: productIds } });
-
         const files = [];
 
-        for (const design of designs) {
-            for (const file of design.downloadFiles) {
+        for (const item of order.items) {
+            for (const file of (item.fileSnapshot || [])) {
                 const cmd = new GetObjectCommand({
                     Bucket: file.bucket,
-                    Key: file.key,
+                    Key: file.key
                 });
 
                 const url = await getSignedUrl(s3, cmd, { expiresIn: 60 * 60 * 12 });
 
                 files.push({
-                    name: design.name,
-                    size: design.size,
+                    name: `${item.name} (${item.size})`,
+                    size: item.size,
                     url,
-                })
+                });
             }
         }
+
         const html = buildDownloadEmail({
             orderNumber: order.orderNumber,
             files
@@ -189,6 +192,4 @@ module.exports.webhook = async (req, res) => {
         order.emailSentAt = new Date();
         await order.save();
     }
-
-    return res.json({ received: true });
 }

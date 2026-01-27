@@ -18,7 +18,7 @@ const mkS3Files = async (files, prefix) => {
         out.push({
             bucket,
             key,
-            originalName: file.original.name,
+            originalName: file.originalname,
             contentType: file.mimetype,
             size: file.size
         });
@@ -46,7 +46,6 @@ module.exports.renderNewForm = (req, res) => {
 
 module.exports.createProduct = async (req, res) => {
     const product = new Design(req.body.product);
-    if (!product) throwError(product);
 
     // upload images to cloudinary
     const imageUploads = req.imageFiles || [];
@@ -67,47 +66,34 @@ module.exports.createProduct = async (req, res) => {
         filename: f.public_id
     }));
 
-    // upload design fies to s3
-    const designUploads = req.designFiles || [];
-    for (const file of designUploads) {
-        const { bucket, key } = await uploadToS3({
-            buffer: file.buffer,
-            contentType: file.mimetype,
-            originalName: file.originalname,
-            prefix: `products/${product.id}`
-        });
-
-        product.downloadFiles.push({
-            bucket,
-            key,
-            originalName: file.originalname,
-            contentType: file.mimetype,
-            size: file.size
-        });
-    }
-
     await product.save();
 
     const prefix = `products/${product._id}`;
-    const standardFiles = await mkS3Files(req.designFileByField.designFileStandard, prefix);
-    await Variant.create({
-        productId: product._id,
-        size: 'Standard',
-        price: product.price,
-        files: standardFiles
-    });
+    const standardFiles = await mkS3Files(req.designFilesByField.designFileStandard, prefix);
+
+    if (standardFiles.length) {
+        await Variant.create({
+            productId: product._id,
+            size: 'Standard',
+            price: product.price,
+            files: standardFiles
+        })
+    };
 
     const sizes = Array.isArray(req.body.product?.size) ? req.body.product.size : [];
     for (const size of sizes) {
         const fieldName = `designFile${size}`;
         const files = await mkS3Files(req.designFilesByField[fieldName], prefix);
 
+        if (!files.length) throw new Error(`Missing upload files for size ${size}`);
+
         await Variant.create({
             productId: product._id,
             size: size,
             price: product.price,
             files
-        });
+        })
+
     }
 
     req.flash('success', 'Add product sucessfully');
@@ -121,7 +107,8 @@ module.exports.showProduct = async (req, res) => {
         .map(review => review.author?.username)
         .filter(Boolean);
     throwError(product);
-    res.render('products/show', { product, usernames });
+    const variants = await Variant.find({ productId: product._id }).lean();
+    res.render('products/show', { product, usernames, variants });
 };
 
 module.exports.editForm = async (req, res) => {

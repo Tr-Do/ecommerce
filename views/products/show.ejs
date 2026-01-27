@@ -38,6 +38,7 @@
                     <h5 class="mb-3">$<%=product.price%>
                     </h5>
                 </li>
+
                 <form action="/cart" id="addToCartForm" class="d-flex flex-column justify-content-center" method="POST">
                     <% if (Array.isArray(product.size) && product.size.length>1) { %>
                         <div class="mt-3 d-flex justify-content-center gap-3">
@@ -63,6 +64,7 @@
                                     Item is already in cart
                                 </div>
                 </form>
+
                 <li class="list-group-item fw-bold mt-4">Product description</li>
                 <li class="list-group-item">
                     <% product.description.split('\n').forEach(p=> { %>

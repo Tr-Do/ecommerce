@@ -2,6 +2,8 @@ const Design = require('../models/design');
 
 module.exports.addToCart = async (req, res) => {
     const { size, productId } = req.body;
+
+    // enforece productID and size must be present
     if (!productId || !size) return res.status(400).send('Invalid cart data');
 
     // if there is no cart, initialize an empty one

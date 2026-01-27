@@ -38,6 +38,11 @@ const orderSchema = new Schema(
                     ref: 'Design',
                     required: true
                 },
+                variantId: {
+                    type: Schema.Types.ObjectId,
+                    ref: 'Variant',
+                    required: true
+                },
                 name: {
                     type: String,
                     required: true
@@ -50,7 +55,14 @@ const orderSchema = new Schema(
                 price: {
                     type: Number,
                     required: true
-                }
+                },
+                filesSnapshot: [{
+                    bucket: String,
+                    key: String,
+                    originalName: String,
+                    contentType: String,
+                    size: Number
+                }]
             }
         ],
         amountTotal: {

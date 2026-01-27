@@ -1,5 +1,4 @@
 const Order = require('../models/order');
-const Design = require('../models/design');
 const { GetObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const { s3 } = require('../s3');
@@ -22,27 +21,27 @@ module.exports.getFiles = async (req, res, next) => {
     try {
         const { sessionId } = req.params;
 
-        const order = await Order.findOne({ stripeSessionId: sessionId });
+        const order = await Order.findOne({ stripeSessionId: sessionId }).lean();
         if (!order || !order.paid) return res.status(403).json({ error: 'Not paid' });
 
-        const productIds = order.items.map(i => i.productId);
-        const designs = await Design.find({ _id: { $in: productIds } });
-
         const files = [];
-        for (const design of designs) {
-            for (const file of design.downloadFiles) {
-                const cmd = new GetObjectCommand({ Bucket: file.bucket, Key: file.key });
+
+        for (const item of (order.items || [])) {
+            for (const file of (item.filesSnapshot || [])) {
+                const cmd = new GetObjectCommand({
+                    Bucket: file.bucket,
+                    Key: file.key
+                });
                 // expires in 12 hours
                 const url = await getSignedUrl(s3, cmd, { expiresIn: 60 * 60 * 12 });
 
                 files.push({
-                    name: design.name,
-                    size: design.size,
+                    name: `${item.name} (${item.size})`,
+                    size: item.size,
                     url
                 });
             }
         }
-
         res.json(files);
 
     } catch (e) {

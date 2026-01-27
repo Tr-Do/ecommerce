@@ -18,16 +18,13 @@ module.exports.createSession = async (req, res, next) => {
         if (!Array.isArray(cart.items) || cart.items.length === 0) return res.redirect('/cart');
 
         const productIds = cart.items.map(i => i.productId);
+        const variantIds = cart.items.map(i => i.variantId)
+
         const products = await Design.find({ _id: { $in: productIds } });
         const productMap = new Map(products.map(p => [String(p._id), p]));
 
-        const variants = await Variant.find({
-            productId: { $in: productIds },
-            size: { $in: cart.items.map(i => i.size) }
-        }).lean();
-
-        const variantKey = v => `${String(v.productId)}-${v.size}`;
-        const variantMap = new Map(variants.map(v => [variantKey(v), v]));
+        const variants = await Variant.find({ _id: { $in: variantIds } }).lean();
+        const variantMap = new Map(variants.map(v => [String(v._id), v]));
 
         let amountTotalCents = 0;
         const orderItems = [];
@@ -37,8 +34,10 @@ module.exports.createSession = async (req, res, next) => {
             const product = productMap.get(productId);
             if (!product) throw new AppError('Product is missing', 404);
 
-            const variant = variantMap.get(`${productId}-${item.size}`);
-            if (!variant) throw new AppError(`Variant missing ${productId} size ${item.size}`, 404);
+            const variant = variantMap.get(String(item.variantId));
+            if (!variant) throw new AppError(`Variant missing ${item.variantId}`, 404);
+
+            if (String(variant.productId) !== productId) throw new AppError('Variant does not belong to product', 400);
 
             //javascript has only floating point and base 2
             const unitAmount = Math.round(Number(variant.price) * 100);

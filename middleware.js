@@ -8,13 +8,12 @@ module.exports.splitFiles = (req, res, next) => {
     req.imageFiles = req.files?.image || [];
 
     req.designFilesByField = {
-        designFileStandard: req.file?.designFileStandard || [],
-        designFileS: req.file?.designFileS || [],
-        designFileM: req.file?.designFileM || [],
-        designFileL: req.file?.designFileL || [],
-        designFileXL: req.file?.designFileXL || [],
+        designFileStandard: req.files?.designFileStandard || [],
+        designFileS: req.files?.designFileS || [],
+        designFileM: req.files?.designFileM || [],
+        designFileL: req.files?.designFileL || [],
+        designFileXL: req.files?.designFileXL || [],
     }
-
     next();
 };
 

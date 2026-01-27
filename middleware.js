@@ -5,10 +5,15 @@ const User = require('./models/user.js');
 
 // Busboy of multer parses request stream once, file splitting is needed
 module.exports.splitFiles = (req, res, next) => {
-    const imageFiles = req.files?.image || [];
-    const designFiles = req.files?.designFile || [];
-    req.imageFiles = imageFiles;
-    req.designFiles = designFiles;
+    req.imageFiles = req.files?.image || [];
+
+    req.designFilesByField = {
+        designFileStandard: req.file?.designFileStandard || [],
+        designFileS: req.file?.designFileS || [],
+        designFileM: req.file?.designFileM || [],
+        designFileL: req.file?.designFileL || [],
+        designFileXL: req.file?.designFileXL || [],
+    }
 
     next();
 };

@@ -7,3 +7,13 @@ document.addEventListener('change', (e) => {
 
     upload.classList.toggle('d-none', checked);
 })
+
+document.querySelectorAll('.size-check').forEach(f => {
+    f.addEventListener('change', () => {
+        const target = document.getElementById(f.dataset.target);
+
+        if (!target) return;
+
+        target.classList.toggle('d-none', !f.checked);
+    })
+});

@@ -22,7 +22,7 @@ const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const helmet = require('helmet');
 const checkout = require('./controllers/checkout.js');
-const { setLocals } = require('./middleware.js');
+const { setLocals, globalErrorHandler } = require('./middleware.js');
 
 mongoose.connect('mongodb://localhost:27017/terrarium');
 
@@ -63,6 +63,7 @@ const sessionConfig = {
     }
 }
 
+// send raw bytes to stripe before sanitize req.body
 app.post(
     '/checkout/webhook',
     express.raw({ type: 'application/json' }),
@@ -107,24 +108,17 @@ app.use('/cart', cartRoute);
 
 app.get('/', (req, res) => {
     res.render('home');
-})
+});
 
 app.get('/about', (req, res) => {
     res.render('about');
-})
+});
 
 app.use((req, res, next) => {
     next(new AppError('Page not found', 404));
-})
+});
 
-app.use((err, req, res, next) => {
-    const { status = 500, message = 'Something went wrong' } = err;
-    if (req.originalUrl.startsWith('/checkout/webhook')) {
-        console.error('WEBHOOK ERROR', err);
-        return res.status(200).json({ received: true });
-    }
-    res.status(status).render('error', { err });
-})
+app.use(globalErrorHandler);
 
 app.listen(3000, () => {
     console.log('Serving port 3000')

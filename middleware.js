@@ -1,7 +1,6 @@
 const Review = require('./models/review');
 const { productSchema, reviewSchema, userSchema } = require('./schemas.js');
 const { AppError } = require('./utils/AppError');
-const User = require('./models/user.js');
 
 // Busboy of multer parses request stream once, file splitting is needed
 module.exports.splitFiles = (req, res, next) => {
@@ -100,4 +99,13 @@ module.exports.setLocals = (req, res, next) => {
     const cartCount = cart && Array.isArray(cart.items) ? cart.items.length : 0;
     res.locals.cartCount = cartCount;
     next();
+}
+
+module.exports.globalErrorHandler = (err, req, res, next) => {
+    const { status = 500, message = 'Something went wrong' } = err;
+    if (req.originalUrl.startsWith('/checkout/webhook')) {
+        console.error('WEBHOOK ERROR', err);
+        return res.status(200).json({ received: true });
+    }
+    res.status(status).render('error', { err });
 }

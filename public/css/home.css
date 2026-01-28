@@ -98,7 +98,7 @@ table tfoot tr:last-child td {
 
     /* Center the whole column vertically */
     main {
-        justify-content: center !important;
+        justify-content: center;
 
     }
 

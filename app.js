@@ -22,6 +22,7 @@ const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const helmet = require('helmet');
 const checkout = require('./controllers/checkout.js');
+const { setLocals } = require('./middleware.js');
 
 mongoose.connect('mongodb://localhost:27017/terrarium');
 
@@ -40,8 +41,6 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
-
-
 
 // get user's IP
 app.set('trust proxy', 1);
@@ -97,16 +96,7 @@ passport.use(new LocalStrategy(User.authenticate()))
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-app.use((req, res, next) => {
-    res.locals.currentUser = req.user;
-    res.locals.success = req.flash('success');
-    res.locals.error = req.flash('error');
-
-    const cart = req.session.cart;
-    const cartCount = cart && Array.isArray(cart.items) ? cart.items.length : 0;
-    res.locals.cartCount = cartCount;
-    next();
-})
+app.use(setLocals);
 
 app.use('/checkout', checkoutRoute);
 app.use('/downloads', downloadRoute);
@@ -114,8 +104,6 @@ app.use('/', usersRoute);
 app.use('/products', productsRoute);
 app.use('/products/:id/reviews', reviewRoute);
 app.use('/cart', cartRoute);
-
-
 
 app.get('/', (req, res) => {
     res.render('home');

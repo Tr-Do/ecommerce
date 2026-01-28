@@ -90,3 +90,14 @@ module.exports.previousPage = (req, res, next) => {
 
     next();
 };
+
+module.exports.setLocals = (req, res, next) => {
+    res.locals.currentUser = req.user;
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+
+    const cart = req.session.cart;
+    const cartCount = cart && Array.isArray(cart.items) ? cart.items.length : 0;
+    res.locals.cartCount = cartCount;
+    next();
+}

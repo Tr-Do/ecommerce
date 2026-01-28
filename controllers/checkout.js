@@ -122,7 +122,7 @@ module.exports.paymentConfirmation = async (req, res, next) => {
             req.flash('success', 'Payment processing...');
         }
 
-        return res.render('orders/show', { order, sessionId });
+        return res.render('orders/index', { order, sessionId });
     } catch (err) {
         return next(err);
     }
@@ -176,7 +176,6 @@ module.exports.webhook = async (req, res) => {
                 });
             }
         }
-
         const html = buildDownloadEmail({
             orderNumber: order.orderNumber,
             files

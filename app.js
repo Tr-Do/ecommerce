@@ -91,7 +91,10 @@ app.use(session(sessionConfig));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(helmet({
+    contentSecurityPolicy: false,
+    permissionsPolicy: false
+}));
 
 passport.use(new LocalStrategy(User.authenticate()))
 passport.serializeUser(User.serializeUser());

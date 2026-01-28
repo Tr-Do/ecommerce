@@ -7,12 +7,4 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_SECRET
 })
 
-// const storage = new CloudinaryStorage({
-//     cloudinary: { v2: cloudinaryV2 },
-//     params: {
-//         folder: 'Terrarium',
-//         allowed_formats: ['jpeg', 'png', 'jpg', 'webp']
-//     }
-// });
-
 module.exports = cloudinary;

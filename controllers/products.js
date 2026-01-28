@@ -68,34 +68,48 @@ module.exports.createProduct = async (req, res) => {
 
     const prefix = `products/${product._id}`;
 
-    const standardFiles = await mkS3Files(req.designFilesByField.designFileStandard, prefix);
-    if (!standardFiles.length) throw new Error('Standard variant files are required');
+    const sizesRaw = req.body.product?.size;
+    const sizes = Array.isArray(sizesRaw) ? sizesRaw : (sizesRaw ? [sizesRaw] : []);
 
-    const sizes = Array.isArray(req.body.product?.size) ? req.body.product.size : [];
+    const hasStandard = sizes.includes('Standard');
+    const nonStandardSizes = sizes.filter(s => s !== 'Standard');
+
+    if (sizes.length === 0) throw new Error('Select at least one size');
+
+    if (hasStandard && nonStandardSizes.length > 0) {
+        throw new Error('Do not mix standard size with others');
+    }
 
     await product.save();
 
-    await Variant.create({
-        productId: product._id,
-        size: 'Standard',
-        price: product.price,
-        files: standardFiles
-    });
-
-    for (const size of sizes) {
-        const fieldName = `designFile${size}`;
-        const files = await mkS3Files(req.designFilesByField[fieldName], prefix);
-
-        if (!files.length) throw new Error(`Missing upload files for size ${size}`);
+    if (hasStandard) {
+        const standardFiles = await mkS3Files(req.designFilesByField?.designFileStandard, prefix);
+        if (!standardFiles.length) throw new Error('Standard variant files are required');
 
         await Variant.create({
             productId: product._id,
-            size: size,
+            size: 'Standard',
+            price: product.price,
+            files: standardFiles
+        });
+
+        req.flash('success', 'Add product sucessfully');
+        return res.redirect(`/products/${product._id}`);
+    }
+
+    for (const size of nonStandardSizes) {
+        const fileName = `designFile${size}`;
+        const files = await mkS3Files(req.designFilesByField?.[fileName], prefix);
+
+        if (!files.length) throw new Error(`Missing upload files for ${size}`);
+
+        await Variant.create({
+            productId: product._id,
+            size,
             price: product.price,
             files
         })
-
-    }
+    };
 
     req.flash('success', 'Add product sucessfully');
     res.redirect(`/products/${product._id}`);
@@ -172,8 +186,16 @@ module.exports.updateProduct = async (req, res) => {
         );
     }
 
-    const sizes = Array.isArray(req.body.product?.size) ? req.body.product.size : [];
+    const sizesRaw = req.body.product?.size;
+    const sizes = Array.isArray(sizesRaw) ? sizesRaw : (sizesRaw ? [sizesRaw] : []);
+
+    const hasStandard = sizes.includes('Standard');
+    const nonStandardSizes = sizes.filter(s => s !== 'Standard');
+
+    if (hasStandard && nonStandardSizes.length > 0) throw new Error('Do not mix standard size with others');
+
     for (const size of sizes) {
+        if (size === 'Standard') continue;
         const fieldName = `designFile${size}`;
         const uploaded = await mkS3Files(req.designFilesByField?.[fieldName], prefix);
 

@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 cartCount.textContent = String(data.cartCount);
                 sub.textContent = `$${data.subtotal}`;
 
-                if (data.cartCount === 0) location.reload;
+                if (data.cartCount === 0) location.reload();
             })
         })
     }

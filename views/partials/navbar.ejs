@@ -12,10 +12,9 @@
                 <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
 
                 <% const cuser=(typeof currentUser !=='undefined' )? currentUser:null; %>
-                    <%const cc=(typeof cartCount!=='undefined' )?cartCount:0; %>
-                        <% if (cuser && cuser.role==='admin' ) { %>
-                            <li class="nav-item"><a class="nav-link" href="/products/new">Add Product</a></li>
-                            <% } %>
+                    <% if (cuser && cuser.role==='admin' ) { %>
+                        <li class="nav-item"><a class="nav-link" href="/products/new">Add Product</a></li>
+                        <% } %>
             </ul>
             <form class="d-flex">
                 <ul class="navbar-nav mb-2 mb-lg-0 gap-2">
@@ -43,7 +42,7 @@
                                     <a href="/cart" class="btn btn-outline-dark" type="submit">
                                         <i class="bi-cart-fill me-1"></i>Cart
                                         <span class="badge bg-dark text-white ms-1 rounded-pill" id="cartCount">
-                                            <%=cc%>
+                                            <%=cartCount%>
                                         </span>
                                     </a>
                                 </li>

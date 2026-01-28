@@ -65,24 +65,24 @@ module.exports.renderCart = async (req, res) => {
     const productIds = cart.items.map(i => i.productId);
     const variantIds = cart.items.map(i => i.variantId);
 
+    const uniqProductIds = [...new Set(productIds)];
+    const uniqVariantIds = [...new Set(variantIds)];
+
     // run both search in parallel, O(n) = max(t1, t2), use promise for multiple asyncs
     const [products, variants] = await Promise.all([
-        Design.find({ _id: { $in: productIds } }),
-        Variant.find({ _id: { $in: variantIds } }).lean()]);
-
-    if (products.length !== productIds.length || variants.length !== variantIds.length) {
-        req.session.cart.items = [];
-        return res.redirect('/cart');
-    }
+        Design.find({ _id: { $in: uniqProductIds } }),
+        Variant.find({ _id: { $in: uniqVariantIds } }).lean()]);
 
     const productMap = new Map(products.map(p => [String(p._id), p]));
     const variantMap = new Map(variants.map(v => [String(v._id), v]));
+
+    cart.items = cart.items.filter(i => productMap.has(String(i.productId)) && variantMap.has(String(i.variantId)));
 
     const items = cart.items.map(i => ({
         ...i,
         product: productMap.get(String(i.productId)),
         variant: variantMap.get(String(i.variantId))
-    }));
+    }))
 
     res.render('cart/index', { cart: { items } });
 }

@@ -1,36 +1,36 @@
 const upload = document.getElementById('upload');
+const sizeChecks = document.querySelectorAll('.size-check');
 
 document.addEventListener('change', (e) => {
     if (!e.target.matches('input[name="product[size][]"]')) return;
 
     const checked = document.querySelectorAll('input[name="product[size][]"]:checked').length > 0;
 
-    upload.classList.toggle('d-none', checked);
-})
-
-document.querySelectorAll('.size-check').forEach(f => {
-    f.addEventListener('change', () => {
-        const target = document.getElementById(f.dataset.target);
-
-        if (!target) return;
-
-        target.classList.toggle('d-none', !f.checked);
-    })
+    if (upload) upload.classList.toggle('d-none', checked);
 });
 
-document.getElementById('standard').addEventListener('change', (e) => {
-    if (!e) return;
+sizeChecks.forEach(e => {
+    e.addEventListener('change', () => {
+        const target = document.getElementById(e.dataset.target);
+        if (!target) return;
+        target.classList.toggle('d-none', !e.checked);
+    });
+});
 
-    const list = document.getElementById('file');
-    if (!list) return;
-    list.innerHTML = '';
+const standardInput = document.getElementById('standard');
+if (standardInput) {
+    standardInput.addEventListener('change', (e) => {
+        const list = document.getElementById('file-standard');
+        if (!list) return;
+        list.innerHTML = '';
 
-    Array.from(e.target.files).forEach(file => {
-        const li = document.createElement('li');
-        li.textContent = file.name;
-        list.appendChild(li);
-    })
-})
+        Array.from(e.target.files).forEach(file => {
+            const li = document.createElement('li');
+            li.textContent = file.name;
+            list.appendChild(li);
+        });
+    });
+};
 
 document.querySelectorAll('.fileUpload').forEach(input => {
     input.addEventListener('change', () => {
@@ -48,3 +48,9 @@ document.querySelectorAll('.fileUpload').forEach(input => {
         });
     });
 });
+
+(() => {
+    const checked = document.querySelectorAll('input[name="product[size][]"]:checked').length > 0;
+    if (upload) upload.classList.toggle('d-none', checked);
+})
+    ();

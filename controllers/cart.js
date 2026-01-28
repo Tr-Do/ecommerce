@@ -4,6 +4,9 @@ const { throwError } = require('../middleware');
 
 module.exports.addToCart = async (req, res) => {
     const { productId, variantId } = req.body;
+    if (!productId || !variantId) {
+        return res.status(400).json({ error: 'Invalid cart data', body: req.body });
+    }
 
     // enforece productID and size must be present
     if (!productId || !variantId) return res.status(400).send('Invalid cart data');
@@ -64,7 +67,7 @@ module.exports.renderCart = async (req, res) => {
 
     // run both search in parallel, O(n) = max(t1, t2), use promise for multiple asyncs
     const [products, variants] = await Promise.all([
-        Design.find({ _id: { $in: productIds } }).lean(),
+        Design.find({ _id: { $in: productIds } }),
         Variant.find({ _id: { $in: variantIds } }).lean()]);
 
     if (products.length !== productIds.length || variants.length !== variantIds.length) {

@@ -13,6 +13,10 @@ main {
     flex: 1;
 }
 
+#home {
+    padding-top: 110px;
+}
+
 #cart {
     flex: 1;
     display: flex;

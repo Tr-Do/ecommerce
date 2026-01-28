@@ -10,7 +10,7 @@ if (cartCount && sub && removeBtn.length) {
 
             // set default price is 5 if not found
             const price = Number(e.currentTarget.dataset.price) || 5;
-            const size = e.currentTarget.dataset.size;
+            const variantId = e.currentTarget.dataset.variantId;
             const productId = e.currentTarget.dataset.productId;
             if (!productId) return;
 
@@ -19,7 +19,7 @@ if (cartCount && sub && removeBtn.length) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 // use stringify to preserve data, String({productId}) destroys data, String for display, JSON.stringify for transport
-                body: JSON.stringify({ productId, size })
+                body: JSON.stringify({ productId, variantId })
             })
 
             if (!res.ok) return;        // true if HTTP from 200-299

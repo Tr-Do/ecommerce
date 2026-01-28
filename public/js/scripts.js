@@ -92,12 +92,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const formData = new FormData(addToCartForm);
             const productId = formData.get('productId');
-            const size = formData.get('size');
+            const variantId = formData.get('variantId');
 
             const res = await fetch('/cart', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ productId, size })
+                body: JSON.stringify({ productId, variantId })
             });
 
             // show error on duplicate

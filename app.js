@@ -41,14 +41,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 
-const sanitizer = sanitizeV5({ replaceWith: '_' });
 
-app.use((req, res, next) => {
-    if (req.originalUrl.startsWith('/checkout/webhook') || req.originalUrl.startsWith('/downloads')) {
-        return next()
-    };
-    return sanitizer(req, res, next);
-})
 
 // get user's IP
 app.set('trust proxy', 1);
@@ -58,8 +51,6 @@ app.use((req, res, next) => {
     res.locals.currentUrl = req.originalUrl;
     next();
 });
-
-
 
 const sessionConfig = {
     name: 'session',
@@ -81,6 +72,20 @@ app.post(
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+const sanitizer = sanitizeV5({ replaceWith: '_' });
+
+app.use((req, res, next) => {
+    if (req.originalUrl.startsWith('/checkout/webhook') || req.originalUrl.startsWith('/downloads')) {
+        return next()
+    };
+    if (
+        req.originalUrl.startsWith('/checkout/webhook') ||
+        req.originalUrl.startsWith('/downloads') ||
+        req.originalUrl.startsWith('/cart')
+    ) return next();
+    return sanitizer(req, res, next);
+})
 
 app.use(session(sessionConfig));
 app.use(passport.initialize());
@@ -120,8 +125,6 @@ app.get('/about', (req, res) => {
     res.render('about');
 })
 
-
-
 app.use((req, res, next) => {
     next(new AppError('Page not found', 404));
 })
@@ -132,7 +135,6 @@ app.use((err, req, res, next) => {
         console.error('WEBHOOK ERROR', err);
         return res.status(200).json({ received: true });
     }
-
     res.status(status).render('error', { err });
 })
 

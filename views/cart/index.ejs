@@ -1,6 +1,7 @@
 <% layout('layouts/boilerplate') %>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script src="/js/turnstile.js"></script>
+    <script src="/js/addToCart.js" defer></script>
 
     <% if (cart.items.length===0) {%>
         <h1 class="text-dark mt-5" id="cart">Your cart is empty</h1>

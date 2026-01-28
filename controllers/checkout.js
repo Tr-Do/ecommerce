@@ -65,7 +65,7 @@ module.exports.createSession = async (req, res, next) => {
                 name: product.name,
                 size: variant.size,
                 price: variant.price,
-                fileSnapshot: variant.files || []
+                filesSnapshot: variant.files || []
             });
         }
 

@@ -66,21 +66,22 @@ module.exports.createProduct = async (req, res) => {
         filename: f.public_id
     }));
 
-    await product.save();
-
     const prefix = `products/${product._id}`;
-    const standardFiles = await mkS3Files(req.designFilesByField.designFileStandard, prefix);
 
-    if (standardFiles.length) {
-        await Variant.create({
-            productId: product._id,
-            size: 'Standard',
-            price: product.price,
-            files: standardFiles
-        })
-    };
+    const standardFiles = await mkS3Files(req.designFilesByField.designFileStandard, prefix);
+    if (!standardFiles.length) throw new Error('Standard variant files are required');
 
     const sizes = Array.isArray(req.body.product?.size) ? req.body.product.size : [];
+
+    await product.save();
+
+    await Variant.create({
+        productId: product._id,
+        size: 'Standard',
+        price: product.price,
+        files: standardFiles
+    });
+
     for (const size of sizes) {
         const fieldName = `designFile${size}`;
         const files = await mkS3Files(req.designFilesByField[fieldName], prefix);
@@ -102,19 +103,26 @@ module.exports.createProduct = async (req, res) => {
 
 module.exports.showProduct = async (req, res) => {
     const product = await Design.findById(req.params.id)
-        .populate({ path: 'reviews', populate: { path: 'author' } });
+        .populate({
+            path: 'reviews',
+            populate: { path: 'author' }
+        });
+
     const usernames = product.reviews
         .map(review => review.author?.username)
         .filter(Boolean);
-    throwError(product);
+
     const variants = await Variant.find({ productId: product._id }).lean();
+
     res.render('products/show', { product, usernames, variants });
 };
 
 module.exports.editForm = async (req, res) => {
+    const { id } = req.params;
     const product = await Design.findById(req.params.id);
+    const variants = await Variant.find({ productId: id }).lean();
     throwError(product);
-    res.render('products/edit', { product });
+    res.render('products/edit', { product, variants });
 };
 
 module.exports.updateProduct = async (req, res) => {
@@ -137,6 +145,62 @@ module.exports.updateProduct = async (req, res) => {
         return res.redirect('/products');
     };
 
+    const prefix = `products/${product._id}`;
+
+    const standardFiles = await mkS3Files(req.designFilesByField?.designFileStandard, prefix);
+    if (standardFiles.length) {
+
+        let price;
+        if (req.body.product && req.body.product.price !== undefined && req.body.product.price !== null) {
+            price = req.body.product.price;
+        } else price = product.price;
+
+        await Variant.findOneAndUpdate(
+            {
+                productId: product._id,
+                size: 'Standard'
+            },
+            {
+                $set: {
+                    productId: product._id,
+                    size: 'Standard',
+                    price,
+                    files: standardFiles,
+                }
+            },
+            { upsert: true, new: true }
+        );
+    }
+
+    const sizes = Array.isArray(req.body.product?.size) ? req.body.product.size : [];
+    for (const size of sizes) {
+        const fieldName = `designFile${size}`;
+        const uploaded = await mkS3Files(req.designFilesByField?.[fieldName], prefix);
+
+        if (!uploaded.length) continue;
+
+        let price;
+        if (req.body.product && req.body.product.price !== undefined && req.body.product.price !== null) {
+            price = req.body.product.price;
+        } else price = product.price;
+
+        await Variant.findOneAndUpdate(
+            {
+                productId: product._id,
+                size
+            },
+            {
+                $set: {
+                    productId: product._id,
+                    size,
+                    price,
+                    files: uploaded
+                }
+            },
+            { upsert: true, new: true }
+        );
+    }
+
     // image upload logic
     const imageUploads = req.imageFiles || [];
     const cloudinaryImages = [];
@@ -150,6 +214,7 @@ module.exports.updateProduct = async (req, res) => {
         });
         cloudinaryImages.push(result);
     }
+
     const imgs = cloudinaryImages.map(f => {
         const url = f.secure_url || f.url;
         const filename = f.public_id;

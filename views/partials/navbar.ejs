@@ -30,6 +30,9 @@
                                     data-bs-toggle="dropdown" aria-expanded="false">Hi, <%=currentUser.username%></a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li><a class="dropdown-item"
+                                            href="/adminView?returnTo=<%= encodeURIComponent(currentUrl) %>">View
+                                            Orders</a></li>
+                                    <li><a class="dropdown-item"
                                             href="/update?returnTo=<%= encodeURIComponent(currentUrl) %>">Reset
                                             password</a></li>
                                     <li><a class="dropdown-item"

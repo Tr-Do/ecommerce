@@ -18,14 +18,14 @@ main {
     justify-content: center;
 }
 
-#orderList {
-    width: max-content;
+
+#orderList th,
+#orderList td {
+    padding: 1rem;
+    white-space: nowrap;
+    border: 1px solid black;
 }
 
-#orderList th {
-    padding: 5rem;
-    white-space: nowrap;
-}
 
 #home,
 #download-root {

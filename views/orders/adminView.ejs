@@ -1,5 +1,7 @@
 <% layout('layouts/boilerplate') %>
-    <div class="table-wrap">
+
+    <h1 class="text-center my-3">Admin view</h1>
+    <div class="table-wrap mb-5">
         <table class="text-center" id="orderList">
             <thead>
                 <tr>
@@ -14,29 +16,33 @@
             </thead>
             <tbody>
                 <% orders.forEach(o=> { %>
-                    <% o.items.forEach(item=> {%>
+                    <% o.items.forEach((item, idx)=> {%>
                         <tr>
-                            <td>
-                                <%=o.orderNumber%>
-                            </td>
-                            <td>
-                                <%=item.name%>
-                            </td>
-                            <td>
-                                <%=item.size%>
-                            </td>
-                            <td>
-                                <%=o.email%>
-                            </td>
-                            <td>
-                                <%=o.amountTotal%>
-                            </td>
-                            <td>
-                                <%=o.emailSentAt%>
-                            </td>
-                            <td>
-                                <%=o.ip%>
-                            </td>
+                            <% if (idx===0) {%>
+                                <td rowspan="<%=o.items.length%>">
+                                    <%=o.orderNumber%>
+                                </td>
+                                <%}%>
+                                    <td>
+                                        <%=item.name%>
+                                    </td>
+                                    <td>
+                                        <%=item.size%>
+                                    </td>
+                                    <% if (idx===0) {%>
+                                        <td rowspan="<%=o.items.length%>">
+                                            <%=o.email%>
+                                        </td>
+                                        <td rowspan="<%=o.items.length%>">
+                                            <%=o.amountTotal%>
+                                        </td>
+                                        <td rowspan="<%=o.items.length%>">
+                                            <%=o.emailSentAt%>
+                                        </td>
+                                        <td rowspan="<%=o.items.length%>">
+                                            <%=o.ip%>
+                                        </td>
+                                        <%}%>
                         </tr>
                         <%})%>
                             <%})%>

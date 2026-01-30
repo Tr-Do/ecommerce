@@ -5,12 +5,14 @@
             <img src="/assets/banner2.png" class="img-fluid w100" alt="">
         </div>
     </header>
-    <div class="input-group input-group-sm rounded-pill ms-auto" id="searchDiv">
-        <input id="searchBar" class="form-control border-0 form-control text-center" type="text"
-            placeholder="search"><span id="searchIcon" class="input-group-text border-0">
+
+    <form action="" class="d-flex ms-auto" id="searchForm">
+        <input id="searchBar" class="form-control border-0 form-control text-center" type="text" name="searchProduct"
+            placeholder="search"><button type="submit" id="searchIcon" class="input-group-text border-0">
             <i class="bi bi-search"></i>
-        </span>
-    </div>
+        </button>
+    </form>
+
     <section class="pt-5">
         <div class="container px-4 px-lg-5 mt-5">
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
@@ -49,7 +51,7 @@
         <ul class="pagination">
 
             <!-- Previous -->
-            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+            <li class="mb-4 page-item <%= currentPage === 1 ? 'disabled' : '' %>">
                 <a class="page-link" href="<%= currentPage === 1 ? '#' : '?page=' + (currentPage - 1) %>">
                     Previous
                 </a>

@@ -13,14 +13,24 @@ main {
     flex: 1;
 }
 
-#searchDiv {
-    max-width: 200px;
+#searchForm {
+    max-width: 250px;
+    border-radius: 999px;
+
 }
 
 #searchIcon {
     cursor: pointer;
     border-radius: 0 999px 999px 0;
     background-color: #e9ecef;
+}
+
+#searchForm:focus-within {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+#searchIcon:hover {
+    background-color: #6c757d;
 }
 
 #searchBar {
@@ -39,7 +49,6 @@ main {
     white-space: nowrap;
     border: 1px solid black;
 }
-
 
 #home,
 #download-root {

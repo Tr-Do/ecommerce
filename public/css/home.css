@@ -13,6 +13,20 @@ main {
     flex: 1;
 }
 
+.table-wrap {
+    display: flex;
+    justify-content: center;
+}
+
+#orderList {
+    width: max-content;
+}
+
+#orderList th {
+    padding: 5rem;
+    white-space: nowrap;
+}
+
 #home,
 #download-root {
     padding-top: 110px;

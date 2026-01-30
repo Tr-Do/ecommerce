@@ -1,1 +1,45 @@
 <% layout('layouts/boilerplate') %>
+    <div class="table-wrap">
+        <table class="text-center" id="orderList">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Product</th>
+                    <th>Size</th>
+                    <th>Email</th>
+                    <th>Amount Paid</th>
+                    <th>Order date</th>
+                    <th>IP</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% orders.forEach(o=> { %>
+                    <% o.items.forEach(item=> {%>
+                        <tr>
+                            <td>
+                                <%=o.orderNumber%>
+                            </td>
+                            <td>
+                                <%=item.name%>
+                            </td>
+                            <td>
+                                <%=item.size%>
+                            </td>
+                            <td>
+                                <%=o.email%>
+                            </td>
+                            <td>
+                                <%=o.amountTotal%>
+                            </td>
+                            <td>
+                                <%=o.emailSentAt%>
+                            </td>
+                            <td>
+                                <%=o.ip%>
+                            </td>
+                        </tr>
+                        <%})%>
+                            <%})%>
+            </tbody>
+        </table>
+    </div>

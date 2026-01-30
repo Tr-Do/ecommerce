@@ -1,10 +1,16 @@
 <% layout('layouts/boilerplate') %>
     <!-- Header-->
     <header>
-        <div class="container-fluid p-0">
+        <div class="container-fluid p-0 mb-3">
             <img src="/assets/banner2.png" class="img-fluid w100" alt="">
         </div>
     </header>
+    <div class="input-group input-group-sm rounded-pill ms-auto" id="searchDiv">
+        <input id="searchBar" class="form-control border-0 form-control text-center" type="text"
+            placeholder="search"><span id="searchIcon" class="input-group-text border-0">
+            <i class="bi bi-search"></i>
+        </span>
+    </div>
     <section class="pt-5">
         <div class="container px-4 px-lg-5 mt-5">
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">

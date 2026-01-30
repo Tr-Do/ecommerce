@@ -13,13 +13,27 @@ main {
     flex: 1;
 }
 
+#searchDiv {
+    max-width: 200px;
+}
+
+#searchIcon {
+    cursor: pointer;
+    border-radius: 0 999px 999px 0;
+    background-color: #e9ecef;
+}
+
+#searchBar {
+    background-color: #e9ecef;
+    border-radius: 999px 0 0 999px;
+}
+
 .table-wrap {
     display: flex;
     justify-content: center;
 }
 
-
-#orderList th,
+#search #orderList th,
 #orderList td {
     padding: 1rem;
     white-space: nowrap;

@@ -36,13 +36,18 @@
                                         <li><a class="dropdown-item" href="/orders/adminView">View
                                                 Users</a></li>
                                         <%}%>
-                                            <li><a class="dropdown-item"
-                                                    href="/update?returnTo=<%= encodeURIComponent(currentUrl) %>">Reset
-                                                    password</a></li>
-                                            <li><a class="dropdown-item"
-                                                    href="/logout?returnTo=<%= encodeURIComponent(currentUrl) %>">Sign
-                                                    out</a>
-                                            </li>
+                                            <% if (cuser && cuser.role!=='admin' ) { %>
+                                                <li><a class="dropdown-item"
+                                                        href="/orderhistory?returnTo=<%= encodeURIComponent(currentUrl) %>">View
+                                                        Orders</a></li>
+                                                <%}%>
+                                                    <li><a class="dropdown-item"
+                                                            href="/update?returnTo=<%= encodeURIComponent(currentUrl) %>">Reset
+                                                            password</a></li>
+                                                    <li><a class="dropdown-item"
+                                                            href="/logout?returnTo=<%= encodeURIComponent(currentUrl) %>">Sign
+                                                            out</a>
+                                                    </li>
                                 </ul>
                             </li>
                             <% } %>

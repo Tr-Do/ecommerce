@@ -1,6 +1,6 @@
 <% layout('layouts/boilerplate') %>
 
-    <h1 class="text-center my-3">Admin view</h1>
+    <h1 class="text-center my-3">Order History</h1>
     <div class="table-wrap mb-5">
         <table class="text-center" id="orderList">
             <thead>
@@ -11,7 +11,7 @@
                     <th>Email</th>
                     <th>Amount Paid</th>
                     <th>Order date</th>
-                    <th>IP</th>
+                    <th>Payment information</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,8 +39,8 @@
                                         <td rowspan="<%=o.items.length%>">
                                             <%=o.emailSentAt%>
                                         </td>
-                                        <td rowspan="<%=o.items.length%>">
-                                            <%=o.ip%>
+                                        <td>
+                                            <%=last4%>
                                         </td>
                                         <%}%>
                         </tr>

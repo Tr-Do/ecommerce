@@ -19,4 +19,6 @@ router.route('/update')
     .get(previousPage, requireLogin, users.renderUpdate)
     .post(requireLogin, users.update);
 
+router.get('/orderhistory', previousPage, requireLogin, users.orderHistory)
+
 module.exports = router;

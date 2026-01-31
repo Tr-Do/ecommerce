@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const Order = require('../models/order');
 
 module.exports.renderRegister = (req, res) => {
     res.render('users/register');
@@ -23,7 +24,6 @@ module.exports.register = async (req, res, next) => {
 }
 
 module.exports.renderLogin = (req, res) => {
-
     res.render('users/login');
 }
 
@@ -36,7 +36,7 @@ module.exports.login = (req, res) => {
     res.redirect(redirectUrl);
 }
 
-module.exports.logout = (req, res, next) => {
+module.exports.logout = (req, res) => {
     const redirectUrl = req.session.returnTo;
 
     req.logout(function (err) {
@@ -78,3 +78,23 @@ module.exports.update = async (req, res, next) => {
         next(e);
     }
 };
+
+module.exports.orderHistory = async (req, res, next) => {
+    try {
+        const orders = await Order.find({ user: req.user._id });
+
+        const session = event.data.object;
+
+        const paymentIntentId = session.payment_intent;
+
+        const pi = await Stripe.paymentIntents.retrieve(paymentIntentId, {
+            expand: ['charges.data.payment_method_details']
+        });
+
+        const last4 = pi.charges.data[0].payment_method_details.card.last4;
+
+        res.render('orders/orderHistory', { orders, last4 });
+    } catch (err) {
+        next(err)
+    }
+}

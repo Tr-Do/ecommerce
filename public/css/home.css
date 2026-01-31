@@ -13,6 +13,11 @@ main {
     flex: 1;
 }
 
+#banner {
+    /* transform: scale(0.85); */
+
+}
+
 #searchForm {
     max-width: 250px;
     border-radius: 999px;
@@ -52,7 +57,7 @@ main {
 
 #home,
 #download-root {
-    padding-top: 110px;
+    padding-top: 45px;
 }
 
 #cart {

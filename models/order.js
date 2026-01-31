@@ -10,11 +10,6 @@ const orderSchema = new Schema(
             unique: true,
             default: () => `ORD-${nanoid()}`        // create readable order #
         },
-        stripeSessionId: {
-            type: String,
-            required: true,
-            unique: true
-        },
         ip: {
             type: String,
             required: true,
@@ -27,7 +22,7 @@ const orderSchema = new Schema(
         email: {
             type: String,
             required: function () {
-                return this.paid === true;
+                return this.payment?.status === true;
             },
             default: null
         },
@@ -78,32 +73,36 @@ const orderSchema = new Schema(
             amountCharged: Number,
             currency: {
                 type: String,
-                default: usd,
+                default: 'usd',
             },
-            stripeSessionId: String,
-            paymentIntentId: String,
+            stripeSessionId: {
+                type: String,
+                required: true,
+                unique: true
+            },
+            paymentIntentId: {
+                type: String,
+                default: null
+            },
             card: {
                 brand: String,
                 last4: String
             },
-            paidAt: Date
-        },
-        amountTotal: {
-            type: Number,
-            required: true
-        },
-        paid: {
-            type: Boolean,
-            default: false
-        },
-        emailSentAt: {
-            type: Date,
-            default: null
+            paidAt: {
+                type: Date,
+                default: null
+            },
+            amountTotal: {
+                type: Number,
+                required: true
+            },
+            emailSentAt: {
+                type: Date,
+                default: null
+            }
         }
     },
-    {
-        timestamps: true
-    }
+    { timestamps: true }
 );
 
 module.exports = mongoose.model('Order', orderSchema);

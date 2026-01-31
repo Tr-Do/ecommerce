@@ -34,7 +34,9 @@
                                             <%=o.email%>
                                         </td>
                                         <td rowspan="<%=o.items.length%>">
-                                            <%=(o.email)?('$'+(o.amountTotal /100).toFixed(2)):'Unpaid' %>
+                                            <%= (o.payment?.status==='paid' )?
+                                                ('$'+(((o.payment.amountCharged??o.payment.amountTotal)
+                                                /100).toFixed(2))):'Unpaid' %>
                                         </td>
                                         <td rowspan="<%=o.items.length%>">
                                             <%=o.emailSentAt%>

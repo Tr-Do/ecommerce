@@ -77,12 +77,25 @@ module.exports.createSession = async (req, res, next) => {
         });
 
         const order = await Order.create({
-            stripeSessionId: session.id,
             ip,
             user: req.user ? req.user._id : null,
             items: orderItems,
-            amountTotal: amountTotalCents,
-            paid: false,
+            payment: {
+                provider: 'stripe',
+                status: 'pending',
+                stripeSessionId: session.id,
+                currency: 'usd',
+                amountCharged: null,
+                paymentIntentId: null,
+                paidAt: null,
+                emailSentAt: null,
+                card: {
+                    brand: null,
+                    last4: null
+                },
+                amountTotal: amountTotalCents
+            },
+            email: null,
         });
 
         req.session.lastOrderId = order._id;
@@ -103,14 +116,14 @@ module.exports.paymentConfirmation = async (req, res, next) => {
             return res.redirect('/products');
         }
 
-        const order = await Order.findOne({ stripeSessionId: sessionId });
+        const order = await Order.findOne({ 'payment.stripeSessionId': sessionId });
 
         if (!order) {
             req.flash('error', 'Order not found');
             res.locals.error = req.flash('error');
             return res.redirect('/cart');
         }
-        if (order && order.paid) {
+        if (order?.payment?.status === 'paid') {
             req.flash('success', 'Payment completed.');
             res.locals.success = req.flash('success');
 
@@ -118,8 +131,9 @@ module.exports.paymentConfirmation = async (req, res, next) => {
             req.session.cart = { items: [] };
             delete req.session.lastOrderId;
             res.locals.cartCount = 0;
+
         } else {
-            req.flash('success', 'Payment processing...');
+            req.flash('info', 'Payment processing...');
         }
 
         return res.render('orders/index', { order, sessionId });
@@ -150,18 +164,22 @@ module.exports.webhook = async (req, res) => {
         const session = event.data.object; // checkout.session
         if (session.payment_status !== 'paid') return res.json({ received: true });
 
-        const order = await Order.findOne({ stripeSessionId: session.id });
-        if (!order || order.paid) return res.json({ received: true });
+        const order = await Order.findOne({ 'payment.stripeSessionId': session.id });
+        if (!order || order.payment?.status === 'paid') return res.json({ received: true });
 
-        if (typeof session.amount_total === 'number' && session.amount_total !== order.amountTotal)
+        if (typeof session.amount_total === 'number' && session.amount_total !== order.payment.amountTotal)
             return res.status(400).json({ error: 'Amount mismatch' });
 
+        order.payment.status = 'paid';
+        order.payment.amountCharged = session.amount_total ?? null;
+        order.payment.currency = session.currency ?? 'usd';
+        order.payment.paymentIntentId = session.payment_intent ?? null;
+        order.payment.paidAt = new Date();
 
-        order.paid = true;
         order.email = session.customer_details?.email || order.email;
         await order.save();
 
-        if (!order.emailSentAt && order.email) {
+        if (!order.payment.emailSentAt && order.email) {
             const files = [];
 
             for (const item of order.items) {
@@ -191,7 +209,7 @@ module.exports.webhook = async (req, res) => {
                 html
             });
 
-            order.emailSentAt = new Date();
+            order.payment.emailSentAt = new Date();
             await order.save();
         }
         return res.json({ received: true });

@@ -7,10 +7,11 @@ module.exports.status = async (req, res, next) => {
     try {
         const { sessionId } = req.params;
 
-        const order = await Order.findOne({ stripeSessionId: sessionId });
+        const order = await Order.findOne({ 'payment.stripeSessionId': sessionId });
         if (!order) return res.status(404).json({ paid: false });
 
-        res.json({ paid: order.paid });
+        const paid = order.payment?.status === 'paid';
+        res.json({ paid });
 
     } catch (e) {
         res.status(500).json({ paid: false })
@@ -21,8 +22,8 @@ module.exports.getFiles = async (req, res, next) => {
     try {
         const { sessionId } = req.params;
 
-        const order = await Order.findOne({ stripeSessionId: sessionId }).lean();
-        if (!order || !order.paid) return res.status(403).json({ error: 'Not paid' });
+        const order = await Order.findOne({ 'payment.stripeSessionId': sessionId }).lean();
+        if (!order || order.payment?.status !== 'paid') return res.status(403).json({ error: 'Not paid' });
 
         const files = [];
 

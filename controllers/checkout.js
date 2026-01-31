@@ -54,7 +54,7 @@ module.exports.createSession = async (req, res, next) => {
                         metadata: {
                             productId: productId,
                             variantId: String(variant._id),
-                            size: item.size
+                            size: variant.size
                         }
                     }
                 }
@@ -146,48 +146,56 @@ module.exports.webhook = async (req, res) => {
         return res.json({ received: true });
     }
 
-    const session = event.data.object; // checkout.session
-    const sessionId = session.id;
+    try {
+        const session = event.data.object; // checkout.session
+        if (session.payment_status !== 'paid') return res.json({ received: true });
 
-    const order = await Order.findOne({ stripeSessionId: sessionId });
+        const order = await Order.findOne({ stripeSessionId: session.id });
+        if (!order || order.paid) return res.json({ received: true });
 
-    if (!order || order.paid) return res.json({ received: true });
+        if (typeof session.amount_total === 'number' && session.amount_total !== order.amountTotal)
+            return res.status(400).json({ error: 'Amount mismatch' });
 
-    order.paid = true;
-    order.email = session.customer_details?.email || order.email;
-    await order.save();
 
-    if (!order.emailSentAt && order.email) {
-        const files = [];
-
-        for (const item of order.items) {
-            for (const file of (item.fileSnapshot || [])) {
-                const cmd = new GetObjectCommand({
-                    Bucket: file.bucket,
-                    Key: file.key
-                });
-
-                const url = await getSignedUrl(s3, cmd, { expiresIn: 60 * 60 * 12 });
-
-                files.push({
-                    name: `${item.name} (${item.size})`,
-                    size: item.size,
-                    url,
-                });
-            }
-        }
-        const html = buildDownloadEmail({
-            orderNumber: order.orderNumber,
-            files
-        });
-
-        await sendEmail({
-            to: order.email,
-            subject: `Your Terrarium Files - ${order.orderNumber}`,
-            html
-        });
-
-        order.emailSentAt = new Date();
+        order.paid = true;
+        order.email = session.customer_details?.email || order.email;
         await order.save();
+
+        if (!order.emailSentAt && order.email) {
+            const files = [];
+
+            for (const item of order.items) {
+                for (const file of (item.filesSnapshot || [])) {
+                    const cmd = new GetObjectCommand({
+                        Bucket: file.bucket,
+                        Key: file.key
+                    });
+
+                    const url = await getSignedUrl(s3, cmd, { expiresIn: 60 * 60 * 12 });
+
+                    files.push({
+                        name: `${item.name} (${item.size})`,
+                        size: item.size,
+                        url,
+                    });
+                }
+            }
+            const html = buildDownloadEmail({
+                orderNumber: order.orderNumber,
+                files
+            });
+
+            await sendEmail({
+                to: order.email,
+                subject: `Your Terrarium Files - ${order.orderNumber}`,
+                html
+            });
+
+            order.emailSentAt = new Date();
+            await order.save();
+        }
+        return res.json({ received: true });
+    } catch (err) {
+        return res.status(500).json({ received: false });
     }
 }

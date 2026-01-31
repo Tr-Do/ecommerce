@@ -65,6 +65,29 @@ const orderSchema = new Schema(
                 }]
             }
         ],
+        payment: {
+            provider: {
+                type: String,
+                default: 'stripe'
+            },
+            status: {
+                type: String,
+                enum: ['pending', 'paid', 'failed', 'refunded'],
+                default: 'pending'
+            },
+            amountCharged: Number,
+            currency: {
+                type: String,
+                default: usd,
+            },
+            stripeSessionId: String,
+            paymentIntentId: String,
+            card: {
+                brand: String,
+                last4: String
+            },
+            paidAt: Date
+        },
         amountTotal: {
             type: Number,
             required: true

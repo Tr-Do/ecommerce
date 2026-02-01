@@ -62,8 +62,13 @@
     }
 
     #orderList,
-    #userList {
+    #userList,
+    #dashboard {
         width: 100%;
+    }
+
+    #adminDashboard {
+        margin-top: 500px;
     }
 
     #home,

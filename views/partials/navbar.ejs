@@ -30,24 +30,18 @@
                                     data-bs-toggle="dropdown" aria-expanded="false">Hi, <%=currentUser.username%> <i
                                             class="bi bi-person-fill"></i></a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <% if (cuser && cuser.role==='admin' ) { %>
-                                        <li><a class="dropdown-item" href="/admin/orderOverview">View
+                                    <% if (cuser && cuser.role!=='admin' ) { %>
+                                        <li><a class="dropdown-item"
+                                                href="/orderhistory?returnTo=<%= encodeURIComponent(currentUrl) %>">View
                                                 Orders</a></li>
-                                        <li><a class="dropdown-item" href="/admin/userOverview">View
-                                                Users</a></li>
                                         <%}%>
-                                            <% if (cuser && cuser.role!=='admin' ) { %>
-                                                <li><a class="dropdown-item"
-                                                        href="/orderhistory?returnTo=<%= encodeURIComponent(currentUrl) %>">View
-                                                        Orders</a></li>
-                                                <%}%>
-                                                    <li><a class="dropdown-item"
-                                                            href="/update?returnTo=<%= encodeURIComponent(currentUrl) %>">Reset
-                                                            password</a></li>
-                                                    <li><a class="dropdown-item"
-                                                            href="/logout?returnTo=<%= encodeURIComponent(currentUrl) %>">Sign
-                                                            out</a>
-                                                    </li>
+                                            <li><a class="dropdown-item"
+                                                    href="/update?returnTo=<%= encodeURIComponent(currentUrl) %>">Reset
+                                                    password</a></li>
+                                            <li><a class="dropdown-item"
+                                                    href="/logout?returnTo=<%= encodeURIComponent(currentUrl) %>">Sign
+                                                    out</a>
+                                            </li>
                                 </ul>
                             </li>
                             <% } %>

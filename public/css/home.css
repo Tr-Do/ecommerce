@@ -43,6 +43,14 @@
         justify-content: center;
     }
 
+    #order {
+        margin-top: 100px;
+    }
+
+    #order ul li {
+        margin-top: 10px;
+    }
+
     #search #orderList th,
     #orderList td {
         padding: 1rem;

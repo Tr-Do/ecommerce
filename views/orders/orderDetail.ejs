@@ -1,9 +1,42 @@
 <% layout('layouts/boilerplate') %>
 
 
-    <h2 class="text-center">
+    <h2 class="text-center mt-5">
         <%=order.orderNumber%>
     </h2>
+    <div id="order"></div>
     <ul>
-        <li></li>
+        <li>
+            Email: <%=order.email%>
+        </li>
+        <li>
+            IP: <%=order.ip%>
+        </li>
+        <li>
+            Payment provider: <%=order.payment.provider%>
+        </li>
+        <li>
+            Stripe session: <%=order.payment.stripeSessionId%>
+        </li>
+        <li>
+            Payment card: <%=order.payment.card.brand%>
+        </li>
+        <li>
+            Last 4 digits: <%=order.payment.card.last4%>
+        </li>
+        <li>
+            Total amount: <%=String(Number(order.payment.amountTotal) /100)%>
+        </li>
+        <li>Item:
+            <ul>
+                <%order.items.forEach(e=> {%>
+                    <li>
+                        <%=e.name%> -
+                            <%=e.size%> -
+                                <%=e.price%>
+                    </li>
+                    <%})%>
+            </ul>
+        </li>
     </ul>
+    </div>

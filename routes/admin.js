@@ -9,4 +9,6 @@ router.get(`/orders/:orderNumber`, requireLogin, isAdmin, admin.orderDetail);
 
 router.get('/userOverview', requireLogin, isAdmin, admin.userOverview);
 
+router.get('/dashboard', requireLogin, isAdmin, admin.dashboard);
+
 module.exports = router;

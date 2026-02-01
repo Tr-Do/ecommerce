@@ -17,3 +17,7 @@ module.exports.userOverview = async (req, res) => {
     const users = await User.find({ role: { $ne: 'admin' } });
     res.render('users/userOverview', { users });
 }
+
+module.exports.dashboard = async (req, res) => {
+    res.render('users/dashboard');
+}

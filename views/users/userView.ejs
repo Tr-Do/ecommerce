@@ -1,0 +1,22 @@
+<% layout('layouts/boilerplate') %>
+
+    <h2 class="text-center mt-5" id="userList">Users Overview</h2>
+    <table>
+        <tr>
+            <th>Username</th>
+            <th>Action</th>
+            <th>Confirmation</th>
+        </tr>
+        <tbody>
+            <tr>
+                <td>user.username</td>
+                <td><select name="action" id="">
+                        <option value=delete">Delete</option>
+                        <option value="reset">Change password</option>
+                    </select></td>
+                <td>
+                    <form action="">Submit</form>
+                </td>
+            </tr>
+        </tbody>
+    </table>

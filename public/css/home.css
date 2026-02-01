@@ -58,7 +58,8 @@
         border: 1px solid black;
     }
 
-    #orderList {
+    #orderList,
+    #userList {
         width: 100%;
     }
 

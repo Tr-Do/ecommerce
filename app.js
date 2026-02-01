@@ -109,7 +109,7 @@ app.use('/', usersRoute);
 app.use('/products', productsRoute);
 app.use('/products/:id/reviews', reviewRoute);
 app.use('/cart', cartRoute);
-app.use('/orders', adminRoute);
+app.use('/admin', adminRoute);
 
 app.get('/', (req, res) => {
     res.render('home');

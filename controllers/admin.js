@@ -1,8 +1,8 @@
 const Order = require('../models/order');
 
-module.exports.renderView = async (req, res) => {
+module.exports.orderView = async (req, res) => {
     const orders = await Order.find({});
-    res.render('orders/adminView', { orders });
+    res.render('orders/orderView', { orders });
 }
 
 module.exports.orderDetail = async (req, res) => {

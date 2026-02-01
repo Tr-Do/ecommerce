@@ -14,6 +14,6 @@ module.exports.orderDetail = async (req, res) => {
 }
 
 module.exports.userOverview = async (req, res) => {
-    const users = await User.find();
+    const users = await User.find({ role: { $ne: 'admin' } });
     res.render('users/userOverview', { users });
 }

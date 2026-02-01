@@ -3,8 +3,10 @@ const router = express.Router();
 const { requireLogin, isAdmin } = require('../middleware');
 const admin = require('../controllers/admin');
 
-router.get('/orderView', requireLogin, isAdmin, admin.orderView);
+router.get('/orderOverview', requireLogin, isAdmin, admin.orderOverview);
 
 router.get(`/orders/:orderNumber`, requireLogin, isAdmin, admin.orderDetail);
+
+router.get('/userOverview', requireLogin, isAdmin, admin.userOverview);
 
 module.exports = router;

@@ -51,8 +51,11 @@
         margin-top: 10px;
     }
 
-    #search #orderList th,
-    #orderList td {
+    #search,
+    #orderList th,
+    #orderList td,
+    #userList th,
+    #userList td {
         padding: 1rem;
         white-space: nowrap;
         border: 1px solid black;

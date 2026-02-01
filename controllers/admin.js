@@ -7,7 +7,7 @@ module.exports.renderView = async (req, res) => {
 
 module.exports.orderDetail = async (req, res) => {
     const { orderNumber } = req.params;
-    const order = Order.find(orderNumber);
+    const order = await Order.findOne({ orderNumber });
 
-    res.render('orders/orderDetail', { order });
+    res.render('orders/orderDetail', { order })
 }

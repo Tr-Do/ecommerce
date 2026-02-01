@@ -32,7 +32,7 @@
                                     </td>
                                     <% if (idx===0) {%>
                                         <td rowspan="<%=o.items.length%>">
-                                            <%=o.email%>
+                                            <%=o.payment.email%>
                                         </td>
                                         <td rowspan="<%=o.items.length%>">
                                             <%= (o.payment?.status==='paid' )?

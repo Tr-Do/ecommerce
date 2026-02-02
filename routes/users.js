@@ -6,7 +6,7 @@ const { validateUser, requireGuest, requireLogin, previousPage } = require('../m
 
 router.route('/register')
     .get(previousPage, requireGuest, users.renderRegister)
-    .post(requireGuest, validateUser, users.register);
+    .post(validateUser, users.register);
 
 router.route('/login')
     .get(previousPage, requireGuest, users.renderLogin)

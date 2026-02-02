@@ -15,8 +15,23 @@ module.exports.orderDetail = async (req, res) => {
 }
 
 module.exports.userOverview = async (req, res) => {
-    const users = await User.find({ role: { $ne: 'admin' } });
-    res.render('users/userOverview', { users });
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    const users = await User
+        .find({ role: { $ne: 'admin' } })
+        // sort user alphabetically
+        .sort({ username: 1 })
+        .lean()
+        // discard first n documents
+        .skip(skip)
+        .limit(limit);
+
+    const totalUsers = await User.countDocuments();
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    res.render('users/userOverview', { users, currentPage: page, totalPages });
 }
 
 module.exports.dashboard = async (req, res) => {

@@ -176,6 +176,19 @@ module.exports.webhook = async (req, res) => {
         order.payment.paymentIntentId = session.payment_intent ?? null;
         order.payment.paidAt = new Date();
 
+        // fetch payment from the latest charge to extract card information and store it to DB
+        if (session.payment_intent) {
+            const pi = await stripe.paymentIntents.retrieve(session.payment_intent, {
+                expand: ['latest_charge']
+            });
+            const card = pi.latest_charge?.payment_method_details?.card;
+
+            order.payment.card = {
+                brand: card?.brand ?? null,
+                last4: card?.last4 ?? null
+            };
+        }
+
         order.email = session.customer_details?.email || order.email;
         await order.save();
 

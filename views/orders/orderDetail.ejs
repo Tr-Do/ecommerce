@@ -1,5 +1,7 @@
 <% layout('layouts/boilerplate') %>
 
+    <div><button onclick="location.href='/admin/dashboard'" class="btn btn-lg btn-success mt-3">Order Overview</button>
+    </div>
     <h2 class="text-center mt-5">
         <%=order.orderNumber%>
     </h2>
@@ -18,10 +20,10 @@
             Stripe session: <%=order.payment.stripeSessionId%>
         </li>
         <li>
-            Payment card: <%=order.payment.card.brand%>
+            Payment card: <%=order.payment.card?.brand??'-'%>
         </li>
         <li>
-            Last 4 digits: <%=order.payment.card.last4%>
+            Last 4 digits: <%=order.payment.card?.last4??'-'%>
         </li>
         <li>
             Total amount: <%=String(Number(order.payment.amountTotal) /100)%>

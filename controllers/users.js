@@ -82,19 +82,12 @@ module.exports.update = async (req, res, next) => {
 
 module.exports.orderHistory = async (req, res, next) => {
     try {
-        const orders = await Order.find({ user: req.user._id });
+        // find and sort order descending
+        const orders = await Order
+            .find({ user: req.user._id })
+            .sort({ createdAt: -1 });
 
-        const session = event.data.object;
-
-        const paymentIntentId = session.payment_intent;
-
-        const pi = await Stripe.paymentIntents.retrieve(paymentIntentId, {
-            expand: ['charges.data.payment_method_details']
-        });
-
-        const last4 = pi.charges.data[0].payment_method_details.card.last4;
-
-        res.render('orders/orderHistory', { orders, last4 });
+        res.render('orders/orderHistory', { orders });
     } catch (err) {
         next(err)
     }

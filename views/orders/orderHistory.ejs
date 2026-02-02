@@ -34,13 +34,13 @@
                                             <%=o.email%>
                                         </td>
                                         <td rowspan="<%=o.items.length%>">
-                                            <%=(o.email)?('$'+(o.amountTotal /100).toFixed(2)):'Unpaid' %>
+                                            <%=(o.email)?('$'+(o.payment.amountTotal /100).toFixed(2)):'Unpaid' %>
                                         </td>
                                         <td rowspan="<%=o.items.length%>">
-                                            <%=o.emailSentAt%>
+                                            <%=o.payment.emailSentAt%>
                                         </td>
-                                        <td>
-                                            <%=last4%>
+                                        <td rowspan="<%=o.items.length%>">
+                                            <%= o.payment.card.brand%> - <%=o.payment.card.last4%>
                                         </td>
                                         <%}%>
                         </tr>

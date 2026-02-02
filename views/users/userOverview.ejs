@@ -17,7 +17,8 @@
                         <td>
                             <%=user.username%>
                         </td>
-                        <td><select name="action" id="" class="text-center">
+                        <td><select name="action" id="" class="text-center" required>
+                                <option value="" disabled selected>-</option>
                                 <option value="delete">Delete</option>
                                 <option value="resetPassword">Change password</option>
                             </select></td>

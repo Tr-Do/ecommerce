@@ -11,4 +11,6 @@ router.get('/userOverview', requireLogin, isAdmin, admin.userOverview);
 
 router.get('/dashboard', requireLogin, isAdmin, admin.dashboard);
 
+router.post('/userOverview/:userId', requireLogin, isAdmin, admin.deleteUser);
+
 module.exports = router;

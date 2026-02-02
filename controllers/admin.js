@@ -21,3 +21,14 @@ module.exports.userOverview = async (req, res) => {
 module.exports.dashboard = async (req, res) => {
     res.render('users/dashboard');
 }
+
+module.exports.deleteUser = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        await User.findByIdAndDelete(userId);
+        req.flash('success', 'Delete user successfully!')
+        res.redirect('/admin/userOverview');
+    } catch (err) {
+        next(err);
+    }
+}

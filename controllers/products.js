@@ -2,7 +2,6 @@ const Design = require('../models/design');
 const { throwError } = require('../utils/AppError');
 const cloudinary = require('../cloudinary');
 const { uploadToS3 } = require('../utils/s3Upload');
-const User = require('../models/user');
 const Variant = require('../models/variant');
 
 const mkS3Files = async (files, prefix) => {
@@ -26,19 +25,35 @@ const mkS3Files = async (files, prefix) => {
     return out;
 };
 
-module.exports.index = async (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 8;
-    const skip = (page - 1) * limit;
-    const products = await Design.find({})
-        .lean()
-        .skip(skip)
-        .limit(limit);
-    const totalProducts = await Design.countDocuments();
-    const totalPages = Math.ceil(totalProducts / limit);
+module.exports.index = async (req, res, next) => {
+    try {
 
-    res.render('index', { products, currentPage: page, totalPages });
-}
+        const search = typeof req.query.search === 'string' ? req.query.search.trim() : '';
+        const pageRaw = Number(req.query.page);
+        const currentPage = Number.isInteger(pageRaw) && pageRaw > 0 ? pageRaw : 1;
+
+        const limit = 8;
+        const skip = (currentPage - 1) * limit;
+
+        const filter = search ? { name: { $regex: search, $options: 'i' } } : {};
+
+        const [products, total] = await Promise.all([
+            Design
+                .find(filter)
+                .sort({ _id: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            Design.countDocuments(filter)
+        ])
+
+        const totalPages = Math.max(Math.ceil(total / limit), 1);
+
+        res.render('index', { products, currentPage, totalPages, search });
+    } catch (err) {
+        next(err);
+    }
+};
 
 module.exports.renderNewForm = (req, res) => {
     res.render('products/new');

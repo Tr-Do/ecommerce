@@ -9,8 +9,8 @@ module.exports.orderOverview = async (req, res) => {
 
     const orders = await Order
         .find({ role: { $ne: 'admin' } })
+        .sort({ createdAt: -1 })
         .lean()
-        // discard first n documents
         .skip(skip)
         .limit(limit);
 

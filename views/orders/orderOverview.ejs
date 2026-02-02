@@ -35,7 +35,7 @@
                                     </td>
                                     <% if (idx===0) {%>
                                         <td rowspan="<%=o.items.length%>">
-                                            <%=o.payment.email%>
+                                            <%=o.email%>
                                         </td>
                                         <td rowspan="<%=o.items.length%>">
                                             <%= (o.payment?.status==='paid' )?
@@ -43,7 +43,7 @@
                                                 /100).toFixed(2))):'Unpaid' %>
                                         </td>
                                         <td rowspan="<%=o.items.length%>">
-                                            <%=o.emailSentAt%>
+                                            <%=o.payment.emailSentAt%>
                                         </td>
                                         <%}%>
                         </tr>

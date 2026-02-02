@@ -30,7 +30,10 @@
                                     data-bs-toggle="dropdown" aria-expanded="false">Hi, <%=currentUser.username%> <i
                                             class="bi bi-person-fill"></i></a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <% if (cuser && cuser.role!=='admin' ) { %>
+                                    <% if (cuser && cuser.role==='admin' ) { %>
+                                        <li><a class="dropdown-item" href="/admin/dashboard">Dashboard
+                                                <%}%>
+                                                    <% if (cuser && cuser.role!=='admin' ) { %>
                                         <li><a class="dropdown-item"
                                                 href="/orderhistory?returnTo=<%= encodeURIComponent(currentUrl) %>">View
                                                 Orders</a></li>

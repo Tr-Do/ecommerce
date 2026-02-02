@@ -3,8 +3,21 @@ const User = require('../models/user');
 const { AppError } = require('../utils/AppError');
 
 module.exports.orderOverview = async (req, res) => {
-    const orders = await Order.find();
-    res.render('orders/orderOverview', { orders });
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    const orders = await Order
+        .find({ role: { $ne: 'admin' } })
+        .lean()
+        // discard first n documents
+        .skip(skip)
+        .limit(limit);
+
+    const totalOrders = await Order.countDocuments();
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    res.render('orders/orderOverview', { orders, currentPage: page, totalPages });
 }
 
 module.exports.orderDetail = async (req, res) => {

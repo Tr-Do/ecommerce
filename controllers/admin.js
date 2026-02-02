@@ -1,5 +1,6 @@
 const Order = require('../models/order');
 const User = require('../models/user');
+const { AppError } = require('../utils/AppError');
 
 module.exports.orderOverview = async (req, res) => {
     const orders = await Order.find();
@@ -22,12 +23,29 @@ module.exports.dashboard = async (req, res) => {
     res.render('users/dashboard');
 }
 
-module.exports.deleteUser = async (req, res, next) => {
+module.exports.userAction = async (req, res, next) => {
     try {
+        const { action } = req.body;
         const { userId } = req.params;
-        await User.findByIdAndDelete(userId);
-        req.flash('success', 'Delete user successfully!')
-        res.redirect('/admin/userOverview');
+
+        if (!action) throw new AppError('No action selected', 400);
+
+        if (action === 'reset') {
+            const user = await User.findById(userId);
+            await user.setPassword('123456');
+            await user.save();
+
+            req.flash('success', 'Password reset');
+            res.redirect('/admin/userOverview');
+        }
+
+        if (action === 'delete') {
+            const { userId } = req.params;
+            await User.findByIdAndDelete(userId);
+
+            req.flash('success', 'Delete user successfully!')
+            res.redirect('/admin/userOverview');
+        }
     } catch (err) {
         next(err);
     }

@@ -1,6 +1,7 @@
-if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
-}
+// if (process.env.NODE_ENV !== 'production') {
+//     require('dotenv').config();
+// }
+require('dotenv').config();
 
 const sanitizeV5 = require('./utils/mongoSanitizeV5.js');
 const express = require('express');
@@ -125,6 +126,5 @@ app.use((req, res, next) => {
 
 app.use(globalErrorHandler);
 
-app.listen(3000, () => {
-    console.log('Serving port 3000')
-})
+const port = process.env.PORT || 3000;
+app.listen(port);

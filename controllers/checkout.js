@@ -1,13 +1,17 @@
 const { AppError, throwError } = require('../utils/AppError.js');
 const Design = require('../models/design');
 const Order = require('../models/order');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const Stripe = require('stripe');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const { s3 } = require('../s3');
 const { sendEmail } = require('../utils/mailgun');
 const { buildDownloadEmail } = require('../utils/emailTemplate');
 const { GetObjectCommand } = require('@aws-sdk/client-s3');
 const Variant = require('../models/variant.js');
+const STRIPE_KEY = process.env.STRIPE_SECRET_KEY;
+
+if (!STRIPE_KEY) throw new Error('Missing STRIPE_SECRET key');
+const stripe = new Stripe(STRIPE_KEY);
 
 module.exports.createSession = async (req, res, next) => {
     try {

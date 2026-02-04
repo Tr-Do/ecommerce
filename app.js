@@ -26,8 +26,9 @@ const helmet = require('helmet');
 const checkout = require('./controllers/checkout.js');
 const { setLocals, globalErrorHandler } = require('./middleware.js');
 const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/terrarium';
+const { MongoStore } = require('connect-mongo');
 
-mongoose.connect('mongodb://localhost:27017/terrarium');
+mongoose.connect(dbUrl);
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error: '));
@@ -54,7 +55,20 @@ app.use((req, res, next) => {
     next();
 });
 
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret: 'CsfYj6CQL5wUMHBqa4ur5W31mOplvUJe2dxBbJ4Q8OeFScbdlZddDRyFcqhO1r6A5TFcYyvz3fck2fRmTkCpV46FIs6WtWjH5p1M5KD9jBpuu06iS5IPKM0LRdq0XPwl'
+    }
+});
+
+store.on('error', function (e) {
+    console.log('Session store error', e);
+})
+
 const sessionConfig = {
+    store,
     name: 'session',
     secret: process.env.SESSION_SECRET,
     resave: false,

@@ -72,7 +72,17 @@ module.exports.createSession = async (req, res, next) => {
                 filesSnapshot: variant.files || []
             });
         }
+        console.log('NODE_ENV:', process.env.NODE_ENV);
+        console.log('BASE_URL:', process.env.BASE_URL);
 
+        const successUrl = `${process.env.BASE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
+        const cancelUrl = `${process.env.BASE_URL}/cart`;
+
+        console.log('success_url:', successUrl);
+        console.log('cancel_url:', cancelUrl);
+
+        const img0 = product.images?.[0]?.showPage;
+        console.log('stripe image:', img0);
         const session = await stripe.checkout.sessions.create({
             mode: 'payment',
             line_items,

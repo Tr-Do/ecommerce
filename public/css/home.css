@@ -166,11 +166,12 @@
         }
 
         #about {
-            height: 25vh;
+            height: 15vh;
         }
 
         #faq {
-            margin-top: 5%;
+            margin-top: 0;
+            padding-top: 0;
         }
 
         /* Optional: add controlled spacing between carousel and button */

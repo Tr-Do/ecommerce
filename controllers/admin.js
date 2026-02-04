@@ -8,14 +8,15 @@ module.exports.orderOverview = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const orders = await Order
-        .find({ role: { $ne: 'admin' } })
+        .find({})
+        // sort according to created time
         .sort({ createdAt: -1 })
         .lean()
         .skip(skip)
         .limit(limit);
 
     const totalOrders = await Order.countDocuments();
-    const totalPages = Math.ceil(totalOrders / limit);
+    const totalPages = Math.max(Math.ceil(totalOrders / limit), 1);
 
     res.render('orders/orderOverview', { orders, currentPage: page, totalPages });
 }
@@ -42,7 +43,7 @@ module.exports.userOverview = async (req, res) => {
         .limit(limit);
 
     const totalUsers = await User.countDocuments();
-    const totalPages = Math.ceil(totalUsers / limit);
+    const totalPages = Math.max(Math.ceil(totalUsers / limit), 1);
 
     res.render('users/userOverview', { users, currentPage: page, totalPages });
 }

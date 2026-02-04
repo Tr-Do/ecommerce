@@ -1,7 +1,7 @@
-// if (process.env.NODE_ENV !== 'production') {
-//     require('dotenv').config();
-// }
-require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
+// require('dotenv').config();
 
 const sanitizeV5 = require('./utils/mongoSanitizeV5.js');
 const express = require('express');
@@ -25,6 +25,7 @@ const User = require('./models/user');
 const helmet = require('helmet');
 const checkout = require('./controllers/checkout.js');
 const { setLocals, globalErrorHandler } = require('./middleware.js');
+const dbUrl = process.env.DB_URL
 
 mongoose.connect('mongodb://localhost:27017/terrarium');
 

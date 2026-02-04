@@ -20,7 +20,7 @@ sizeChecks.forEach(e => {
 const standardInput = document.getElementById('standard');
 if (standardInput) {
     standardInput.addEventListener('change', (e) => {
-        const list = document.getElementById('file-standard');
+        const list = document.getElementById('file');
         if (!list) return;
         list.innerHTML = '';
 

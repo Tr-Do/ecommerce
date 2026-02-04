@@ -82,6 +82,7 @@
 
                 <div id="upload" class="<%=hasNonStandard?'d-none':''%>">
                     <label for="standard" class="form-label">Upload files:</label>
+                    <input class="form-control" type="file" name="designFileStandard" id="standard" multiple>
                     <ul class="file-list mt-3" id="file-standard">
                         <% filesFor('Standard').forEach(f=> { %>
                             <li>
@@ -89,7 +90,6 @@
                             </li>
                             <%})%>
                     </ul>
-                    <input class="form-control" type="file" name="designFileStandard" id="standard" multiple>
                 </div>
                 <div id="uploadS" class="<%= hasSize('S')?'':'d-none'%> mb-2">
                     <label for="file" class="form-label">Upload S files:</label>

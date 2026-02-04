@@ -36,6 +36,7 @@ const checkout = require('./controllers/checkout.js');
 const { setLocals, globalErrorHandler } = require('./middleware.js');
 const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/terrarium';
 const { MongoStore } = require('connect-mongo');
+const rateLimit = require('express-rate-limit');
 
 mongoose.connect(dbUrl);
 
@@ -63,6 +64,13 @@ app.use((req, res, next) => {
     res.locals.currentUrl = req.originalUrl;
     next();
 });
+
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    standardHeaders: true,
+    legacyHeaders: false
+})
 
 const secret = process.env.SECRET || 'CsfYj6CQL5wUMHBqa4ur5W31mOplvUJe2dxBbJ4Q8OeFScbdlZddDRyFcqhO1r6A5TFcYyvz3fck2fRmTkCpV46FIs6WtWjH5p1M5KD9jBpuu06iS5IPKM0LRdq0XPwl'
 
@@ -127,6 +135,8 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use(setLocals);
+
+app.use(['/login', '/register'], authLimiter)
 
 app.use('/checkout', checkoutRoute);
 app.use('/downloads', downloadRoute);

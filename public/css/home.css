@@ -71,7 +71,10 @@
         margin-top: 110px;
     }
 
-    #home,
+    #home {
+        margin-top: 100px;
+    }
+
     #download-root {
         padding-top: 45px;
     }
@@ -99,7 +102,6 @@
     #imgGrid {
         height: auto;
         width: auto;
-        /* background-color: black; */
     }
 
     .smdiv,

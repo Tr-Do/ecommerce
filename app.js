@@ -24,7 +24,7 @@ const User = require('./models/user');
 const helmet = require('helmet');
 const checkout = require('./controllers/checkout.js');
 const { setLocals, globalErrorHandler } = require('./middleware.js');
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/terrarium';
+const dbUrl = 'mongodb://localhost:27017/terrarium';
 const { MongoStore } = require('connect-mongo');
 
 mongoose.connect(dbUrl);

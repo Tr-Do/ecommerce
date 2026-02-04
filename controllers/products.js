@@ -81,10 +81,26 @@ module.exports.createProduct = async (req, res) => {
         filename: f.public_id
     }));
 
+    // Arrange image order
+    let order = req.body.product?.imageOrder; // after your split() this is an array
+    if (typeof order === 'string') order = order.split(',').filter(Boolean);
+    if (Array.isArray(order) && order.length) {
+        const byFilename = new Map(product.images.map(img => [img.filename, img]));
+
+        const ordered = order
+            .map(fn => byFilename.get(fn))
+            .filter(Boolean);
+
+        const orderedSet = new Set(order);
+        const remaining = product.images.filter(img => !orderedSet.has(img.filename));
+
+        product.images = [...ordered, ...remaining];
+    }
+
     const prefix = `products/${product._id}`;
 
     const sizesRaw = req.body.product?.size;
-    const sizes = Array.isArray(sizesRaw) ? sizesRaw : (sizesRaw ? [sizesRaw] : []);
+    const sizes = Array.isArray(sizesRaw) ? sizesRaw : (sizesRaw ? [sizesRaw] : ['Standard']);
 
     const hasStandard = sizes.includes('Standard');
     const nonStandardSizes = sizes.filter(s => s !== 'Standard');
@@ -202,7 +218,8 @@ module.exports.updateProduct = async (req, res) => {
     }
 
     const sizesRaw = req.body.product?.size;
-    const sizes = Array.isArray(sizesRaw) ? sizesRaw : (sizesRaw ? [sizesRaw] : []);
+    // if no box is checked, default is Standard
+    const sizes = Array.isArray(sizesRaw) ? sizesRaw : (sizesRaw ? [sizesRaw] : ['Standard']);
 
     const hasStandard = sizes.includes('Standard');
     const nonStandardSizes = sizes.filter(s => s !== 'Standard');
@@ -281,6 +298,8 @@ module.exports.updateProduct = async (req, res) => {
     }
 
     product.images = keptImages;
+
+    // arrange image order
     const order = req.body.product?.imageOrder; // after your split() this is an array
     if (Array.isArray(order) && order.length) {
         const byFilename = new Map(product.images.map(img => [img.filename, img]));

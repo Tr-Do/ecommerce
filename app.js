@@ -1,7 +1,6 @@
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
 }
-// require('dotenv').config();
 
 const sanitizeV5 = require('./utils/mongoSanitizeV5.js');
 const express = require('express');
@@ -55,12 +54,12 @@ app.use((req, res, next) => {
     next();
 });
 
+const secret = process.env.SECRET || 'CsfYj6CQL5wUMHBqa4ur5W31mOplvUJe2dxBbJ4Q8OeFScbdlZddDRyFcqhO1r6A5TFcYyvz3fck2fRmTkCpV46FIs6WtWjH5p1M5KD9jBpuu06iS5IPKM0LRdq0XPwl'
+
 const store = MongoStore.create({
     mongoUrl: dbUrl,
     touchAfter: 24 * 60 * 60,
-    crypto: {
-        secret: 'CsfYj6CQL5wUMHBqa4ur5W31mOplvUJe2dxBbJ4Q8OeFScbdlZddDRyFcqhO1r6A5TFcYyvz3fck2fRmTkCpV46FIs6WtWjH5p1M5KD9jBpuu06iS5IPKM0LRdq0XPwl'
-    }
+    crypto: { secret }
 });
 
 store.on('error', function (e) {
@@ -70,7 +69,7 @@ store.on('error', function (e) {
 const sessionConfig = {
     store,
     name: 'session',
-    secret: process.env.SESSION_SECRET,
+    secret,
     resave: false,
     saveUninitialized: true,
     cookie: {

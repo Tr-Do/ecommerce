@@ -1,6 +1,5 @@
 const User = require('../models/user');
 const Order = require('../models/order');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 module.exports.renderRegister = (req, res) => {
     res.render('users/register');

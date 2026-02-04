@@ -17,9 +17,15 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             // show error on duplicate
+            const cartHelp = document.getElementById('cartHelp');
+            const cartInfo = document.getElementById('cartInfo');
             if (res.status === 409) {
-                const cartHelp = document.getElementById('cartHelp');
                 if (cartHelp) cartHelp.classList.remove('d-none');
+                if (cartInfo) cartInfo.classList.add('d-none');
+            } else {
+                if (cartInfo) cartInfo.classList.remove('d-none');
+                if (cartHelp) cartHelp.classList.add('d-none');
+
             }
 
             if (!res.ok) return;

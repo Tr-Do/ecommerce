@@ -60,7 +60,7 @@ const DesignSchema = new Schema({
             ref: 'Review'
         }
     ],
-
+    // add timestamp to sort the order upon indexing
 }, { timestamp: true })
 
 

@@ -77,15 +77,20 @@ module.exports.createSession = async (req, res, next) => {
                 filesSnapshot: variant.files || []
             });
         }
+        const baseUrl = (process.env.BASE_URL || '').trim();
 
-        const successUrl = `${process.env.BASE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
-        const cancelUrl = `${process.env.BASE_URL}/cart`;
+        if (!/^https?:\/\/[^ "]+$/i.test(baseUrl)) {
+            throw new Error(`BASE_URL invalid at runtime: "${process.env.BASE_URL}"`);
+        }
+
+        const successUrl = `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
+        const cancelUrl = `${baseUrl}/cart`;
 
         const session = await stripe.checkout.sessions.create({
             mode: 'payment',
             line_items,
-            success_url: `${process.env.BASE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.BASE_URL}/cart`,
+            success_url: successUrl,
+            cancel_url: cancelUrl,
         });
 
         const order = await Order.create({

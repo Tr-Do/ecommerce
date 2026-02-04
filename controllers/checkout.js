@@ -47,6 +47,11 @@ module.exports.createSession = async (req, res, next) => {
             const unitAmount = Math.round(Number(variant.price) * 100);
             amountTotalCents += unitAmount;
 
+            const img0 = product.images?.[0]?.showPage;
+            const stripeImages =
+                typeof img0 === 'string' && /^https?:\/\//i.test(img0) ? [img0] : [];
+
+
             line_items.push({
                 quantity: 1,
                 price_data: {
@@ -54,7 +59,7 @@ module.exports.createSession = async (req, res, next) => {
                     unit_amount: unitAmount,
                     product_data: {
                         name: `${product.name} (${variant.size})`,
-                        images: product.images?.length ? [product.images[0].showPage] : [],
+                        images: stripeImages,
                         metadata: {
                             productId: productId,
                             variantId: String(variant._id),
@@ -72,17 +77,10 @@ module.exports.createSession = async (req, res, next) => {
                 filesSnapshot: variant.files || []
             });
         }
-        console.log('NODE_ENV:', process.env.NODE_ENV);
-        console.log('BASE_URL:', process.env.BASE_URL);
 
         const successUrl = `${process.env.BASE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
         const cancelUrl = `${process.env.BASE_URL}/cart`;
 
-        console.log('success_url:', successUrl);
-        console.log('cancel_url:', cancelUrl);
-
-        const img0 = product.images?.[0]?.showPage;
-        console.log('stripe image:', img0);
         const session = await stripe.checkout.sessions.create({
             mode: 'payment',
             line_items,

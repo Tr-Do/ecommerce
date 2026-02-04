@@ -59,8 +59,9 @@ const DesignSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'Review'
         }
-    ]
-})
+    ],
+
+}, { timestamp: true })
 
 
 DesignSchema.post('findOneAndDelete', async function (doc) {

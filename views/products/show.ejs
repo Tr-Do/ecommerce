@@ -4,13 +4,13 @@
     <script src="/js/turnstile.js"></script>
     <script src="/js/addToCart.js" defer></script>
 
-    <div class="row">
-        <div class="col-12 col-lg-7 mt-5">
+    <div class="row d-flex align-items-center" id="imgCarousel">
+        <div class="col-12 col-lg-7">
             <div id="carouselExample" class="carousel slide">
                 <div class="carousel-inner">
                     <% product.images.forEach((img, i)=> { %>
                         <div class="carousel-item <%= i===0?'active':''%>">
-                            <img src="<%=img.showPage%>" class="d-block w-100" alt="/assets/banner.png">
+                            <img src="<%=img.showPage%>" class="d-block w-100 carousel-img" alt="/assets/banner.png">
                         </div>
                         <%})%>
                 </div>
@@ -28,7 +28,7 @@
                     <%}%>
             </div>
         </div>
-        <div class="col-12 col-lg-5 mb-5">
+        <div class="col-12 col-lg-5 mb-5" id="contentCarousel">
             <div class="card-body">
                 <h5 class="card-title text-center">
                     <%=product.name%>

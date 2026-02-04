@@ -116,7 +116,7 @@
     }
 
     #faq {
-        margin-top: 30%;
+        margin-top: 20%;
     }
 
 
@@ -124,6 +124,8 @@
     #signinCard {
         width: 350px;
     }
+
+
 
     .turnstile-wrapper {
         min-height: 80px;
@@ -169,6 +171,7 @@
 
         #about {
             height: 15vh;
+            margin-top: 10%;
         }
 
         #faq {
@@ -179,5 +182,19 @@
         /* Optional: add controlled spacing between carousel and button */
         main {
             gap: 16px;
+        }
+    }
+
+    @media (min-width:1000px) {
+        #imgCarousel {
+            margin-top: -25rem;
+        }
+
+        #contentCarousel {
+            margin-top: 30rem;
+        }
+
+        .carousel-img {
+            max-height: 800px;
         }
     }

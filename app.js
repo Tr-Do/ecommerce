@@ -136,7 +136,7 @@ passport.deserializeUser(User.deserializeUser());
 
 app.use(setLocals);
 
-app.use(['/login', '/register'], authLimiter)
+app.use(['/login', '/register', '/robots.txt'], authLimiter)
 
 app.use('/checkout', checkoutRoute);
 app.use('/downloads', downloadRoute);

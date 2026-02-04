@@ -40,7 +40,7 @@ module.exports.index = async (req, res, next) => {
         const [products, total] = await Promise.all([
             Design
                 .find(filter)
-                .sort({ createdAt: 1 })
+                .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit)
                 .lean(),

@@ -6,13 +6,15 @@
         </div>
     </header>
 
-    <form action="/products" class="d-flex ms-auto" id="searchForm">
-        <input id="searchBar" class="form-control border-0 form-control text-center" type="text" name="search"
-            value="<%=typeof search === 'string'? search:''%>" placeholder="search"><button type="submit"
-            id="searchIcon" class="input-group-text border-0">
-            <i class="bi bi-search"></i>
-        </button>
-    </form>
+    <div class="d-flex justify-content-center justify-content-md-end">
+        <form action="/products" class="d-flex" id="searchForm">
+            <input id="searchBar" class="form-control border-0 form-control text-center" type="text" name="search"
+                value="<%=typeof search === 'string'? search:''%>" placeholder="search"><button type="submit"
+                id="searchIcon" class="input-group-text border-0">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
+    </div>
 
     <section class="pt-5">
         <div class="container px-4 px-lg-5 mt-5">

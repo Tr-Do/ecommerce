@@ -113,6 +113,10 @@
         cursor: pointer;
     }
 
+    #faq {
+        margin-top: 30%;
+    }
+
 
     #registerCard,
     #signinCard {
@@ -159,6 +163,14 @@
         main {
             justify-content: center;
 
+        }
+
+        #about {
+            height: 25vh;
+        }
+
+        #faq {
+            margin-top: 5%;
         }
 
         /* Optional: add controlled spacing between carousel and button */

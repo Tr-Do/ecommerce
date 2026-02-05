@@ -185,7 +185,7 @@
         }
     }
 
-    @media (min-width:1000px) {
+    @media (min-width:992px) {
         #imgCarousel {
             margin-top: -25rem;
         }
@@ -196,5 +196,9 @@
 
         .carousel-img {
             max-height: 800px;
+        }
+
+        .review {
+            margin-top: -22rem;
         }
     }

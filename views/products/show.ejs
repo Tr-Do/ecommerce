@@ -5,12 +5,12 @@
     <script src="/js/addToCart.js" defer></script>
 
     <div class="row d-flex align-items-center" id="imgCarousel">
-        <div class="col-12 col-lg-7">
+        <div class="col-12 col-lg-7 d-flex justify-content-center">
             <div id="carouselExample" class="carousel slide">
                 <div class="carousel-inner">
                     <% product.images.forEach((img, i)=> { %>
                         <div class="carousel-item <%= i===0?'active':''%>">
-                            <img src="<%=img.showPage%>" class="d-block w-100 carousel-img" alt="/assets/banner.png">
+                            <img src="<%=img.showPage%>" class="d-block carousel-img" alt="/assets/banner.png">
                         </div>
                         <%})%>
                 </div>
@@ -91,7 +91,7 @@
                 </div>
                 <% } %>
         </div>
-        <div class="row mt-5">
+        <div class="row review">
             <div class="col-12 col-lg-5">
                 <% if (currentUser) { %>
                     <h2>Leave a review</h2>

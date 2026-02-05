@@ -24,7 +24,7 @@
     #home {
         width: 100%;
         height: 90vh;
-        background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770280055/1496f20d-ad68-41dd-bda5-e7d7a3d077c8_tivapf.png");
+        background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770308385/image_qecnkw.webp");
         background-repeat: no-repeat;
         background-size: cover;
         background-position: center;
@@ -167,19 +167,32 @@
         margin-top: 5%;
     }
 
-    body.products-bg {
-        background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770277635/ChatGPT_Image_Feb_5_2026_01_45_26_AM_m8h0mg.png");
+    body.products-bg,
+    body.contact-bg,
+    body.about-bg {
+        min-height: 100vh;
         background-size: cover;
-        background-position: center;
+        background-position: center 50px;
         background-repeat: no-repeat;
+    }
+
+    body.products-bg {
+        background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770308443/image_shhk3b.webp");
+    }
+
+    body.about-bg {
+        background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770307850/image_leojfs.png");
+    }
+
+    body.contact-bg {
+        background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770308052/image_fsluhb.webp");
+
     }
 
     #registerCard,
     #signinCard {
         width: 350px;
     }
-
-
 
     .turnstile-wrapper {
         min-height: 80px;
@@ -191,7 +204,6 @@
         width: min(700px, 100%);
         height: clamp(250px, 60vw, 500px);
         position: relative;
-
     }
 
     /* make inner + items inherit that height */

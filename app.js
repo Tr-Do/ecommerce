@@ -151,11 +151,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/about', (req, res) => {
-    res.render('about');
+    res.render('about', { bodyClass: 'about-bg' });
 });
 
 app.get('/contact', (req, res) => {
-    res.render('contact');
+    res.render('contact', { bodyClass: 'contact-bg' });
 })
 
 app.use((req, res, next) => {

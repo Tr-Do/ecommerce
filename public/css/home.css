@@ -28,15 +28,28 @@
         background-repeat: no-repeat;
         background-size: cover;
         background-position: center;
-        filter: brightness(60%);
+        /* filter: brightness(60%); */
 
     }
 
     .hero {
         top: 40%;
-        left: 49%;
+        left: 48%;
         position: absolute;
         transform: translate(-50%, -50%);
+        animation: dropIn 0.8s ease-in-out;
+    }
+
+    @keyframes dropIn {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -70%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translate(-50%, -50%);
+        }
     }
 
     #hero-btn {
@@ -45,6 +58,7 @@
         position: absolute;
         background-color: #f2f2f2;
         transform: translate(-50%, -50%);
+        animation: dropIn 0.8s ease-in-out;
     }
 
     #searchIcon {
@@ -58,7 +72,7 @@
     }
 
     #searchIcon:hover {
-        background-color: #6c757d;
+        background-color: #dad7cd;
     }
 
     #searchBar {

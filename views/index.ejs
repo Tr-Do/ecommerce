@@ -12,17 +12,17 @@
         </div>
 
         <section class="pt-5">
-            <div class="container px-4 px-lg-5">
+            <div class="container px-4 px-md-5">
                 <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
                     <% for (let i=0; i< products.length; i++) { %>
-                        <div class="col mb-5">
+                        <div class="col mb-md-5 mb-3">
                             <div class="card h-100">
                                 <a href="/products/<%=products[i]._id%>">
                                     <img class="card-img-top product-img"
                                         src="<%=products[i].images[0]?products[i].images[0].url:'/assets/banner.png'%>"
                                         alt="<%=products[i].name%>" />
                                 </a>
-                                <div class="card-body p-4">
+                                <div class="card-body p-md-4">
                                     <div class="text-center">
                                         <h5 class="fw-bolder">
                                             <a style="text-decoration:none;" class="text-dark"
@@ -33,7 +33,7 @@
                                         $<%= products[i].price %>
                                     </div>
                                 </div>
-                                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                <div class="card-footer p-md-4 pt-0 border-top-0 bg-transparent">
                                     <div class="text-center"></button><a class="btn btn-secondary mt-auto"
                                             href="/products/<%=products[i]._id%>">View
                                             details</a>

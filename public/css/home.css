@@ -95,8 +95,12 @@
     #registerForm,
     #signinForm,
     #updateForm,
-    #about {
+    #contact {
         height: 70vh;
+    }
+
+    #about {
+        margin-top: 5%;
     }
 
     #imgGrid {
@@ -116,7 +120,7 @@
     }
 
     #faq {
-        margin-top: 20%;
+        margin-top: 5%;
     }
 
 
@@ -167,16 +171,6 @@
         main {
             justify-content: center;
 
-        }
-
-        #about {
-            height: 15vh;
-            margin-top: 10%;
-        }
-
-        #faq {
-            margin-top: 0;
-            padding-top: 0;
         }
 
         /* Optional: add controlled spacing between carousel and button */

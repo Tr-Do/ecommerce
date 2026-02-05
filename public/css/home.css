@@ -9,14 +9,36 @@
         flex-direction: column;
     }
 
-    main {
-        flex: 1;
-    }
-
     #searchForm {
         max-width: 250px;
         border-radius: 999px;
 
+    }
+
+    #home {
+        width: 100%;
+        height: 90vh;
+        background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770272106/ChatGPT_Image_Feb_4_2026_10_05_49_PM_bz4hdx.png");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        filter: brightness(60%);
+
+    }
+
+    .hero {
+        top: 40%;
+        left: 49%;
+        position: absolute;
+        transform: translate(-50%, -50%);
+    }
+
+    #hero-btn {
+        top: 55%;
+        left: 48%;
+        position: absolute;
+        background-color: #f2f2f2;
+        transform: translate(-50%, -50%);
     }
 
     #searchIcon {
@@ -69,10 +91,6 @@
 
     #adminDashboard {
         margin-top: 110px;
-    }
-
-    #home {
-        margin-top: 100px;
     }
 
     #download-root {
@@ -176,6 +194,10 @@
         /* Optional: add controlled spacing between carousel and button */
         main {
             gap: 16px;
+        }
+
+        #hero-btn {
+            margin-top: 50px;
         }
     }
 

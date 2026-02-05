@@ -1,18 +1,14 @@
     html,
     body {
         height: 100%;
-        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
     }
 
     body {
         height: 100%;
         display: flex;
         flex-direction: column;
-        background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770277635/ChatGPT_Image_Feb_5_2026_01_45_26_AM_m8h0mg.png");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-
     }
 
     main {
@@ -43,11 +39,6 @@
         transform: translate(-50%, -50%);
     }
 
-    .email {
-        color: #7fc8f8;
-        text-decoration: none;
-    }
-
     #hero-btn {
         top: 55%;
         left: 48%;
@@ -59,7 +50,7 @@
     #searchIcon {
         cursor: pointer;
         border-radius: 0 999px 999px 0;
-        background-color: #e9ecef;
+        background-color: white;
     }
 
     #searchForm:focus-within {
@@ -71,7 +62,7 @@
     }
 
     #searchBar {
-        background-color: #e9ecef;
+
         border-radius: 999px 0 0 999px;
     }
 
@@ -162,6 +153,13 @@
         margin-top: 5%;
     }
 
+    body.products-bg {
+        background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770277635/ChatGPT_Image_Feb_5_2026_01_45_26_AM_m8h0mg.png");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
     #registerCard,
     #signinCard {
         width: 350px;
@@ -202,7 +200,6 @@
         width: auto;
         object-fit: contain;
     }
-
 
     @media (max-width: 768px) {
 

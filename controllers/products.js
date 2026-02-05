@@ -49,7 +49,8 @@ module.exports.index = async (req, res, next) => {
 
         const totalPages = Math.max(Math.ceil(total / limit), 1);
 
-        res.render('index', { products, currentPage, totalPages, search });
+
+        res.render('index', { bodyClass: 'products-bg', products, currentPage, totalPages, search });
     } catch (err) {
         next(err);
     }

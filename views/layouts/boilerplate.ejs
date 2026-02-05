@@ -14,7 +14,8 @@
 
 </head>
 
-<body>
+<body class="<%= typeof bodyClass !== 'undefined' ? bodyClass : '' %>">
+
     <%- include('../partials/navbar') %>
         <main class="container mt-3">
             <%- include('../partials/flash') %>
@@ -46,6 +47,5 @@
             </script>
 
 </body>
-
 
 </html>

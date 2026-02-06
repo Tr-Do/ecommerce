@@ -187,10 +187,6 @@ body.about-bg {
 }
 
 body.products-bg {
-    /* background-position: 30px; */
-}
-
-body.products-bg {
     background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770308443/image_shhk3b.webp");
 }
 
@@ -260,4 +256,20 @@ body.contact-bg {
     .carousel-img {
         max-width: 100%;
     }
+}
+
+@media (max-width: 500px) {
+    .product-img {
+        height: 140px;
+        object-fit: cover;
+    }
+
+    .product .card-body {
+        padding: 0;
+    }
+
+    .product .btn {
+        font-size: 0.7rem;
+    }
+
 }

@@ -61,7 +61,7 @@ const DesignSchema = new Schema({
         }
     ],
     // add timestamp to sort the order upon indexing
-}, { timestamp: true })
+}, { timestamps: true })
 
 
 DesignSchema.post('findOneAndDelete', async function (doc) {

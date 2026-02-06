@@ -1,278 +1,263 @@
-    html,
-    body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+#searchForm {
+    width: 500px;
+    border-radius: 999px;
+
+}
+
+.card-body a,
+.card-body button {
+    position: relative;
+    z-index: 10;
+}
+
+.card.card-body {
+    margin-top: -1.5rem;
+}
+
+#home {
+    width: 100%;
+    height: 90vh;
+    background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770308385/image_qecnkw.webp");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    /* filter: brightness(60%); */
+
+}
+
+.hero {
+    top: 40%;
+    left: 48%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    animation: dropIn 0.8s ease-in-out;
+}
+
+@keyframes dropIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -70%);
     }
 
-    body {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-
-    main {
-        flex: 1;
-    }
-
-    #searchForm {
-        width: 500px;
-        border-radius: 999px;
-
-    }
-
-    .card-body a,
-    .card-body button {
-        position: relative;
-        z-index: 10;
-    }
-
-    #home {
-        width: 100%;
-        height: 90vh;
-        background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770308385/image_qecnkw.webp");
-        background-repeat: no-repeat;
-        background-size: cover;
-        background-position: center;
-        /* filter: brightness(60%); */
-
-    }
-
-    .hero {
-        top: 40%;
-        left: 48%;
-        position: absolute;
+    to {
+        opacity: 1;
         transform: translate(-50%, -50%);
-        animation: dropIn 0.8s ease-in-out;
+    }
+}
+
+#hero-btn {
+    top: 55%;
+    left: 48%;
+    position: absolute;
+    background-color: #f2f2f2;
+    transform: translate(-50%, -50%);
+    animation: dropIn 0.8s ease-in-out;
+}
+
+#searchIcon {
+    cursor: pointer;
+    border-radius: 0 999px 999px 0;
+    background-color: white;
+}
+
+#searchForm:focus-within {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+#searchIcon:hover {
+    background-color: #dad7cd;
+}
+
+#searchBar {
+
+    border-radius: 999px 0 0 999px;
+}
+
+.table-wrap {
+    display: flex;
+    justify-content: center;
+}
+
+#order {
+    margin-top: 100px;
+}
+
+#order ul li {
+    margin-top: 10px;
+}
+
+#search,
+#orderList th,
+#orderList td,
+#userList th,
+#userList td {
+    padding: 1rem;
+    white-space: nowrap;
+    border: 1px solid black;
+}
+
+#orderList,
+#userList,
+#dashboard {
+    width: 100%;
+}
+
+#adminDashboard {
+    margin-top: 110px;
+}
+
+#download-root {
+    padding-top: 45px;
+}
+
+#cart {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+}
+
+table tfoot tr:last-child td {
+    border-bottom: none;
+    padding-top: 2rem;
+}
+
+#registerForm,
+#signinForm,
+#updateForm,
+#contact {
+    height: 70vh;
+}
+
+#about {
+    margin-top: 5%;
+}
+
+#imgGrid {
+    height: auto;
+    width: auto;
+}
+
+.smdiv,
+#addImg {
+    height: 100px;
+    width: 100px;
+}
+
+.delImg,
+#addImg {
+    cursor: pointer;
+}
+
+#banner img {
+    object-fit: cover;
+    height: 32vh;
+    width: 100%;
+}
+
+#faq {
+    margin-top: 5%;
+}
+
+body.products-bg,
+body.contact-bg,
+body.about-bg {
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center 50px;
+    background-repeat: repeat-y;
+}
+
+body.products-bg {
+    /* background-position: 30px; */
+}
+
+body.products-bg {
+    background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770308443/image_shhk3b.webp");
+}
+
+body.about-bg {
+    background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770308052/image_fsluhb.webp");
+}
+
+body.contact-bg {
+    background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770329996/image_ushxnw.webp");
+}
+
+#registerCard,
+#signinCard {
+    width: 350px;
+}
+
+.turnstile-wrapper {
+    min-height: 80px;
+    min-width: auto;
+}
+
+/* force the carousel itself to have the same height as the slides */
+#carouselExampleFade {
+    width: min(700px, 100%);
+    height: clamp(250px, 60vw, 500px);
+    position: relative;
+}
+
+/* make inner + items inherit that height */
+#carouselExampleFade .carousel-inner,
+#carouselExampleFade .carousel-item {
+    height: 100%;
+}
+
+/* make images fill the 500px box */
+#carouselExampleFade .carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.navbar-brand-img {
+    height: 40px;
+    /* match navbar height */
+    width: auto;
+    object-fit: contain;
+}
+
+@media (max-width: 768px) {
+
+    /* Center the whole column vertically */
+    main {
+        justify-content: center;
+
     }
 
-    @keyframes dropIn {
-        from {
-            opacity: 0;
-            transform: translate(-50%, -70%);
-        }
-
-        to {
-            opacity: 1;
-            transform: translate(-50%, -50%);
-        }
+    /* Optional: add controlled spacing between carousel and button */
+    main {
+        gap: 16px;
     }
 
     #hero-btn {
-        top: 55%;
-        left: 48%;
-        position: absolute;
-        background-color: #f2f2f2;
-        transform: translate(-50%, -50%);
-        animation: dropIn 0.8s ease-in-out;
+        margin-top: 60px;
     }
 
-    #searchIcon {
-        cursor: pointer;
-        border-radius: 0 999px 999px 0;
-        background-color: white;
+    .carousel-img {
+        max-width: 100%;
     }
-
-    #searchForm:focus-within {
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    }
-
-    #searchIcon:hover {
-        background-color: #dad7cd;
-    }
-
-    #searchBar {
-
-        border-radius: 999px 0 0 999px;
-    }
-
-    .table-wrap {
-        display: flex;
-        justify-content: center;
-    }
-
-    #order {
-        margin-top: 100px;
-    }
-
-    #order ul li {
-        margin-top: 10px;
-    }
-
-    #search,
-    #orderList th,
-    #orderList td,
-    #userList th,
-    #userList td {
-        padding: 1rem;
-        white-space: nowrap;
-        border: 1px solid black;
-    }
-
-    #orderList,
-    #userList,
-    #dashboard {
-        width: 100%;
-    }
-
-    #adminDashboard {
-        margin-top: 110px;
-    }
-
-    #download-root {
-        padding-top: 45px;
-    }
-
-    #cart {
-        flex: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 50vh;
-    }
-
-    table tfoot tr:last-child td {
-        border-bottom: none;
-        padding-top: 2rem;
-    }
-
-    #registerForm,
-    #signinForm,
-    #updateForm,
-    #contact {
-        height: 70vh;
-    }
-
-    #about {
-        margin-top: 5%;
-    }
-
-    #imgGrid {
-        height: auto;
-        width: auto;
-    }
-
-    .smdiv,
-    #addImg {
-        height: 100px;
-        width: 100px;
-    }
-
-    .delImg,
-    #addImg {
-        cursor: pointer;
-    }
-
-    #banner img {
-        object-fit: cover;
-        height: 32vh;
-        width: 100%;
-    }
-
-    #faq {
-        margin-top: 5%;
-    }
-
-    body.products-bg,
-    body.contact-bg,
-    body.about-bg {
-        min-height: 100vh;
-        background-size: cover;
-        background-position: center 50px;
-        background-repeat: repeat-y;
-    }
-
-    body.products-bg {
-        /* background-position: 30px; */
-    }
-
-    body.products-bg {
-        background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770308443/image_shhk3b.webp");
-    }
-
-    body.about-bg {
-        background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770329996/image_ushxnw.webp");
-    }
-
-    body.contact-bg {
-        background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770308052/image_fsluhb.webp");
-    }
-
-    #registerCard,
-    #signinCard {
-        width: 350px;
-    }
-
-    .turnstile-wrapper {
-        min-height: 80px;
-        min-width: auto;
-    }
-
-    /* force the carousel itself to have the same height as the slides */
-    #carouselExampleFade {
-        width: min(700px, 100%);
-        height: clamp(250px, 60vw, 500px);
-        position: relative;
-    }
-
-    /* make inner + items inherit that height */
-    #carouselExampleFade .carousel-inner,
-    #carouselExampleFade .carousel-item {
-        height: 100%;
-    }
-
-    /* make images fill the 500px box */
-    #carouselExampleFade .carousel-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-
-    .navbar-brand-img {
-        height: 40px;
-        /* match navbar height */
-        width: auto;
-        object-fit: contain;
-    }
-
-    @media (max-width: 768px) {
-
-        /* Center the whole column vertically */
-        main {
-            justify-content: center;
-
-        }
-
-        /* Optional: add controlled spacing between carousel and button */
-        main {
-            gap: 16px;
-        }
-
-        #hero-btn {
-            margin-top: 60px;
-        }
-
-        .carousel-img {
-            max-width: 100%;
-        }
-    }
-
-    @media (min-width:992px) {
-        #imgCarousel {
-            margin-top: -25rem;
-        }
-
-        #contentCarousel {
-            margin-top: 30rem;
-        }
-
-        .carousel-img {
-            max-height: 800px;
-            margin-top: 200px;
-        }
-
-        .review {
-            margin-top: -22rem;
-        }
-    }
+}

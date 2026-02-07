@@ -38,8 +38,6 @@ main {
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    /* filter: brightness(60%); */
-
 }
 
 .hero {
@@ -49,6 +47,8 @@ main {
     transform: translate(-50%, -50%);
     animation: dropIn 0.8s ease-in-out;
 }
+
+
 
 @keyframes dropIn {
     from {
@@ -63,7 +63,7 @@ main {
 }
 
 #hero-btn {
-    top: 55%;
+    top: 60%;
     left: 48%;
     position: absolute;
     background-color: #f2f2f2;
@@ -186,6 +186,18 @@ body.about-bg {
     background-repeat: repeat-y;
 }
 
+body.login-bg {
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+}
+
+body.register-bg {
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center -850px;
+}
+
 body.products-bg {
     background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770308443/image_shhk3b.webp");
 }
@@ -197,6 +209,16 @@ body.about-bg {
 body.contact-bg {
     background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770329996/image_ushxnw.webp");
 }
+
+body.register-bg {
+    background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770477008/image_v95eqp.webp");
+}
+
+body.login-bg {
+    background-image: url("https://res.cloudinary.com/dky8szloh/image/upload/v1770476804/image_1_otoyuu.webp");
+}
+
+
 
 #registerCard,
 #signinCard {
@@ -272,4 +294,10 @@ body.contact-bg {
         font-size: 0.7rem;
     }
 
+}
+
+@media (min-width: 500px) {
+    .card-footer {
+        margin-top: -15px;
+    }
 }

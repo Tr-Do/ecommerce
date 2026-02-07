@@ -2,7 +2,7 @@ const User = require('../models/user');
 const Order = require('../models/order');
 
 module.exports.renderRegister = (req, res) => {
-    res.render('users/register');
+    res.render('users/register', { bodyClass: 'register-bg' });
 }
 
 module.exports.register = async (req, res, next) => {
@@ -24,7 +24,7 @@ module.exports.register = async (req, res, next) => {
 }
 
 module.exports.renderLogin = (req, res) => {
-    res.render('users/login');
+    res.render('users/login', { bodyClass: 'login-bg' });
 }
 
 module.exports.login = (req, res) => {

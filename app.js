@@ -60,10 +60,22 @@ app.use(methodOverride('_method'));
 app.set('trust proxy', 1);
 
 // store previous url in express storage -> pass it into url query -> pass it into middleware variable -> redirect to previous url
+// app.use((req, res, next) => {
+//     res.locals.currentUrl = req.originalUrl;
+//     next();
+// });
+
 app.use((req, res, next) => {
-    res.locals.currentUrl = req.originalUrl;
+    // req.get('host') get current domain
+    const url = new URL(req.originalUrl, `${req.protocol}://${req.get('host')}`);
+    url.searchParams.delete('returnTo');
+    // url.search return everything after ?
+    // url.pathname returns everything after /
+    const cleanPath = url.pathname + (url.search ? url.search : '');
+    res.locals.currentUrl = cleanPath;
+
     next();
-});
+})
 
 const authLimiter = rateLimit({
     windowMs: 24 * 60 * 60 * 1000,

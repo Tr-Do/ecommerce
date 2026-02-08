@@ -13,18 +13,20 @@
                 <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
 
                 <% const cuser=(typeof currentUser !=='undefined' )? currentUser:null; %>
-                    <% if (cuser && cuser.role==='admin' ) { %>
-                        <li class="nav-item"><a class="nav-link" href="/products/new">Add Product</a></li>
-                        <% } %>
+                    <%const safeReturnTo=(currentUrl.startsWith('/login') ||
+                        currentUrl.startsWith('/register'))?'/':currentUrl;%>
+                        <%if (cuser && cuser.role==='admin' ) {%>
+                            <li class="nav-item"><a class="nav-link" href="/products/new">Add Product</a></li>
+                            <%} %>
             </ul>
             <form class="d-flex">
                 <ul class="navbar-nav mb-2 mb-lg-0 gap-lg-4 gap-2">
                     <% if (!cuser) {%>
                         <li class="navbar-nav nav-item"><a class="nav-link"
-                                href="/register?returnTo=<%= encodeURIComponent(currentUrl) %>">Register</a>
+                                href="/register?returnTo=<%= encodeURIComponent(safeReturnTo) %>">Register</a>
                         </li>
                         <li class="navbar-nav nav-item me-3"><a class="nav-link"
-                                href="/login?returnTo=<%= encodeURIComponent(currentUrl) %>">Sign in</a></li>
+                                href="/login?returnTo=<%= encodeURIComponent(safeReturnTo) %>">Sign in</a></li>
                         <% } else { %>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button"
@@ -36,14 +38,14 @@
                                                 <%}%>
                                                     <% if (cuser && cuser.role!=='admin' ) { %>
                                         <li><a class="dropdown-item"
-                                                href="/orderhistory?returnTo=<%= encodeURIComponent(currentUrl) %>">View
+                                                href="/orderhistory?returnTo=<%= encodeURIComponent(safeReturnTo) %>">View
                                                 Orders</a></li>
                                         <%}%>
                                             <li><a class="dropdown-item"
-                                                    href="/update?returnTo=<%= encodeURIComponent(currentUrl) %>">Reset
+                                                    href="/update?returnTo=<%= encodeURIComponent(safeReturnTo) %>">Reset
                                                     password</a></li>
                                             <li><a class="dropdown-item"
-                                                    href="/logout?returnTo=<%= encodeURIComponent(currentUrl) %>">Sign
+                                                    href="/logout?returnTo=<%= encodeURIComponent(safeReturnTo) %>">Sign
                                                     out</a>
                                             </li>
                                 </ul>

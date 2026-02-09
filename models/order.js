@@ -77,8 +77,12 @@ const orderSchema = new Schema(
             },
             stripeSessionId: {
                 type: String,
-                required: true,
-                unique: true
+                default: null,
+                required: function () {
+                    return this.payment?.provider === 'stripe';
+                },
+                unique: true,
+                sparse: true    //ignore the value if null
             },
             paymentIntentId: {
                 type: String,

@@ -177,6 +177,11 @@ table tfoot tr:last-child td {
     margin-top: 5%;
 }
 
+#paypal-button {
+    max-width: 240px;
+    width: 100%;
+}
+
 body.products-bg,
 body.contact-bg,
 body.about-bg {
@@ -189,13 +194,14 @@ body.about-bg {
 body.login-bg {
     min-height: 100vh;
     background-size: cover;
-    background-position: center;
+    background-position: contain;
 }
 
 body.register-bg {
     min-height: 100vh;
-    background-size: cover;
-    background-position: center -850px;
+    background-size: contain;
+    background-position: center -900px;
+    background-position-x: 800px;
 }
 
 body.products-bg {

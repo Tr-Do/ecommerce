@@ -2,16 +2,6 @@ if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
 }
 
-process.on('uncaughtException', err => {
-    console.error('UNCAUGHT EXCEPTION:', err);
-    process.exit(1);
-});
-
-process.on('unhandledRejection', err => {
-    console.error('UNHANDLED REJECTION:', err);
-    process.exit(1);
-});
-
 const sanitizeV5 = require('./utils/mongoSanitizeV5.js');
 const express = require('express');
 const ejsMate = require('ejs-mate');

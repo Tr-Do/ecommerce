@@ -21,8 +21,10 @@ const orderSchema = new Schema(
         },
         email: {
             type: String,
+            trim: true,
+            lowercase: true,
             required: function () {
-                return this.payment?.status === true;
+                return this.payment?.status === 'paid' && this.payment?.provider === 'stripe';
             },
             default: null
         },
@@ -49,7 +51,8 @@ const orderSchema = new Schema(
                 },
                 price: {
                     type: Number,
-                    required: true
+                    required: true,
+                    min: 0
                 },
                 filesSnapshot: [{
                     bucket: String,
@@ -57,12 +60,13 @@ const orderSchema = new Schema(
                     originalName: String,
                     contentType: String,
                     size: Number
-                }]
+                }],
             }
         ],
         payment: {
             provider: {
                 type: String,
+                enum: ['stripe', 'paypal'],
                 default: 'stripe'
             },
             status: {
@@ -70,9 +74,14 @@ const orderSchema = new Schema(
                 enum: ['pending', 'paid', 'failed', 'refunded'],
                 default: 'pending'
             },
-            amountCharged: Number,
+            amountCharged: {            // amount in cents
+                type: Number,
+                default: null,
+                min: 0
+            },
             currency: {
                 type: String,
+                lowercase: true,
                 default: 'usd',
             },
             stripeSessionId: {
@@ -89,21 +98,43 @@ const orderSchema = new Schema(
                 default: null
             },
             card: {
-                brand: String,
-                last4: String
+                brand: {
+                    type: String,
+                    default: null
+                },
+                last4: {
+                    type: String,
+                    default: null
+                }
             },
             paidAt: {
                 type: Date,
                 default: null
             },
-            amountTotal: {
+            amountTotal: {          // amount in cents
                 type: Number,
-                required: true
+                required: true,
+                min: 0
             },
             emailSentAt: {
                 type: Date,
                 default: null
-            }
+            },
+            paypalOrderId: {
+                type: String,
+                default: null,
+                required: function () {
+                    return this.payment?.provider === 'paypal';
+                },
+                unique: true,
+                sparse: true
+            },
+            paypalCaptureId: {
+                type: String,
+                default: null,
+                unique: true,
+                sparse: true
+            },
         }
     },
     { timestamps: true }

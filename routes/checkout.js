@@ -6,4 +6,8 @@ router.post('/create-session', checkout.createSession);
 
 router.get('/success', checkout.paymentConfirmation);
 
+router.post('/paypal/create', checkout.createPaypalOrder);
+
+router.post('/paypal/capture', checkout.capturePaypalOrder);
+
 module.exports = router;

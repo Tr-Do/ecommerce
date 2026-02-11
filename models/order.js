@@ -121,11 +121,7 @@ const orderSchema = new Schema(
                 default: null
             },
             paypalOrderId: {
-                type: String,
-                default: null,
-                required: function () {
-                    return this.payment?.provider === 'paypal';
-                },
+                type: String, default: null,
                 unique: true,
                 sparse: true
             },

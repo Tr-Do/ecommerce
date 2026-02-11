@@ -1,9 +1,6 @@
-const pp = document.querySelector('#paypal-button');
-const subTotalNum = Number(pp.dataset.subtotal);
-
 paypal.Buttons({
     createOrder: async () => {
-        const res = await fetch('checkout/paypal/create', {
+        const res = await fetch('/checkout/paypal/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
         });

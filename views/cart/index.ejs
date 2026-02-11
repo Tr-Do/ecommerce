@@ -80,24 +80,10 @@
                         </form>
                     </div>
                     <div class="my-4 text-center">- OR -</div>
-                    <div id="paypal-button" disabled></div>
+                    <div id="paypal-button" data-subtotal="<%=subtotal.toFixed(2)%>"></div>
                 </div>
             </div>
-            <script>
-                const subTotalNum = "<%=subtotal.toFixed(2)%>";
-                paypal.Buttons({
-                    createOrder: (data, actions) => {
-                        return actions.order.create({
-                            purchase_units: [{
-                                amount: { value: subTotalNum }
-                            }]
-                        });
-                    },
-                    onApprove: (data, actions) => {
-                        return actions.order.capture();
-                    }
-                }).render('#paypal-button')
-            </script>
+            <script src="/js/paypalButton.js"></script>
             <script src="/js/cartRemoval.js"></script>
 
             <%}%>

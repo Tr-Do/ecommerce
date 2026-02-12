@@ -10,4 +10,6 @@ router.post('/paypal/create', checkout.createPaypalOrder);
 
 router.post('/paypal/capture', checkout.capturePaypalOrder);
 
+router.post('/paypal/finalize', checkout.paypalFinalize);
+
 module.exports = router;

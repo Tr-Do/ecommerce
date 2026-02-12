@@ -277,6 +277,29 @@ module.exports.capturePaypalOrder = async (req, res) => {
     }
 }
 
+module.exports.paypalFinalize = async (req, res) => {
+    const { dbOrderId, paypalOrderId, paypalCaptureId } = req.body;
+
+    if (!dbOrderId || !paypalOrderId) return res.status(400).json({ error: 'Missing order id' });
+
+    const result = await Order.updateOne({
+        _id: dbOrderId,
+        'payment.provider': 'paypal'
+    }, {
+        $set: {
+            'payment.status': 'paid',
+            'payment.paidAt': new Date(),
+            'payment.paypalOrderId': paypalOrderId,
+            'payment.paypalCaptureId': paypalCaptureId || null,
+        }
+    })
+    if (result.matchedCount !== 1)
+        return res.status(400).json({ error: 'Order not found', dbOrderId });
+
+    req.session.cart = { item: [] };
+    return res.json({ ok: true })
+}
+
 module.exports.createSession = async (req, res, next) => {
     try {
         const { orderItems, amountTotalCents } = await buildCartOrder(req);

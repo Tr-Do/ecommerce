@@ -395,8 +395,9 @@ module.exports.createSession = async (req, res, next) => {
         if (!/^https?:\/\/[^ "]+$/i.test(baseUrl)) {
             throw new Error(`BASE_URL invalid at runtime: "${process.env.BASE_URL}"`);
         }
-        const successUrl = `${baseUrl} / checkout / success ? session_id = { CHECKOUT_SESSION_ID }`;
-        const cancelUrl = `${baseUrl} / cart`;
+        const successUrl = new URL('/checkout/success?session_id={CHECKOUT_SESSION_ID}', baseUrl).toString();
+
+        const cancelUrl = new URL('/cart', baseUrl).toString();
 
         const line_items = buildStripeLineItems(orderItems);
 

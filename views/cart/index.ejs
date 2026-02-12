@@ -1,8 +1,9 @@
 <% layout('layouts/boilerplate') %>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    <script src="/js/turnstile.js"></script>
+    <!-- <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script src="/js/turnstile.js"></script> -->
     <script
-        src="https://www.paypal.com/sdk/js?client-id=AVU52xTQUSe2qW3ZWh-1Q_IO7dnyYi0qdIqm2ttcNetwo1mF6me29aia4kIc5ejzSF-A76oux9kxPT2p&currency=USD"></script>
+        src="https://www.paypal.com/sdk/js?client-id=AVU52xTQUSe2qW3ZWh-1Q_IO7dnyYi0qdIqm2ttcNetwo1mF6me29aia4kIc5ejzSF-A76oux9kxPT2p&currency=USD&intent=capture"></script>
+
 
     <% if (cart.items.length===0) {%>
         <h1 class="text-dark mt-5" id="cart">Your cart is empty</h1>
@@ -70,10 +71,10 @@
                         <form action="/checkout/create-session" method='POST'
                             class="d-flex justify-content-center  mt-5">
                             <div class="d-flex flex-column align-items-center">
-                                <div class="cf-turnstile" data-sitekey="0x4AAAAAACOFjC_zbncU7Qrj" data-theme="auto"
+                                <!-- <div class="cf-turnstile" data-sitekey="0x4AAAAAACOFjC_zbncU7Qrj" data-theme="auto"
                                     data-size="flexible" data-callback="onTurnstileSuccess"
                                     data-error-callback="onTurnstileError" data-expired-callback="onTurnstileExpired">
-                                </div>
+                                </div> -->
                                 <div><button class="btn btn-primary mt-3" id="submit-btn" disabled>Check out with
                                         cards/Cashapp</button></div>
                             </div>

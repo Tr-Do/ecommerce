@@ -147,7 +147,6 @@ module.exports.createPaypalOrder = async (req, res) => {
             },
             email: null
         });
-
         const accessToken = await getAccessToken();
         const totalUSD = (amountTotalCents / 100).toFixed(2);
 
@@ -168,11 +167,19 @@ module.exports.createPaypalOrder = async (req, res) => {
                 }],
                 application_context: {
                     shipping_preference: 'NO_SHIPPING',
-                    user_action: 'PAY_NOW'
+                    user_action: 'PAY_NOW',
+                    return_url: `${process.env.BASE_URL}/checkout/paypal/return`,
+                    cancel_url: `${process.env.BASE_URL}/cart`
                 }
             })
         });
-        const ppOrder = await ppRes.json();
+        let ppOrder;
+        try {
+            ppOrder = await ppRes.json();
+        } catch {
+            ppOrder = { error: 'Non-JSON response from Paypal' };
+        }
+
         if (!ppRes.ok) {
             await Order.updateOne(
                 { _id: order._id },
@@ -189,10 +196,19 @@ module.exports.createPaypalOrder = async (req, res) => {
             { _id: order._id },
             { $set: { 'payment.paypalOrderId': ppOrder.id } }
         );
-        return res.json({ orderID: ppOrder.id });
+        const approveLink = ppOrder.links?.find(link => link.rel === 'approve');
+        if (!approveLink?.href)
+            return res.status(502).json({ error: 'Paypal approve link missing', ppOrder });
+
+        return res.json({
+            orderID: ppOrder.id,
+            approveUrl: approveLink.href,
+            dbOrderId: String(order._id)
+        });
     } catch (e) {
         return res.status(e.status || 500).json({ error: e.message || 'Server error' });
     }
+
 }
 
 module.exports.capturePaypalOrder = async (req, res) => {
@@ -277,6 +293,8 @@ module.exports.capturePaypalOrder = async (req, res) => {
     }
 }
 
+
+
 module.exports.paypalFinalize = async (req, res) => {
     const { dbOrderId, paypalOrderId, paypalCaptureId } = req.body;
 
@@ -296,7 +314,7 @@ module.exports.paypalFinalize = async (req, res) => {
     if (result.matchedCount !== 1)
         return res.status(400).json({ error: 'Order not found', dbOrderId });
 
-    req.session.cart = { item: [] };
+    req.session.cart = { items: [] };
     return res.json({ ok: true })
 }
 

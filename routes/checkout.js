@@ -12,4 +12,6 @@ router.post('/paypal/capture', checkout.capturePaypalOrder);
 
 router.post('/paypal/finalize', checkout.paypalFinalize);
 
+router.get('/paypal/return', checkout.paypalReturn);
+
 module.exports = router;

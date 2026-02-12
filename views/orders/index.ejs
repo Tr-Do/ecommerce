@@ -1,6 +1,7 @@
 <% layout('layouts/boilerplate') %>
 
-    <div class="d-flex flex-column align-items-center" id="download-root" data-session-id="<%=sessionId%>">
+    <div class="d-flex flex-column align-items-center" id="download-root" data-session-id="<%=sessionId%>"
+        data-provider="<%=order.payment.provider%>" data-order-id="<%=order._id%>">
         <div>
             <h4>Thank you for shopping!</h4>
             <h4 class="mt-4">Order ID: <%=order.orderNumber%>
@@ -16,5 +17,5 @@
             <%=order.email || 'Pending' %>
         </h5>
     </div>
-    =
+
     <script src="/js/orderDetail.js"></script>

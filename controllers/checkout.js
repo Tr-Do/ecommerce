@@ -314,11 +314,11 @@ module.exports.paypalReturn = async (req, res) => {
         if (!capRes.ok) return res.status(502).json(cap);
 
         const pu = cap.purchase_units?.[0];
-        const dbOrderId = pu?.custom_id;
         const capture = pu?.payments?.captures?.[0];
+        const dbOrderId = pu?.custom_id || capture?.custom_id || null;
         const captureId = capture?.id;
         const payerEmail = cap.payer?.email_address || null;
-        const chargedCents = Math.round(Number(pu?.amount?.value) * 100);
+
 
         if (!dbOrderId) return res.status(400).json({ error: 'Missing custom id', cap });
         if (!captureId || capture?.status !== 'COMPLETED')
@@ -327,8 +327,15 @@ module.exports.paypalReturn = async (req, res) => {
         const dbOrder = await Order.findOne({ _id: dbOrderId, 'payment.paypalOrderId': orderID });
         if (!dbOrder) return res.status(400).json({ error: 'Order not found' });
 
+        const valueStr = capture?.amount?.value ?? pu?.amount?.value ?? null;
+        const chargedCents = valueStr ? Math.round(Number(valueStr) * 100) : null;
+
         if (chargedCents !== dbOrder.payment.amountTotal)
-            return res.status(400).json({ error: 'Paid amount mismatch', chargedCents, expect: dbOrder.payment.amountTotal });
+            return res.status(400).json({ error: 'Paid amount mismatch', chargedCents, expect: dbOrder.payment.amountTotal })
+        else if (chargedCents === null)
+            return res.status(400).json({ error: 'Paid amount missing', cap })
+
+
 
         await Order.updateOne(
             {
@@ -349,7 +356,9 @@ module.exports.paypalReturn = async (req, res) => {
 
         await deliverFiles(dbOrderId);
 
-        return res.redirect(`/orders/${dbOrderId}/success`);
+        const order = await Order.findById(dbOrderId).lean();
+        return res.render('orders/index', { order, sessionId: null });
+
     } catch (e) {
         return res.status(500).json({ error: e.message || 'Server error' });
     }

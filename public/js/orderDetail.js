@@ -1,13 +1,35 @@
-const sessionId = document.getElementById('download-root').dataset.sessionId;
+const root = document.getElementById('download-root')
+const provider = root.dataset.provider;
 const fileStatus = document.getElementById('status');
 const downloadList = document.getElementById('downloadList');
+const sessionId = root.dataset.sessionId;
+const orderId = root.dataset.orderId;
+
+if (provider !== 'stripe' && provider !== 'paypal') {
+    fileStatus.textContent = 'Unknown payment';
+    throw new Error('Unknow provider');
+}
+
+if (provider === 'stripe' && !sessionId) {
+    fileStatus.textContent = 'Missing Stripe sesssion';
+    throw new Error('Missing session id');
+}
+
+if (provider === 'paypal' && !orderId) {
+    fileStatus.textContent = 'Missing order id';
+    throw new Error('Missing order id');
+}
+
+const key = provider === 'stripe' ? sessionId : orderId;
+const type = provider === 'stripe' ? 'session' : 'order';
+const safeKey = encodeURIComponent(key);
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 async function pollPaid(maxSeconds = 60) {
     const deadline = Date.now() + maxSeconds * 1000;
     while (Date.now() < deadline) {
-        const result = await fetch(`/downloads/session/${encodeURIComponent(sessionId)}/status`);
+        const result = await fetch(`/downloads/${type}/${safeKey}/status`);
         const data = await result.json();
         if (data.paid) return true;
         await sleep(1000);
@@ -16,7 +38,7 @@ async function pollPaid(maxSeconds = 60) {
 }
 
 async function loadFiles() {
-    const result = await fetch(`/downloads/session/${encodeURIComponent(sessionId)}/files`);
+    const result = await fetch(`/downloads/${type}/${safeKey}/files`);
     if (!result.ok) throw new Error('Download not available yet');
     return await result.json();
 }
@@ -57,7 +79,7 @@ function renderLink(files) {
 
 (async () => {
     try {
-        const paid = await pollPaid(60);
+        const paid = (provider === 'paypal') ? true : await pollPaid(60);
         if (!paid) {
             fileStatus.textContent = 'Payment processing. Please wait ...';
             return;
@@ -71,5 +93,6 @@ function renderLink(files) {
         fileStatus.textContent = 'Your download is ready. The link(s) will expire in 12 hours!';
     } catch (e) {
         fileStatus.textContent = 'Something went wrong. Please refresh the page';
+        console.log(e);
     }
 })();

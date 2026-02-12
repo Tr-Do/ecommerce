@@ -81,11 +81,11 @@
                         </form>
                     </div>
                     <div class="my-4 text-center">- OR -</div>
-                    <div id="paypal-button" data-subtotal="<%=subtotal.toFixed(2)%>"
-                        data-db-order-id="<%=cart.dbOrderId%>"></div>
+                    <div id="paypal-redirect" class="btn btn-lg btn-primary" data-subtotal="<%=subtotal.toFixed(2)%>"
+                        data-db-order-id="<%=cart.dbOrderId%>">Pay with Paypal</div>
                 </div>
             </div>
-            <script src="/js/paypalButton.js"></script>
+            <script src="/js/paypalRedirect.js"></script>
             <script src="/js/cartRemoval.js"></script>
 
             <%}%>

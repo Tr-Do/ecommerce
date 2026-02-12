@@ -293,7 +293,67 @@ module.exports.capturePaypalOrder = async (req, res) => {
     }
 }
 
+module.exports.paypalReturn = async (req, res) => {
+    try {
+        const orderID = req.query.token;
+        if (!orderID) return res.status(400).send('Missing token');
 
+        const accessToken = await getAccessToken();
+
+        const capRes = await fetch(
+            `${process.env.PAYPAL_BASE_URL}/v2/checkout/orders/${orderID}/capture`,
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+            }
+        );
+        const cap = await capRes.json().catch(() => ({}));
+        if (!capRes.ok) return res.status(502).json(cap);
+
+        const pu = cap.purchase_units?.[0];
+        const dbOrderId = pu?.custom_id;
+        const capture = pu?.payments?.captures?.[0];
+        const captureId = capture?.id;
+        const payerEmail = cap.payer?.email_address || null;
+        const chargedCents = Math.round(Number(pu?.amount?.value) * 100);
+
+        if (!dbOrderId) return res.status(400).json({ error: 'Missing custom id', cap });
+        if (!captureId || capture?.status !== 'COMPLETED')
+            return res.status(400).json({ error: 'Capture not complete', cap });
+
+        const dbOrder = await Order.findOne({ _id: dbOrderId, 'payment.paypalOrderId': orderID });
+        if (!dbOrder) return res.status(400).json({ error: 'Order not found' });
+
+        if (chargedCents !== dbOrder.payment.amountTotal)
+            return res.status(400).json({ error: 'Paid amount mismatch', chargedCents, expect: dbOrder.payment.amountTotal });
+
+        await Order.updateOne(
+            {
+                _id: dbOrderId,
+                'payment.paypalOrderId': orderID
+            },
+            {
+                $set: {
+                    email: payerEmail,
+                    'payment.status': 'paid',
+                    'payment.paidAt': new Date(),
+                    'payment.paypalCaptureId': captureId,
+                    'payment.amountCharged': chargedCents
+                }
+            }
+        );
+        req.session.cart = { items: [] };
+
+        await deliverFiles(dbOrderId);
+
+        return res.redirect(`/orders/${dbOrderId}/success`);
+    } catch (e) {
+        return res.status(500).json({ error: e.message || 'Server error' });
+    }
+}
 
 module.exports.paypalFinalize = async (req, res) => {
     const { dbOrderId, paypalOrderId, paypalCaptureId } = req.body;
@@ -326,8 +386,8 @@ module.exports.createSession = async (req, res, next) => {
         if (!/^https?:\/\/[^ "]+$/i.test(baseUrl)) {
             throw new Error(`BASE_URL invalid at runtime: "${process.env.BASE_URL}"`);
         }
-        const successUrl = `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
-        const cancelUrl = `${baseUrl}/cart`;
+        const successUrl = `${baseUrl} / checkout / success ? session_id = { CHECKOUT_SESSION_ID }`;
+        const cancelUrl = `${baseUrl} / cart`;
 
         const line_items = buildStripeLineItems(orderItems);
 

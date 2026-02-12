@@ -83,8 +83,10 @@
                     <div class="my-4 text-center">- OR -</div>
                     <button id="paypal-redirect" class="btn p-0 border-0 bg-transparent"
                         data-subtotal="<%=subtotal.toFixed(2)%>" data-db-order-id="<%=cart.dbOrderId%>"><img
+                            id="paypal-button"
                             src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png"
-                            alt="Pay with PayPal" style="height: 44px;" /></button>
+                            alt="Pay with PayPal" />
+                    </button>
                 </div>
             </div>
             <script src="/js/paypalRedirect.js"></script>

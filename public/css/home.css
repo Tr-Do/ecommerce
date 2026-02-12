@@ -178,8 +178,8 @@ table tfoot tr:last-child td {
 }
 
 #paypal-button {
-    max-width: 240px;
-    width: 100%;
+    width: 240px;
+    height: auto
 }
 
 body.products-bg,

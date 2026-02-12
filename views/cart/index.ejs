@@ -1,6 +1,6 @@
 <% layout('layouts/boilerplate') %>
-    <!-- <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    <script src="/js/turnstile.js"></script> -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script src="/js/turnstile.js"></script>
     <script
         src="https://www.paypal.com/sdk/js?client-id=AVU52xTQUSe2qW3ZWh-1Q_IO7dnyYi0qdIqm2ttcNetwo1mF6me29aia4kIc5ejzSF-A76oux9kxPT2p&currency=USD&intent=capture"></script>
 
@@ -71,18 +71,20 @@
                         <form action="/checkout/create-session" method='POST'
                             class="d-flex justify-content-center  mt-5">
                             <div class="d-flex flex-column align-items-center">
-                                <!-- <div class="cf-turnstile" data-sitekey="0x4AAAAAACOFjC_zbncU7Qrj" data-theme="auto"
+                                <div class="cf-turnstile" data-sitekey="0x4AAAAAACOFjC_zbncU7Qrj" data-theme="auto"
                                     data-size="flexible" data-callback="onTurnstileSuccess"
                                     data-error-callback="onTurnstileError" data-expired-callback="onTurnstileExpired">
-                                </div> -->
+                                </div>
                                 <div><button class="btn btn-primary mt-3" id="submit-btn" disabled>Check out with
                                         cards/Cashapp</button></div>
                             </div>
                         </form>
                     </div>
                     <div class="my-4 text-center">- OR -</div>
-                    <div id="paypal-redirect" class="btn btn-lg btn-primary" data-subtotal="<%=subtotal.toFixed(2)%>"
-                        data-db-order-id="<%=cart.dbOrderId%>">Pay with Paypal</div>
+                    <button id="paypal-redirect" class="btn p-0 border-0 bg-transparent"
+                        data-subtotal="<%=subtotal.toFixed(2)%>" data-db-order-id="<%=cart.dbOrderId%>"><img
+                            src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png"
+                            alt="Pay with PayPal" style="height: 44px;" /></button>
                 </div>
             </div>
             <script src="/js/paypalRedirect.js"></script>

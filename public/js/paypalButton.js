@@ -1,24 +1,30 @@
-paypal.Buttons({
-    createOrder: async () => {
-        const res = await fetch('/checkout/paypal/create', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data?.error || 'Paypal create failed');
+const pp = document.querySelector('#paypal-button');
+const subtotal = pp.dataset.subtotal;
+const dbOrderId = pp.dataset.dbOrderId;
 
-        return data.orderID;        // paypal order id
+paypal.Buttons({
+    createOrder: async (data, actions) => {
+        return actions.order.create({
+            purchase_units: [{amount:{value:subtotal}}]
+        });    
     },
     onApprove: async (data) => {
-        const res = await fetch('/checkout/paypal/capture', {
+        const capture = await actions.order.capture();
+
+        const res = await fetch('/checkout/paypal/finalize', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ orderID: data.orderID })
+            body: JSON.stringify({ 
+                dbOrderId, 
+                paypalOrderId: data.orderID,
+            paypalCaptureId: capture?.purchase_units?.[0]?.payment?.capture?.[0]?.id 
+        })
         });
-        const cap = await res.json();
-        if (!res.ok) throw new Error(cap?.error || 'Paypal capture failed');
-
-        window.location.href = '/checkout/success?paypal=1';
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || 'Finalize failed');
+        }
+        window.location.href = `/orders/${dbOrderId}/success`;
     },
     onError: (err) => {
         console.log('Paypal error', err);

@@ -1,0 +1,4 @@
+{
+    "prettier.singleAttributePerLine": true,
+    "prettier.trailingComma": "es5"
+}

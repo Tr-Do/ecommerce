@@ -90,7 +90,6 @@ const orderSchema = new Schema(
                 required: function () {
                     return this.payment?.provider === 'stripe';
                 },
-                unique: true,
                 sparse: true    //ignore the value if null
             },
             paymentIntentId: {
@@ -122,13 +121,11 @@ const orderSchema = new Schema(
             },
             paypalOrderId: {
                 type: String, default: null,
-                unique: true,
                 sparse: true
             },
             paypalCaptureId: {
                 type: String,
                 default: null,
-                unique: true,
                 sparse: true
             },
         }

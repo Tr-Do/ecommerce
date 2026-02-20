@@ -2,13 +2,9 @@ const { AppError } = require('../utils/AppError.js');
 const Design = require('../models/design');
 const Order = require('../models/order');
 const Stripe = require('stripe');
-const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
-const { s3 } = require('../s3');
-const { sendEmail } = require('../utils/mailgun');
-const { buildDownloadEmail } = require('../utils/emailTemplate');
-const { GetObjectCommand } = require('@aws-sdk/client-s3');
 const Variant = require('../models/variant.js');
 const STRIPE_KEY = process.env.STRIPE_SECRET_KEY;
+const { deliverFiles } = require('../services/fileDelivery.js');
 
 if (!STRIPE_KEY) throw new Error('Missing STRIPE_SECRET key');
 const stripe = new Stripe(STRIPE_KEY);
@@ -40,7 +36,7 @@ async function buildCartOrder(req) {
 
         if (String(variant.productId) !== productId) throw new AppError('Variant does not belong to product', 400);
 
-        //javascript has only floating point and base 2
+        //javascript has only floating point and base 2, need to work around to get value of decimal
         const unitAmount = Math.round(Number(variant.price) * 100);
         if (!Number.isFinite(unitAmount) || unitAmount < 0) throw new AppError('Invalid price', 400);
         amountTotalCents += unitAmount;
@@ -104,31 +100,6 @@ async function getAccessToken() {
     }
     const data = await res.json();
     return data.access_token;
-}
-
-async function deliverFiles(orderId) {
-    const order = await Order.findById(orderId);
-    if (!order || order.payment.status !== 'paid') return;
-    if (order.payment.emailSentAt || !order.email) return;
-
-    const files = [];
-    for (const item of order.items) {
-        for (const file of (item.filesSnapshot || [])) {
-            const cmd = new GetObjectCommand(
-                {
-                    Bucket: file.bucket,
-                    Key: file.key
-                }
-            );
-            const url = await getSignedUrl(s3, cmd, { expiresIn: 60 * 60 * 12 })
-            files.push({ name: `${item.name} (${item.size})`, size: item.size, url });
-        }
-    }
-    const html = buildDownloadEmail({ orderNumber: order.orderNumber, files });
-    await sendEmail({ to: order.email, subject: `Your Terrarium Files - ${order.orderNumber}`, html });
-
-    order.payment.emailSentAt = new Date();
-    await order.save();
 }
 
 module.exports.createPaypalOrder = async (req, res) => {

@@ -49,12 +49,6 @@ app.use(methodOverride('_method'));
 // get user's IP
 app.set('trust proxy', 1);
 
-// store previous url in express storage -> pass it into url query -> pass it into middleware variable -> redirect to previous url
-// app.use((req, res, next) => {
-//     res.locals.currentUrl = req.originalUrl;
-//     next();
-// });
-
 app.use((req, res, next) => {
     // req.get('host') get current domain
     const url = new URL(req.originalUrl, `${req.protocol}://${req.get('host')}`);
@@ -79,9 +73,12 @@ const secret = process.env.SECRET || 'CsfYj6CQL5wUMHBqa4ur5W31mOplvUJe2dxBbJ4Q8O
 const store = MongoStore.create({
     mongoUrl: dbUrl,
     touchAfter: 24 * 60 * 60,
-    crypto: { secret }
+    ttl: 604800,
+    crypto: { secret },
+    autoRemove: 'native'
 });
 
+// attach 
 store.on('error', function (e) {
     console.log('Session store error', e);
 })

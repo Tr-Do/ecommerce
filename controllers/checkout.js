@@ -6,6 +6,9 @@ const { buildCartOrder } = require("../services/cartOrder.js");
 const { buildStripeLineItems } = require("../services/buildStripeLineItems.js");
 const crypto = require("crypto");
 const { getAccessToken } = require("../services/getAccessToken.js");
+const {
+  verifyCoinbaseSignature,
+} = require("../services/verifyCoinbaseSignature.js");
 
 const stripe = new Stripe(STRIPE_KEY);
 
@@ -17,7 +20,7 @@ module.exports.createSession = async (req, res, next) => {
     }
     const successUrl = new URL(
       "/checkout/success?session_id={CHECKOUT_SESSION_ID}",
-      baseUrl,
+      baseUrl
     ).toString();
     const cancelUrl = new URL("/cart", baseUrl).toString();
 
@@ -70,7 +73,7 @@ module.exports.webhook = async (req, res) => {
     event = stripe.webhooks.constructEvent(
       req.body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET,
+      process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
     return res.status(400).send(`Webhook signature failed`);
@@ -206,7 +209,7 @@ module.exports.createPaypalOrder = async (req, res) => {
             cancel_url: `${process.env.BASE_URL}/cart`,
           },
         }),
-      },
+      }
     );
     let ppOrder;
     try {
@@ -223,13 +226,13 @@ module.exports.createPaypalOrder = async (req, res) => {
             "payment.status": "failed",
             paypalError: ppOrder,
           },
-        },
+        }
       );
       return res.status(502).json(ppOrder);
     }
     await Order.updateOne(
       { _id: order._id },
-      { $set: { "payment.paypalOrderId": ppOrder.id } },
+      { $set: { "payment.paypalOrderId": ppOrder.id } }
     );
     const approveLink = ppOrder.links?.find((link) => link.rel === "approve");
     if (!approveLink?.href)
@@ -264,7 +267,7 @@ module.exports.paypalReturn = async (req, res) => {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
     const cap = await capRes.json().catch(() => ({}));
     if (!capRes.ok) return res.status(502).json(cap);
@@ -311,7 +314,7 @@ module.exports.paypalReturn = async (req, res) => {
           "payment.paypalCaptureId": captureId,
           "payment.amountCharged": chargedCents,
         },
-      },
+      }
     );
     req.session.cart = { items: [] };
 
@@ -339,7 +342,7 @@ module.exports.capturePaypalOrder = async (req, res) => {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
     const cap = await capRes.json();
     if (!capRes.ok) return res.status(502).json(cap);
@@ -401,7 +404,7 @@ module.exports.capturePaypalOrder = async (req, res) => {
           "payment.paypalCaptureId": captureId,
           "payment.amountCharged": chargedCents,
         },
-      },
+      }
     );
 
     if (result.matchedCount !== 1)
@@ -432,7 +435,7 @@ module.exports.paypalFinalize = async (req, res) => {
         "payment.paypalOrderId": paypalOrderId,
         "payment.paypalCaptureId": paypalCaptureId || null,
       },
-    },
+    }
   );
   if (result.matchedCount !== 1)
     return res.status(400).json({ error: "Order not found", dbOrderId });
@@ -502,7 +505,7 @@ module.exports.createCoinbaseCharge = async (req, res) => {
             "payment.status": "failed",
             coinbaseError: json,
           },
-        },
+        }
       );
       return res.status(502).json({
         error: "Coinbase charge create failed",
@@ -522,7 +525,7 @@ module.exports.createCoinbaseCharge = async (req, res) => {
         $set: {
           "payment.coinbaseChargeId": charge.id,
         },
-      },
+      }
     );
     return res.json({
       orderId: String(order._id),
@@ -541,18 +544,6 @@ function timingSafeEqualHex(aHex, bHex) {
   } catch {
     return false;
   }
-}
-
-function verifyCoinbaseSignature(rawBodyBuffer, signatureHex, secret) {
-  if (!rawBodyBuffer || !Buffer.isBuffer(rawBodyBuffer)) return false;
-  if (!signatureHex || !secret) return false;
-
-  const computedHex = crypto
-    .createHmac("sha256", secret)
-    .update(rawBodyBuffer)
-    .digest("hex");
-
-  return timingSafeEqualHex(computedHex, signatureHex);
 }
 
 module.exports.coinbaseWebhook = async (req, res) => {

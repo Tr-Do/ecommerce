@@ -22,6 +22,7 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user");
 const helmet = require("helmet");
+const stripe = require("./controllers/checkout/stripe.js");
 const checkout = require("./controllers/checkout.js");
 const { setLocals, globalErrorHandler } = require("./middleware.js");
 const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/terrarium";
@@ -101,14 +102,14 @@ const sessionConfig = {
 app.post(
   "/checkout/webhook",
   express.raw({ type: "application/json" }),
-  checkout.webhook,
+  stripe.webhook
 );
 
 // do the same thing for coinbase
 app.post(
   "/checkout/coinbase/webhook",
   express.raw({ type: "application/json" }),
-  checkout.coinbaseWebhook,
+  checkout.coinbaseWebhook
 );
 
 app.use(express.urlencoded({ extended: true }));
@@ -141,7 +142,7 @@ app.use(
   helmet({
     contentSecurityPolicy: false,
     permissionsPolicy: false,
-  }),
+  })
 );
 
 passport.use(new LocalStrategy(User.authenticate()));

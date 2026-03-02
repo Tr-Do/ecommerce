@@ -9,6 +9,7 @@ const { getAccessToken } = require("../services/getAccessToken.js");
 const {
   verifyCoinbaseSignature,
 } = require("../services/verifyCoinbaseSignature.js");
+const { timingSafeEqualHex } = require("../services/timingSafeEqualHex.js");
 
 const stripe = new Stripe(STRIPE_KEY);
 
@@ -535,16 +536,6 @@ module.exports.createCoinbaseCharge = async (req, res) => {
     return res.status(500).json({ error: err?.message || "Server error" });
   }
 };
-
-function timingSafeEqualHex(aHex, bHex) {
-  try {
-    const a = Buffer.from(aHex, "hex");
-    const b = Buffer.from(bHex, "hex");
-    return a.length === b.length && crypto.timingSafeEqual(a, b);
-  } catch {
-    return false;
-  }
-}
 
 module.exports.coinbaseWebhook = async (req, res) => {
   try {

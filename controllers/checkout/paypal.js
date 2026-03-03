@@ -118,7 +118,6 @@ module.exports.paypalReturn = async (req, res) => {
         },
       }
     );
-
     req.session.cart = { items: [] };
     await deliverFiles(final.dbOrderId);
 

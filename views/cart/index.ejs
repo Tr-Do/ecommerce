@@ -9,13 +9,13 @@
             <div class="text-center mt-3 mb-5">
                 <h1>Shopping Cart</h1>
             </div>
-            <table class="table align-middle">
+            <table class="table align-middle w-50 mx-auto" style="table-layout: fixed;">
                 <thead>
                     <tr>
-                        <th>Product</th>
-                        <th>Name</th>
-                        <th>Size</th>
-                        <th>Price</th>
+                        <th  class="text-center">Product</th>
+                        <th class="text-center">Name</th>
+                        <th class="text-center">Size</th>
+                        <th class="text-center">Price</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -23,20 +23,19 @@
                     <% let subtotal=0; %>
                         <%cart.items.forEach(p=> {%>
                             <tr>
-                                <td>
+                                <td  class="text-center">
                                     <a href="/products/<%=p.product._id%>">
                                         <img src="<%=p.product.images[0].cartThumbnail%>" alt="">
                                     </a>
                                 </td>
-                                <td><a href="/products/<%=p.product._id%>" style="text-decoration: none; color:black;">
+                                <td  class="text-center"><a href="/products/<%=p.product._id%>" style="text-decoration: none; color:black;">
                                         <%=p.product.name%>
                                     </a>
                                 </td>
-                                <td>
+                                <td  class="text-center">
                                     <%=p.size%>
                                 </td>
-                                <td>
-
+                                <td class="text-center">
                                     $<%=p.product.price%>
                                         <% subtotal+=p.product.price;%>
                                 </td>
@@ -57,16 +56,16 @@
                 <tfoot>
                     <tr class="border-0">
                         <td colspan="2"></td>
-                        <td>Subtotal:</td>
-                        <td class="fw-bold" id="subtotal">$<%=subtotal.toFixed(2)%>
+                        <td class="text-center">Subtotal:</td>
+                        <td class="fw-bold text-center" id="subtotal">$<%=subtotal.toFixed(2)%>
                         </td>
                     </tr>
                 </tfoot>
             </table>
-            <div class="container mt-3">
+            <div class="container mb-3">
                 <div class="d-flex justify-content-center align-items-center">
                     <div>
-                        <form action="/checkout/create-session" method='POST' class="mt-5">
+                        <form action="/checkout/create-session" method='POST'>
                             <div class="d-flex flex-column align-items-center">
 
                                 <div><button class="btn btn-primary mt-4" id="submit-btn">Check out with

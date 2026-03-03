@@ -2,6 +2,8 @@ const Order = require("../../models/order");
 const { buildCartOrder } = require("../../services/cartOrder.js");
 const { deliverFiles } = require("../../services/fileDelivery.js");
 const { getAccessToken } = require("../../services/getAccessToken.js");
+const { captureOrder } = require("../../services/paypalPayment.js");
+const { finalizePaypal } = require("../../services/paypalFinalize.js");
 
 module.exports.createPaypalOrder = async (req, res) => {
   try {
@@ -20,6 +22,7 @@ module.exports.createPaypalOrder = async (req, res) => {
       },
       email: null,
     });
+
     const accessToken = await getAccessToken();
     const totalUSD = (amountTotalCents / 100).toFixed(2);
 
@@ -36,10 +39,7 @@ module.exports.createPaypalOrder = async (req, res) => {
           purchase_units: [
             {
               custom_id: String(order._id),
-              amount: {
-                currency_code: "USD",
-                value: totalUSD,
-              },
+              amount: { currency_code: "USD", value: totalUSD },
             },
           ],
           application_context: {
@@ -51,30 +51,25 @@ module.exports.createPaypalOrder = async (req, res) => {
         }),
       }
     );
-    let ppOrder;
-    try {
-      ppOrder = await ppRes.json();
-    } catch {
-      ppOrder = { error: "Non-JSON response from Paypal" };
-    }
+
+    const ppOrder = await ppRes
+      .json()
+      .catch(() => ({ error: "Non-JSON response from Paypal" }));
 
     if (!ppRes.ok) {
       await Order.updateOne(
         { _id: order._id },
-        {
-          $set: {
-            "payment.status": "failed",
-            paypalError: ppOrder,
-          },
-        }
+        { $set: { "payment.status": "failed", paypalError: ppOrder } }
       );
       return res.status(502).json(ppOrder);
     }
+
     await Order.updateOne(
       { _id: order._id },
       { $set: { "payment.paypalOrderId": ppOrder.id } }
     );
-    const approveLink = ppOrder.links?.find((link) => link.rel === "approve");
+
+    const approveLink = ppOrder.links?.find((l) => l.rel === "approve");
     if (!approveLink?.href)
       return res
         .status(502)
@@ -97,189 +92,39 @@ module.exports.paypalReturn = async (req, res) => {
     const orderID = req.query.token;
     if (!orderID) return res.status(400).send("Missing token");
 
-    const accessToken = await getAccessToken();
-
-    const capRes = await fetch(
-      `${process.env.PAYPAL_BASE_URL}/v2/checkout/orders/${orderID}/capture`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    const cap = await capRes.json().catch(() => ({}));
-    if (!capRes.ok) return res.status(502).json(cap);
-
-    const pu = cap.purchase_units?.[0];
-    const capture = pu?.payments?.captures?.[0];
-    const dbOrderId = pu?.custom_id || capture?.custom_id || null;
-    const captureId = capture?.id;
-    const payerEmail = cap.payer?.email_address || null;
-
-    if (!dbOrderId)
-      return res.status(400).json({ error: "Missing custom id", cap });
-    if (!captureId || capture?.status !== "COMPLETED")
-      return res.status(400).json({ error: "Capture not complete", cap });
-
     const dbOrder = await Order.findOne({
-      _id: dbOrderId,
       "payment.paypalOrderId": orderID,
-    });
-    if (!dbOrder) return res.status(400).json({ error: "Order not found" });
+    }).lean();
+    if (!dbOrder)
+      return res
+        .status(404)
+        .json({ error: "Order not found for PayPal token", orderID });
 
-    const valueStr = capture?.amount?.value ?? pu?.amount?.value ?? null;
-    const chargedCents = valueStr ? Math.round(Number(valueStr) * 100) : null;
+    const { ok, json: cap, status } = await captureOrder(orderID);
+    if (!ok) return res.status(502).json(cap);
 
-    if (chargedCents !== dbOrder.payment.amountTotal)
-      return res.status(400).json({
-        error: "Paid amount mismatch",
-        chargedCents,
-        expect: dbOrder.payment.amountTotal,
-      });
-    else if (chargedCents === null)
-      return res.status(400).json({ error: "Paid amount missing", cap });
+    const final = await finalizePaypal({ orderID, cap });
+    if (!final.ok) return res.status(final.status).json(final.body);
 
     await Order.updateOne(
-      {
-        _id: dbOrderId,
-        "payment.paypalOrderId": orderID,
-      },
+      { _id: final.dbOrderId, "payment.paypalOrderId": orderID },
       {
         $set: {
-          email: payerEmail,
+          email: final.payerEmail,
           "payment.status": "paid",
           "payment.paidAt": new Date(),
-          "payment.paypalCaptureId": captureId,
-          "payment.amountCharged": chargedCents,
+          "payment.paypalCaptureId": final.captureId,
+          "payment.amountCharged": final.chargedCents,
         },
       }
     );
+
     req.session.cart = { items: [] };
+    await deliverFiles(final.dbOrderId);
 
-    await deliverFiles(dbOrderId);
-
-    const order = await Order.findById(dbOrderId).lean();
+    const order = await Order.findById(final.dbOrderId).lean();
     return res.render("orders/index", { order, sessionId: null });
   } catch (e) {
     return res.status(500).json({ error: e.message || "Server error" });
   }
-};
-
-module.exports.capturePaypalOrder = async (req, res) => {
-  try {
-    const { orderID } = req.body;
-    if (!orderID) return res.status(400).json({ error: "Missing order ID" });
-
-    const accessToken = await getAccessToken();
-
-    const capRes = await fetch(
-      `${process.env.PAYPAL_BASE_URL}/v2/checkout/orders/${orderID}/capture`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    const cap = await capRes.json();
-    if (!capRes.ok) return res.status(502).json(cap);
-
-    const pu = cap.purchase_units?.[0];
-    const dbOrderId = pu?.custom_id;
-    const captureId = pu?.payments?.captures?.[0]?.id;
-    const payerEmail = cap.payer?.email_address || null;
-    const chargedCents = Math.round(Number(pu.amount.value) * 100);
-
-    if (!dbOrderId)
-      return res.status(400).json({ error: "Missing order ID", cap });
-
-    if (!captureId || capture?.status !== "COMPLETED")
-      return res.status(400).json({ error: "Capture not completed", cap });
-
-    const dbOrder = await Order.findOne({
-      _id: dbOrderId,
-      "payment.paypalOrderId": orderID,
-    });
-    if (!dbOrder) return res.status(400).json({ error: "Order not found" });
-
-    if (dbOrder.payment.status === "paid") return res.json({ ok: true });
-
-    const currencyCode = pu?.amount?.currency_code;
-    if (!pu?.amount.value || !currencyCode)
-      return res.status(400).json({ error: "Missing purchase amount", cap });
-    if (currencyCode.toLowerCase() !== dbOrder.payment.currency)
-      return res.status(400).json({
-        error: "Currency mismatch",
-        currencyCode,
-        expected: dbOrder.payment.currency,
-      });
-    if (!captureId)
-      return res.status(400).json({ error: "Missing captureId", cap });
-
-    if (chargedCents !== dbOrder.payment.amountTotal)
-      return res.status(400).json({
-        error: "Amount mismatch",
-        chargedCents,
-        expected: dbOrder.payment.amountTotal,
-      });
-
-    const capture = pu?.payments?.captures?.[0];
-    const captureStatus = capture?.status;
-    if (captureStatus !== "COMPLETED") {
-      return res.status(400).json({ error: "Not Completed", cap });
-    }
-    const result = await Order.updateOne(
-      {
-        _id: dbOrderId,
-        "payment.paypalOrderId": orderID,
-      },
-      {
-        $set: {
-          email: payerEmail,
-          "payment.status": "paid",
-          "payment.paidAt": new Date(),
-          "payment.paypalCaptureId": captureId,
-          "payment.amountCharged": chargedCents,
-        },
-      }
-    );
-
-    if (result.matchedCount !== 1)
-      return res.status(400).json({ error: "Order does not match", dbOrderId });
-
-    await deliverFiles(dbOrderId);
-    return res.json(cap);
-  } catch (e) {
-    return res.status(500).json({ error: e.message || "Server error" });
-  }
-};
-
-module.exports.paypalFinalize = async (req, res) => {
-  const { dbOrderId, paypalOrderId, paypalCaptureId } = req.body;
-
-  if (!dbOrderId || !paypalOrderId)
-    return res.status(400).json({ error: "Missing order id" });
-
-  const result = await Order.updateOne(
-    {
-      _id: dbOrderId,
-      "payment.provider": "paypal",
-    },
-    {
-      $set: {
-        "payment.status": "paid",
-        "payment.paidAt": new Date(),
-        "payment.paypalOrderId": paypalOrderId,
-        "payment.paypalCaptureId": paypalCaptureId || null,
-      },
-    }
-  );
-  if (result.matchedCount !== 1)
-    return res.status(400).json({ error: "Order not found", dbOrderId });
-
-  req.session.cart = { items: [] };
-  return res.json({ ok: true });
 };

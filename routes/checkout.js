@@ -12,8 +12,6 @@ router.get("/success", stripe.paymentConfirmation);
 // paypal payment: create order -> return url -> capture -> finalize
 router.post("/paypal/create", paypal.createPaypalOrder);
 router.get("/paypal/return", paypal.paypalReturn);
-router.post("/paypal/capture", paypal.capturePaypalOrder);
-router.post("/paypal/finalize", paypal.paypalFinalize);
 
 // crypto payment
 router.post("/coinbase/create", coinbase.createCoinbaseCharge);

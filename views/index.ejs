@@ -23,7 +23,12 @@
     <div
       class="d-flex justify-content-center mt-3 mt-md-0 ms-0 ms-md-5 ps-md-5"
     >
-      <select class="text-center rounded-3" name="view" id="view">
+      <select
+        class="text-center rounded-3"
+        name="view"
+        id="view"
+        onchange="window.location.href = '?view=' + this.value"
+      >
         <option value="none" selected>-</option>
         <option value="all">View All</option>
       </select>
@@ -74,10 +79,11 @@
       </div>
     </div>
   </section>
+  <% if (view !=='all') {%>
   <nav class="d-flex justify-content-center">
     <ul class="pagination">
       <!-- Previous -->
-      <li class="mb-4 page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+      <li class="mb-4 page-item <%= currentPage === 1? 'disabled' : '' %>">
         <a
           class="page-link"
           href="<%= currentPage === 1 ? '#' : ('?page=' + (currentPage - 1) + (search?'&search='+encodeURIComponent(search):''))%>"
@@ -108,4 +114,5 @@
       </li>
     </ul>
   </nav>
+  <%}%>
 </div>

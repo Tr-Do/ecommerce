@@ -1,7 +1,8 @@
 const express = require("express");
-const checkout = require("../controllers/checkout");
+const checkout = require("../controllers/checkout/coinbase");
 const stripe = require("../controllers/checkout/stripe");
 const paypal = require("../controllers/checkout/paypal");
+const coinbase = require("../controllers/checkout/coinbase");
 const router = express.Router();
 
 // stripe payment
@@ -15,6 +16,6 @@ router.post("/paypal/capture", paypal.capturePaypalOrder);
 router.post("/paypal/finalize", paypal.paypalFinalize);
 
 // crypto payment
-router.post("/coinbase/create", checkout.createCoinbaseCharge);
+router.post("/coinbase/create", coinbase.createCoinbaseCharge);
 
 module.exports = router;

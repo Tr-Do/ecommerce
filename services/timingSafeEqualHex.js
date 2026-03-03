@@ -1,3 +1,5 @@
+const crypto = require("crypto");
+
 function timingSafeEqualHex(aHex, bHex) {
   try {
     const a = Buffer.from(aHex, "hex");
@@ -7,3 +9,5 @@ function timingSafeEqualHex(aHex, bHex) {
     return false;
   }
 }
+
+module.exports = { timingSafeEqualHex };

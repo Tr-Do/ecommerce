@@ -1,3 +1,5 @@
+const { timingSafeEqualHex } = require("./timingSafeEqualHex");
+
 function verifyCoinbaseSignature(rawBodyBuffer, signatureHex, secret) {
   if (!rawBodyBuffer || !Buffer.isBuffer(rawBodyBuffer)) return false;
   if (!signatureHex || !secret) return false;
@@ -9,3 +11,5 @@ function verifyCoinbaseSignature(rawBodyBuffer, signatureHex, secret) {
 
   return timingSafeEqualHex(computedHex, signatureHex);
 }
+
+module.exports = { verifyCoinbaseSignature };

@@ -1,75 +1,111 @@
 <% layout('layouts/boilerplate') %>
-    <!-- Header-->
-    <div id="page-bg">
-        <div class="d-flex justify-content-center">
-            <form action="/products" class="d-flex" id="searchForm">
-                <input id="searchBar" class="form-control border-0 form-control text-center" type="text" name="search"
-                    value="<%=typeof search === 'string'? search:''%>" placeholder="search"><button type="submit"
-                    id="searchIcon" class="input-group-text border-0">
-                    <i class="bi bi-search"></i>
-                </button>
-            </form>
-        </div>
-
-        <section class="pt-4">
-            <div class="container product">
-                <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-                    <% for (let i=0; i< products.length; i++) { %>
-                        <div class="col mb-md-5 mb-3">
-                            <div class="card h-100">
-                                <a href="/products/<%=products[i]._id%>">
-                                    <img class="card-img-top product-img"
-                                        src="<%=products[i].images[0]?products[i].images[0].url:'/assets/banner.png'%>"
-                                        alt="<%=products[i].name%>" />
-                                </a>
-                                <div class="card-body pt-md-2">
-                                    <div class="text-center">
-                                        <h5 class="fw-bolder">
-                                            <a style="text-decoration:none;" class="text-dark"
-                                                href="/products/<%=products[i]._id%>">
-                                                <%= products[i].name %>
-                                            </a>
-                                        </h5>
-                                        $<%= products[i].price %>
-                                    </div>
-                                </div>
-                                <div class="card-footer border-top-0 bg-transparent">
-                                    <div class="text-center"></button><a class="btn btn-secondary mt-auto"
-                                            href="/products/<%=products[i]._id%>">View
-                                            details</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <%}%>
-                </div>
-            </div>
-        </section>
-        <nav class="d-flex justify-content-center">
-            <ul class="pagination">
-                <!-- Previous -->
-                <li class="mb-4 page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-                    <a class="page-link"
-                        href="<%= currentPage === 1 ? '#' : ('?page=' + (currentPage - 1) + (search?'&search='+encodeURIComponent(search):''))%>">
-                        Previous
-                    </a>
-                </li>
-
-                <!-- Page Numbers -->
-                <% for (let i=1; i <=totalPages; i++) { %>
-                    <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                        <a class="page-link" href="?page=<%= i %><%=search?'&search='+encodeURIComponent(search):''%>">
-                            <%= i %>
-                        </a>
-                    </li>
-                    <% } %>
-                        <!-- Next -->
-                        <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-                            <a class="page-link"
-                                href="<%= currentPage === totalPages ? '#' : ('?page=' + (currentPage + 1) +(search?'&search='+encodeURIComponent(search):''))%>">
-                                Next
-                            </a>
-                        </li>
-            </ul>
-        </nav>
+<!-- Header-->
+<div id="page-bg">
+  <div class="d-md-flex justify-content-center">
+    <div class="d-flex justify-content-center">
+      <form action="/products" class="d-flex" id="searchForm">
+        <input
+          id="searchBar"
+          class="form-control border-0 form-control text-center"
+          type="text"
+          name="search"
+          value="<%=typeof search === 'string'? search:''%>"
+          placeholder="search"
+        /><button
+          type="submit"
+          id="searchIcon"
+          class="input-group-text border-0"
+        >
+          <i class="bi bi-search"></i>
+        </button>
+      </form>
     </div>
+    <div
+      class="d-flex justify-content-center mt-3 mt-md-0 ms-0 ms-md-5 ps-md-5"
+    >
+      <select class="text-center rounded-3" name="view" id="view">
+        <option value="none" selected>-</option>
+        <option value="all">View All</option>
+      </select>
+    </div>
+  </div>
+
+  <section class="pt-4">
+    <div class="container product">
+      <div
+        class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center"
+      >
+        <% for (let i=0; i< products.length; i++) { %>
+        <div class="col mb-md-5 mb-3">
+          <div class="card h-100">
+            <a href="/products/<%=products[i]._id%>">
+              <img
+                class="card-img-top product-img"
+                src="<%=products[i].images[0]?products[i].images[0].url:'/assets/banner.png'%>"
+                alt="<%=products[i].name%>"
+              />
+            </a>
+            <div class="card-body pt-md-2">
+              <div class="text-center">
+                <h5 class="fw-bolder">
+                  <a
+                    style="text-decoration: none"
+                    class="text-dark"
+                    href="/products/<%=products[i]._id%>"
+                  >
+                    <%= products[i].name %>
+                  </a>
+                </h5>
+                $<%= products[i].price %>
+              </div>
+            </div>
+            <div class="card-footer border-top-0 bg-transparent">
+              <div class="text-center">
+                <a
+                  class="btn btn-secondary mt-auto"
+                  href="/products/<%=products[i]._id%>"
+                  >View details</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <%}%>
+      </div>
+    </div>
+  </section>
+  <nav class="d-flex justify-content-center">
+    <ul class="pagination">
+      <!-- Previous -->
+      <li class="mb-4 page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+        <a
+          class="page-link"
+          href="<%= currentPage === 1 ? '#' : ('?page=' + (currentPage - 1) + (search?'&search='+encodeURIComponent(search):''))%>"
+        >
+          Previous
+        </a>
+      </li>
+
+      <!-- Page Numbers -->
+      <% for (let i=1; i <=totalPages; i++) { %>
+      <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+        <a
+          class="page-link"
+          href="?page=<%= i %><%=search?'&search='+encodeURIComponent(search):''%>"
+        >
+          <%= i %>
+        </a>
+      </li>
+      <% } %>
+      <!-- Next -->
+      <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+        <a
+          class="page-link"
+          href="<%= currentPage === totalPages ? '#' : ('?page=' + (currentPage + 1) +(search?'&search='+encodeURIComponent(search):''))%>"
+        >
+          Next
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>

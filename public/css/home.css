@@ -91,6 +91,10 @@ main {
   justify-content: center;
 }
 
+.lastCol {
+  width: 50px;
+}
+
 #order {
   margin-top: 100px;
 }
@@ -297,5 +301,8 @@ body.login-bg {
 @media (min-width: 500px) {
   .card-footer {
     margin-top: -15px;
+  }
+  table {
+    min-width: 600px;
   }
 }

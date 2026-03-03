@@ -4,19 +4,22 @@
 
 
     <% if (cart.items.length===0) {%>
-        <h1 class="text-dark mt-5" id="cart">Your cart is empty</h1>
+        <h1 class="text-dark mt-5" id="cart">
+            Your cart is empty
+        </h1>
         <% } else {%>
             <div class="text-center mt-3 mb-5">
                 <h1>Shopping Cart</h1>
             </div>
-            <table class="table align-middle w-50 mx-auto" style="table-layout: fixed;">
+            <div class="d-flex justify-content-center">
+            <table class="table table-sm align-middle w-auto" style="table-layout: fixed;">
                 <thead>
                     <tr>
                         <th  class="text-center">Product</th>
                         <th class="text-center">Name</th>
                         <th class="text-center">Size</th>
                         <th class="text-center">Price</th>
-                        <th></th>
+                        <th class="lastCol"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,7 +42,7 @@
                                     $<%=p.product.price%>
                                         <% subtotal+=p.product.price;%>
                                 </td>
-                                <td class="text-end">
+                                <td class="text-end lastCol"">
                                     <form action="/cart/remove" method="POST" class="d-inline">
                                         <input type="hidden" name="productId" value="<%= p.product._id %>">
                                         <input type="hidden" name="size" value="<%= p.size[0] %>">
@@ -62,6 +65,8 @@
                     </tr>
                 </tfoot>
             </table>
+            </div>
+
             <div class="container mb-3">
                 <div class="d-flex justify-content-center align-items-center">
                     <div>

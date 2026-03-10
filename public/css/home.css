@@ -263,6 +263,15 @@ body.login-bg {
   object-fit: contain;
 }
 
+.navbar {
+  position: relative;
+  z-index: 1050;
+}
+
+.dropdown-menu {
+  z-index: 2000;
+}
+
 @media (max-width: 768px) {
   /* Center the whole column vertically */
   main {

@@ -1,66 +1,119 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid px-4 px-lg-5 gap-3">
-        <img src="/assets/banner.png" class="navbar-brand-img" style="height:40px; width:auto" alt="">
-        <a class="navbar-brand" href="/">Clover Terrarium</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
-                class="navbar-toggler-icon"></span></button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-4">
-                <li class="nav-item"><a class="nav-link" aria-current="page" href="/">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="/products">Shop</a></li>
-                <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
-                <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+  <div class="container-fluid px-4 px-lg-5 gap-3">
+    <img
+      src="/assets/banner.png"
+      class="navbar-brand-img"
+      style="height: 40px; width: auto"
+      alt=""
+    />
+    <a class="navbar-brand" href="/">Clover Terrarium</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div
+      class="collapse navbar-collapse text-center"
+      id="navbarSupportedContent"
+    >
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-4">
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="/">Home</a>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="/products">Shop</a></li>
+        <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+        <li class="nav-item">
+          <a class="nav-link" href="/contact">Contact</a>
+        </li>
 
-                <% const cuser=(typeof currentUser !=='undefined' )? currentUser:null; %>
-                    <%const safeReturnTo=(currentUrl.startsWith('/login') ||
-                        currentUrl.startsWith('/register'))?'/':currentUrl;%>
-                        <%if (cuser && cuser.role==='admin' ) {%>
-                            <li class="nav-item"><a class="nav-link" href="/products/new">Add Product</a></li>
-                            <%} %>
+        <% const cuser=(typeof currentUser !=='undefined' )? currentUser:null;
+        %> <%const safeReturnTo=(currentUrl.startsWith('/login') ||
+        currentUrl.startsWith('/register'))?'/':currentUrl;%> <%if (cuser &&
+        cuser.role==='admin' ) {%>
+        <li class="nav-item">
+          <a class="nav-link" href="/products/new">Add Product</a>
+        </li>
+        <%} %>
+      </ul>
+      <form class="text-center">
+        <ul class="navbar-nav mb-2 mb-lg-0 gap-lg-4 gap-2">
+          <% if (!cuser) {%>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="/register?returnTo=<%= encodeURIComponent(safeReturnTo) %>"
+              >Register</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="/login?returnTo=<%= encodeURIComponent(safeReturnTo) %>"
+              >Sign in</a
+            >
+          </li>
+          <% } else { %>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              id="navbarDropdown"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              >Hi, <%=currentUser.username%> <i class="bi bi-person-fill"></i
+            ></a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <% if (cuser && cuser.role==='admin' ) { %>
+              <li>
+                <a class="dropdown-item" href="/admin/dashboard">Dashboard</a>
+              </li>
+              <%}%> <% if (cuser && cuser.role!=='admin' ) { %>
+
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="/orderhistory?returnTo=<%= encodeURIComponent(safeReturnTo) %>"
+                  >View Orders</a
+                >
+              </li>
+              <%}%>
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="/update?returnTo=<%= encodeURIComponent(safeReturnTo) %>"
+                  >Reset password</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="/logout?returnTo=<%= encodeURIComponent(safeReturnTo) %>"
+                  >Sign out</a
+                >
+              </li>
             </ul>
-            <form class="d-flex">
-                <ul class="navbar-nav mb-2 mb-lg-0 gap-lg-4 gap-2">
-                    <% if (!cuser) {%>
-                        <li class="navbar-nav nav-item"><a class="nav-link"
-                                href="/register?returnTo=<%= encodeURIComponent(safeReturnTo) %>">Register</a>
-                        </li>
-                        <li class="navbar-nav nav-item me-3"><a class="nav-link"
-                                href="/login?returnTo=<%= encodeURIComponent(safeReturnTo) %>">Sign in</a></li>
-                        <% } else { %>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false">Hi, <%=currentUser.username%> <i
-                                            class="bi bi-person-fill"></i></a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <% if (cuser && cuser.role==='admin' ) { %>
-                                        <li><a class="dropdown-item" href="/admin/dashboard">Dashboard
-                                                <%}%>
-                                                    <% if (cuser && cuser.role!=='admin' ) { %>
-                                        <li><a class="dropdown-item"
-                                                href="/orderhistory?returnTo=<%= encodeURIComponent(safeReturnTo) %>">View
-                                                Orders</a></li>
-                                        <%}%>
-                                            <li><a class="dropdown-item"
-                                                    href="/update?returnTo=<%= encodeURIComponent(safeReturnTo) %>">Reset
-                                                    password</a></li>
-                                            <li><a class="dropdown-item"
-                                                    href="/logout?returnTo=<%= encodeURIComponent(safeReturnTo) %>">Sign
-                                                    out</a>
-                                            </li>
-                                </ul>
-                            </li>
-                            <% } %>
-                                <li class="navbar-nav nav-item me-3">
-                                    <a href="/cart" class="btn btn-outline-dark" type="submit">
-                                        <i class="bi-cart-fill me-1"></i>Cart
-                                        <span class="badge bg-dark text-white ms-1 rounded-pill" id="cartCount">
-                                            <%=cartCount%>
-                                        </span>
-                                    </a>
-                                </li>
-                </ul>
-            </form>
-        </div>
+          </li>
+          <% } %>
+          <li class="nav-item">
+            <a href="/cart" class="btn btn-outline-dark" type="submit">
+              <i class="bi-cart-fill me-1"></i>Cart
+              <span
+                class="badge bg-dark text-white ms-1 rounded-pill"
+                id="cartCount"
+              >
+                <%=cartCount%>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </form>
     </div>
+  </div>
 </nav>

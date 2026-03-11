@@ -10,7 +10,7 @@
           type="text"
           name="search"
           value="<%=typeof search === 'string'? search:''%>"
-          placeholder="search"
+          placeholder="Search"
         /><button
           type="submit"
           id="searchIcon"
@@ -29,8 +29,8 @@
         id="view"
         onchange="window.location.href = '?view=' + this.value"
       >
-        <option value="none" selected>-</option>
-        <option value="all">View All</option>
+        <option value="paged" <%=view !=='all'?'selected':''%>>-</option>
+        <option value="all" <%=view === 'all'?'selected':''%>>View All</option>
       </select>
     </div>
   </div>

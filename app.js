@@ -102,14 +102,14 @@ const sessionConfig = {
 app.post(
   "/checkout/webhook",
   express.raw({ type: "application/json" }),
-  stripe.webhook
+  stripe.webhook,
 );
 
 // do the same thing for coinbase
 app.post(
   "/checkout/coinbase/webhook",
   express.raw({ type: "application/json" }),
-  coinbase.coinbaseWebhook
+  coinbase.coinbaseWebhook,
 );
 
 app.use(express.urlencoded({ extended: true }));
@@ -142,7 +142,7 @@ app.use(
   helmet({
     contentSecurityPolicy: false,
     permissionsPolicy: false,
-  })
+  }),
 );
 
 passport.use(new LocalStrategy(User.authenticate()));
@@ -152,7 +152,10 @@ passport.deserializeUser(User.deserializeUser());
 app.use(setLocals);
 
 if (process.env.NODE_ENV == "production") {
-  app.use(["/login", "/register", "/robots.txt"], authLimiter);
+  app.use(
+    ["/login", "/", "/contact", "/register", "/about", "/robots.txt"],
+    authLimiter,
+  );
 }
 
 app.use("/checkout", checkoutRoute);

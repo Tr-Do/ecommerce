@@ -4,6 +4,7 @@ const angleOutput = document.getElementById("angleOutput");
 const resetBtn = document.getElementById("resetBtn");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const fileName = document.getElementById("fileName");
 
 let img = null;
 let points = [];
@@ -140,6 +141,7 @@ function stopDragging() {
 
   isDragging = false;
   draggedPointIndex = -1;
+  canvas.style.cursor = "crosshair";
 
   if (points.length === 3) {
     setStatus("Measurement complete. Drag points to adjust.");
@@ -195,6 +197,7 @@ canvas.addEventListener("pointerdown", (e) => {
   if (hitIndex !== -1) {
     draggedPointIndex = hitIndex;
     isDragging = true;
+    canvas.style.cursor = "grabbing";
     canvas.setPointerCapture(e.pointerId);
     redraw();
     return;
@@ -233,18 +236,16 @@ canvas.addEventListener("pointermove", (e) => {
   }
 
   const hitIndex = getPointAt(x, y);
+  canvas.style.cursor = hitIndex !== -1 ? "grab" : "crosshair";
+});
 
-  if (hitIndex !== -1) {
-    draggedPointIndex = hitIndex;
-    isDragging = true;
-    canvas.style.cursor = "grabbing";
-    canvas.setPointerCapture(e.pointerId);
-    redraw();
-    return;
-  }
+imageInput.addEventListener("change", () => {
+  if (!fileName) return;
+  fileName.textContent = imageInput.files.length
+    ? imageInput.files[0].name
+    : "";
 });
 
 canvas.addEventListener("pointerup", stopDragging);
 canvas.addEventListener("pointercancel", stopDragging);
-
 resetBtn.addEventListener("click", clearMeasurement);

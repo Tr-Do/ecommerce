@@ -11,7 +11,9 @@
   <span id="angleOutput" class="fw-bold"></span>
   <button id="resetBtn" class="btn btn-danger">Reset</button>
   <span id="status">Upload an image</span>
-  <input type="file" id="imageInput" accept="image/*" />
+  <input type="file" id="imageInput" hidden />
+  <label for="imageInput" class="btn btn-primary">Choose File</label>
+  <span id="fileName"></span>
 </div>
 
 <script src="/js/angle.js"></script>

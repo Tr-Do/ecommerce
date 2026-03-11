@@ -273,13 +273,16 @@ body.login-bg {
 }
 
 .canvas-wrap {
-  width: 75%;
-  min-height: 500px;
+  width: min(100%, 1000px);
+  margin: 0 auto;
+  min-height: 300px;
   overflow: auto;
 }
 
 #canvas {
   cursor: crosshair;
+  max-width: 100%;
+  height: auto;
 }
 
 @media (max-width: 768px) {

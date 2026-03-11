@@ -178,6 +178,10 @@ app.get("/contact", (req, res) => {
   res.render("contact", { bodyClass: "contact-bg" });
 });
 
+app.get("/angle", (req, res) => {
+  res.render("angle");
+});
+
 app.use((req, res, next) => {
   next(new AppError("Page not found", 404));
 });

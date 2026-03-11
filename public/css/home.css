@@ -272,6 +272,14 @@ body.login-bg {
   z-index: 2000;
 }
 
+.canvas-wrap {
+  overflow: auto;
+}
+
+#canvas {
+  cursor: crosshair;
+}
+
 @media (max-width: 768px) {
   /* Center the whole column vertically */
   main {

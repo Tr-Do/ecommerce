@@ -7,6 +7,11 @@ const ctx = canvas.getContext("2d");
 
 let img = null;
 let points = [];
+let draggedPointIndex = -1;
+let isDragging = false;
+
+const POINT_RADIUS = 5;
+const HIT_RADIUS = 12;
 
 function setStatus(message) {
   statusEl.textContent = message;
@@ -15,7 +20,10 @@ function setStatus(message) {
 function clearMeasurement() {
   points = [];
   angleOutput.textContent = "";
+  draggedPointIndex = -1;
+  isDragging = false;
   redraw();
+
   if (img) {
     setStatus("Click 3 points for angle");
   } else {
@@ -26,7 +34,6 @@ function clearMeasurement() {
 function angleFromThreePoints(A, B, C) {
   const v1x = A.x - B.x;
   const v1y = A.y - B.y;
-
   const v2x = C.x - B.x;
   const v2y = C.y - B.y;
 
@@ -36,58 +43,70 @@ function angleFromThreePoints(A, B, C) {
   if (mag1 === 0 || mag2 === 0) return null;
 
   const dot = v1x * v2x + v1y * v2y;
-
   let cosTheta = dot / (mag1 * mag2);
   cosTheta = Math.max(-1, Math.min(1, cosTheta));
 
-  const angle = Math.acos(cosTheta) * (180 / Math.PI);
-
-  return angle;
+  return Math.acos(cosTheta) * (180 / Math.PI);
 }
 
-function drawPoint(point, label) {
+function drawPoint(point, label, isActive = false) {
+  ctx.save();
   ctx.beginPath();
-  ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
-  ctx.fillStyle = "red";
+  ctx.arc(point.x, point.y, POINT_RADIUS, 0, Math.PI * 2);
+  ctx.fillStyle = isActive ? "orange" : "red";
   ctx.fill();
 
   ctx.font = "16px Arial";
-  ctx.fillStyle = "red";
+  ctx.fillStyle = isActive ? "orange" : "red";
   ctx.fillText(label, point.x + 8, point.y - 8);
-}
-
-function distance(p1, p2) {
-  return Math.hypot(p2.x - p1.x, p2.y - p1.y);
+  ctx.restore();
 }
 
 function drawLine(p1, p2, color) {
+  ctx.save();
   ctx.beginPath();
   ctx.moveTo(p1.x, p1.y);
   ctx.lineTo(p2.x, p2.y);
   ctx.lineWidth = 3;
   ctx.strokeStyle = color;
   ctx.stroke();
+  ctx.restore();
 }
+
+function distance(p1, p2) {
+  return Math.hypot(p2.x - p1.x, p2.y - p1.y);
+}
+
+function getCanvasCoordinates(event) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+
+  return {
+    x: (event.clientX - rect.left) * scaleX,
+    y: (event.clientY - rect.top) * scaleY,
+  };
+}
+
+function getPointAt(x, y) {
+  for (let i = points.length - 1; i >= 0; i--) {
+    const p = points[i];
+    if (Math.hypot(x - p.x, y - p.y) <= HIT_RADIUS) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 function redraw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   if (img) {
-    const scale = Math.min(
-      canvas.width / img.width,
-      canvas.height / img.height,
-    );
-
-    const drawWidth = img.width * scale;
-    const drawHeight = img.height * scale;
-
-    const offsetX = (canvas.width - drawWidth) / 2;
-    const offsetY = (canvas.height - drawHeight) / 2;
-
-    ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
   }
 
   for (let i = 0; i < points.length; i++) {
-    drawPoint(points[i], String(i + 1));
+    drawPoint(points[i], String(i + 1), i === draggedPointIndex);
   }
 
   if (points.length >= 2) {
@@ -99,13 +118,9 @@ function redraw() {
 
     const angle = angleFromThreePoints(points[0], points[1], points[2]);
 
-    console.log("points:", points);
-    console.log("angle:", angle);
-    console.log("angleOutput element:", angleOutput);
-
     if (angle === null || Number.isNaN(angle)) {
       angleOutput.textContent = "Invalid measurement";
-      setStatus("One of the lines has zero length.");
+      setStatus("One of the rays has zero length.");
       return;
     }
 
@@ -118,6 +133,21 @@ function redraw() {
     ctx.fillText(text, 20, 30);
     ctx.restore();
   }
+}
+
+function stopDragging() {
+  if (!isDragging) return;
+
+  isDragging = false;
+  draggedPointIndex = -1;
+
+  if (points.length === 3) {
+    setStatus("Measurement complete. Drag points to adjust.");
+  } else if (img) {
+    setStatus(`Point placement in progress. ${3 - points.length} remaining.`);
+  }
+
+  redraw();
 }
 
 imageInput.addEventListener("change", (e) => {
@@ -145,23 +175,32 @@ imageInput.addEventListener("change", (e) => {
 
     points = [];
     angleOutput.textContent = "";
+    draggedPointIndex = -1;
+    isDragging = false;
+
     setStatus("Click 3 points for angle");
     redraw();
     URL.revokeObjectURL(objectUrl);
   };
+
   newImg.src = objectUrl;
 });
 
-canvas.addEventListener("click", (event) => {
+canvas.addEventListener("pointerdown", (e) => {
   if (!img) return;
+
+  const { x, y } = getCanvasCoordinates(e);
+  const hitIndex = getPointAt(x, y);
+
+  if (hitIndex !== -1) {
+    draggedPointIndex = hitIndex;
+    isDragging = true;
+    canvas.setPointerCapture(e.pointerId);
+    redraw();
+    return;
+  }
+
   if (points.length >= 3) return;
-
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
-
-  const x = (event.clientX - rect.left) * scaleX;
-  const y = (event.clientY - rect.top) * scaleY;
 
   const newPoint = { x, y };
 
@@ -175,10 +214,37 @@ canvas.addEventListener("click", (event) => {
   if (points.length < 3) {
     setStatus(`Point ${points.length} placed. ${3 - points.length} remaining.`);
   } else {
-    setStatus("Measurement complete.");
+    setStatus("Measurement complete. Drag points to adjust.");
   }
 
   redraw();
 });
+
+canvas.addEventListener("pointermove", (e) => {
+  if (!img) return;
+
+  const { x, y } = getCanvasCoordinates(e);
+
+  if (isDragging && draggedPointIndex !== -1) {
+    points[draggedPointIndex] = { x, y };
+    canvas.style.cursor = "grabbing";
+    redraw();
+    return;
+  }
+
+  const hitIndex = getPointAt(x, y);
+
+  if (hitIndex !== -1) {
+    draggedPointIndex = hitIndex;
+    isDragging = true;
+    canvas.style.cursor = "grabbing";
+    canvas.setPointerCapture(e.pointerId);
+    redraw();
+    return;
+  }
+});
+
+canvas.addEventListener("pointerup", stopDragging);
+canvas.addEventListener("pointercancel", stopDragging);
 
 resetBtn.addEventListener("click", clearMeasurement);

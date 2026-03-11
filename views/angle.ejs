@@ -1,14 +1,14 @@
 <% layout('layouts/boilerplate') %>
 
 <div
-  class="canvas-wrap border border-secondary-subtle d-block mt-5 w-75 h-75 mb-3 mx-auto"
+  class="canvas-wrap border border-secondary-subtle mt-5 mb-3 mx-auto d-flex justify-content-center align-items-center"
 >
   <canvas id="canvas" class="d-block"></canvas>
 </div>
 <div
   class="controls d-flex flex-column justify-content-center align-items-center flex-wrap gap-2 mb-5"
 >
-  <span id="angleOutput"></span>
+  <span id="angleOutput" class="fw-bold"></span>
   <button id="resetBtn" class="btn btn-danger">Reset</button>
   <span id="status">Upload an image</span>
   <input type="file" id="imageInput" accept="image/*" class="ms-5 ps-5" />

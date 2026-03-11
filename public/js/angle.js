@@ -17,7 +17,7 @@ function clearMeasurement() {
   angleOutput.textContent = "";
   redraw();
   if (img) {
-    setStatus("Click 3 points: 2 for line 1, 1 for line 2");
+    setStatus("Click 3 points for angle");
   } else {
     setStatus("Upload an image");
   }
@@ -72,7 +72,18 @@ function redraw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   if (img) {
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const scale = Math.min(
+      canvas.width / img.width,
+      canvas.height / img.height,
+    );
+
+    const drawWidth = img.width * scale;
+    const drawHeight = img.height * scale;
+
+    const offsetX = (canvas.width - drawWidth) / 2;
+    const offsetY = (canvas.height - drawHeight) / 2;
+
+    ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
   }
 
   for (let i = 0; i < points.length; i++) {
@@ -134,7 +145,7 @@ imageInput.addEventListener("change", (e) => {
 
     points = [];
     angleOutput.textContent = "";
-    setStatus("Click 3 points: 2 for line 1, 1 for line 2");
+    setStatus("Click 3 points for angle");
     redraw();
     URL.revokeObjectURL(objectUrl);
   };

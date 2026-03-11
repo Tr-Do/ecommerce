@@ -273,6 +273,8 @@ body.login-bg {
 }
 
 .canvas-wrap {
+  width: 75%;
+  min-height: 500px;
   overflow: auto;
 }
 

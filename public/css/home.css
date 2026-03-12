@@ -236,20 +236,20 @@ body.login-bg {
 }
 
 /* force the carousel itself to have the same height as the slides */
-#carouselExampleFade {
-  width: min(700px, 100%);
-  height: clamp(250px, 60vw, 500px);
-  position: relative;
+
+#contentCarousel {
+  margin-top: 5%;
 }
 
 /* make inner + items inherit that height */
-#carouselExampleFade .carousel-inner,
-#carouselExampleFade .carousel-item {
+.carousel-inner,
+.carousel-item {
+  margin-top: 5%;
   height: 100%;
 }
 
 /* make images fill the 500px box */
-#carouselExampleFade .carousel-item img {
+.carousel-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -326,5 +326,8 @@ body.login-bg {
   }
   table {
     min-width: 600px;
+  }
+  .canvas-wrap {
+    min-height: 500px;
   }
 }

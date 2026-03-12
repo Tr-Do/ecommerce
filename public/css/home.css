@@ -243,15 +243,19 @@ body.login-bg {
 
 #carouselExample {
   width: min(700px, 100%);
-  height: clamp(250px, 60vw, 800px);
+  height: clamp(400px, 60vw, 800px);
   overflow: hidden;
+  margin-top: 3%;
 }
 
 /* make inner + items inherit that height */
 #carouselExample .carousel-inner,
 #carouselExample .carousel-item {
-  margin-top: 5%;
   height: 100%;
+}
+
+#carouselExample .carousel-item {
+  background-color: #f8f9fa;
 }
 
 /* make images fill the 500px box */
@@ -341,6 +345,6 @@ body.login-bg {
 
 @media (max-width: 990px) {
   .card-title {
-    margin-top: 2.5rem;
+    margin-top: 1rem;
   }
 }

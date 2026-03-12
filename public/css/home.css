@@ -241,18 +241,25 @@ body.login-bg {
   margin-top: 5%;
 }
 
+#carouselExample {
+  width: min(700px, 100%);
+  height: clamp(250px, 60vw, 800px);
+  overflow: hidden;
+}
+
 /* make inner + items inherit that height */
-.carousel-inner,
-.carousel-item {
+#carouselExample .carousel-inner,
+#carouselExample .carousel-item {
   margin-top: 5%;
   height: 100%;
 }
 
 /* make images fill the 500px box */
-.carousel-item img {
+#carouselExample .carousel-item img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   display: block;
 }
 
@@ -329,5 +336,11 @@ body.login-bg {
   }
   .canvas-wrap {
     min-height: 500px;
+  }
+}
+
+@media (max-width: 990px) {
+  .card-title {
+    margin-top: 2.5rem;
   }
 }

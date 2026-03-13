@@ -135,7 +135,9 @@
     id="reviewBody"
   >
     <div class="col-12 col-lg-5">
-      <% if (currentUser) { %>
+      <% const alreadyReviewed = currentUser? product.reviews.some(review =>
+      review.author._id.toString() === currentUser._id.toString()):false %> <%if
+      (currentUser && !alreadyReviewed) { %>
       <h2>Leave a review</h2>
       <form
         action="/products/<%=product._id%>/reviews"

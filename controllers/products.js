@@ -83,7 +83,8 @@ module.exports.createProduct = async (req, res) => {
   for (const file of imageUploads) {
     const result = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
-        { folder: "product" },
+        { folder: "product", resource_type: "auto" },
+
         (error, result) => (error ? reject(error) : resolve(result)),
       );
       stream.end(file.buffer);
@@ -93,6 +94,8 @@ module.exports.createProduct = async (req, res) => {
   product.images = cloudinaryImages.map((f) => ({
     url: f.secure_url || f.url,
     filename: f.public_id,
+    type: f.resource_type,
+    format: f.format,
   }));
 
   // Arrange image order
@@ -305,7 +308,7 @@ module.exports.updateProduct = async (req, res) => {
   for (const file of imageUploads) {
     const result = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
-        { folder: "product" },
+        { folder: "product", resource_type: "auto" },
         (error, result) => (error ? reject(error) : resolve(result)),
       );
       stream.end(file.buffer);
@@ -316,8 +319,10 @@ module.exports.updateProduct = async (req, res) => {
   const imgs = cloudinaryImages.map((f) => {
     const url = f.secure_url || f.url;
     const filename = f.public_id;
+    const type = f.resource_type;
+    const format = f.format;
     if (!url) throw new Error("No url found");
-    return { url, filename };
+    return { url, filename, type, format };
   });
   product.images.push(...imgs);
 

@@ -5,6 +5,8 @@ const Review = require("./review");
 const imageSchema = new Schema({
   url: String,
   filename: String,
+  type: String,
+  format: String,
 });
 
 const fileSchema = new Schema(

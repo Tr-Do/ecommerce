@@ -1,19 +1,27 @@
 <% layout('layouts/boilerplate') %>
 
 <div
-  class="canvas-wrap border mt-5 mb-3 mx-auto d-flex justify-content-center align-items-center"
+  class="UI d-none canvas-wrap border mt-5 mb-3 mx-auto d-flex justify-content-center align-items-center"
 >
   <canvas id="canvas" class="d-block"></canvas>
 </div>
 <div
-  class="controls d-flex flex-column justify-content-center align-items-center gap-2 mb-5"
+  class="UI d-none controls d-flex flex-column justify-content-center align-items-center gap-2 mb-5"
 >
   <span id="angleOutput" class="fw-bold"></span>
   <button id="resetBtn" class="btn btn-danger">Reset</button>
-  <span id="status">Upload an image</span>
   <input type="file" id="imageInput" hidden />
-  <label for="imageInput" class="btn btn-primary">Choose File</label>
+  <label for="imageInput" class="btn btn-lg btn-primary">Upload Image</label>
   <span id="fileName"></span>
+</div>
+
+<div id="uploadImg" class="d-flex justify-content-center align-items-center">
+  <label
+    for="imageInput"
+    id="uploadBigBtn"
+    class="btn btn-lg btn-primary d-flex justify-content-center align-items-center fw-bold gap-3"
+    >Upload Image <i class="bi bi-arrow-bar-up"></i>
+  </label>
 </div>
 
 <script src="/js/measureAngle.js"></script>

@@ -103,6 +103,10 @@ main {
   margin-top: 10px;
 }
 
+#uploadImg {
+  height: 100%;
+}
+
 #search,
 #orderList th,
 #orderList td,
@@ -117,6 +121,11 @@ main {
 #userList,
 #dashboard {
   width: 100%;
+}
+
+#uploadBigBtn {
+  width: 300px;
+  height: 12%;
 }
 
 #adminDashboard {

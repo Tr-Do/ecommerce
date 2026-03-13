@@ -1,10 +1,11 @@
 const imageInput = document.getElementById("imageInput");
-const statusEl = document.getElementById("status");
 const angleOutput = document.getElementById("angleOutput");
 const resetBtn = document.getElementById("resetBtn");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const fileName = document.getElementById("fileName");
+const uploadBigBtn = document.getElementById("uploadImg");
+const UI = document.querySelectorAll(".UI");
 
 let img = null;
 let points = [];
@@ -14,22 +15,12 @@ let isDragging = false;
 const POINT_RADIUS = 5;
 const HIT_RADIUS = 12;
 
-function setStatus(message) {
-  statusEl.textContent = message;
-}
-
 function clearMeasurement() {
   points = [];
   angleOutput.textContent = "";
   draggedPointIndex = -1;
   isDragging = false;
   redraw();
-
-  if (img) {
-    setStatus("Click 3 points for angle");
-  } else {
-    setStatus("Upload an image");
-  }
 }
 
 function angleFromThreePoints(A, B, C) {
@@ -121,7 +112,6 @@ function redraw() {
 
     if (angle === null || Number.isNaN(angle)) {
       angleOutput.textContent = "Invalid measurement";
-      setStatus("One of the rays has zero length.");
       return;
     }
 
@@ -143,16 +133,12 @@ function stopDragging() {
   draggedPointIndex = -1;
   canvas.style.cursor = "crosshair";
 
-  if (points.length === 3) {
-    setStatus("Measurement complete. Drag points to adjust.");
-  } else if (img) {
-    setStatus(`Point placement in progress. ${3 - points.length} remaining.`);
-  }
-
   redraw();
 }
 
 imageInput.addEventListener("change", (e) => {
+  uploadBigBtn.classList.add("d-none");
+  UI.forEach((e) => e.classList.remove("d-none"));
   const file = e.target.files[0];
   if (!file) return;
 
@@ -163,7 +149,6 @@ imageInput.addEventListener("change", (e) => {
   const MAX_HEIGHT = 700;
 
   newImg.onerror = () => {
-    setStatus("Failed to load image.");
     URL.revokeObjectURL(objectUrl);
   };
 
@@ -180,7 +165,6 @@ imageInput.addEventListener("change", (e) => {
     draggedPointIndex = -1;
     isDragging = false;
 
-    setStatus("Click 3 points for angle");
     redraw();
     URL.revokeObjectURL(objectUrl);
   };
@@ -208,17 +192,10 @@ canvas.addEventListener("pointerdown", (e) => {
   const newPoint = { x, y };
 
   if (points.length >= 1 && distance(points[points.length - 1], newPoint) < 5) {
-    setStatus("Point is too close to the previous point");
     return;
   }
 
   points.push(newPoint);
-
-  if (points.length < 3) {
-    setStatus(`Point ${points.length} placed. ${3 - points.length} remaining.`);
-  } else {
-    setStatus("Measurement complete. Drag points to adjust.");
-  }
 
   redraw();
 });

@@ -1,77 +1,82 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const Review = require('./review');
+const Review = require("./review");
 
 const imageSchema = new Schema({
-    url: String,
-    filename: String
-})
+  url: String,
+  filename: String,
+});
 
-const fileSchema = new Schema({
+const fileSchema = new Schema(
+  {
     bucket: { type: String, required: true },
     key: { type: String, required: true },
     originalName: String,
     contentType: { type: String, required: true },
-    size: Number
-}, { _id: false });
+    size: Number,
+  },
+  { _id: false },
+);
 
-imageSchema.virtual('editThumbnail').get(function () {
-    if (!this.url) return '';
-    return this.url.replace('/upload', '/upload/f_auto,q_auto,c_fit,w_200,h_200')
+imageSchema.virtual("editThumbnail").get(function () {
+  if (!this.url) return "";
+  return this.url.replace("/upload", "/upload/f_auto,q_auto,c_fit,w_200,h_200");
 });
 
-imageSchema.virtual('homepageThumbnail').get(function () {
-    if (!this.url) return '';
-    return this.url.replace('/upload', '/upload/f_auto,q_auto,c_fit,h_300,w_450')
+imageSchema.virtual("homepageThumbnail").get(function () {
+  if (!this.url) return "";
+  return this.url.replace("/upload", "/upload/f_auto,q_auto,c_fit,h_300,w_450");
 });
 
-imageSchema.virtual('showPage').get(function () {
-    if (!this.url) return '';
-    return this.url.replace('/upload', '/upload/f_auto,q_auto,c_fit,h_700,w_700');
+imageSchema.virtual("showPage").get(function () {
+  if (!this.url) return "";
+  return this.url.replace("/upload", "/upload/f_auto,q_auto,c_fit,h_700,w_700");
 });
 
-imageSchema.virtual('cartThumbnail').get(function () {
-    if (!this.url) return '';
-    return this.url.replace('/upload', '/upload/f_auto,q_auto,c_fit,w_50,h_50')
+imageSchema.virtual("cartThumbnail").get(function () {
+  if (!this.url) return "";
+  return this.url.replace("/upload", "/upload/f_auto,q_auto,c_fit,w_50,h_50");
 });
 
-const DesignSchema = new Schema({
+const DesignSchema = new Schema(
+  {
     name: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     price: {
-        type: Number,
-        required: true
+      type: Number,
+      required: true,
     },
     images: [imageSchema],
     description: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     downloadFiles: { type: [fileSchema], default: [] },
     size: {
-        type: [String],
-        default: ['Standard']
+      type: [String],
+      default: ["Standard"],
     },
     reviews: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'Review'
-        }
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Review",
+      },
     ],
     // add timestamp to sort the order upon indexing
-}, { timestamps: true })
+  },
+  { timestamps: true },
+);
 
+DesignSchema.post("findOneAndDelete", async function (doc) {
+  if (doc) {
+    await Review.deleteMany({
+      _id: {
+        $in: doc.reviews,
+      },
+    });
+  }
+});
 
-DesignSchema.post('findOneAndDelete', async function (doc) {
-    if (doc) {
-        await Review.deleteMany({
-            _id: {
-                $in: doc.reviews,
-            }
-        })
-    }
-})
-
-module.exports = mongoose.model('Design', DesignSchema);
+module.exports = mongoose.model("Design", DesignSchema);

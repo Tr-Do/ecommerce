@@ -2,28 +2,24 @@
 <link rel="stylesheet" href="/css/starability-grow.css" />
 <script src="/js/addToCart.js" defer></script>
 <script src="/js/showMediaAndReview.js" defer></script>
+<script src="/js/playVideo.js" defer></script>
 
 <div class="row d-flex align-items-start" id="imgCarousel">
   <div class="col-12 col-lg-7 d-flex justify-content-center">
     <div class="carousel slide" id="carouselExample">
       <div class="carousel-inner">
-        <% product.images.forEach((media, i)=> { %>
+        <% const images = product.images.filter(media => media.type==='image')%>
+        <% images.forEach((media, i)=> { %>
         <div class="carousel-item <%= i===0?'active':''%>">
-          <% if (media.type ==='video') { %>
-          <video class="d-block carousel-img" controls>
-            <source src="<%=media.url%>" type="video/<%=media.format%>" />
-          </video>
-          <% } else { %>
           <img
             src="<%=media.url%>"
             class="d-block carousel-img"
             alt="/assets/banner.png"
           />
-          <% } %>
         </div>
         <%})%>
       </div>
-      <% if(product.images.length>1){ %>
+      <% if(images.length>1){ %>
       <button
         class="carousel-control-prev"
         type="button"
@@ -242,5 +238,12 @@
       <%}%>
     </div>
   </div>
-  <div id="mediaBody"></div>
+  <div id="mediaBody">
+    <% const video = product.images.filter(media => media.type==='video')%> <%
+    video.forEach(v => {%>
+    <video class="d-block carousel-img display-media" controls>
+      <source src="<%=v.url%>" type="video/<%=v.format%>" />
+    </video>
+    <%})%>
+  </div>
 </section>

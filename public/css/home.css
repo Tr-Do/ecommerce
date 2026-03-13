@@ -259,11 +259,27 @@ body.login-bg {
 }
 
 /* make images fill the 500px box */
-#carouselExample .carousel-item img {
+#carouselExample .carousel-item img,
+#carouselExample .carousel-item video {
   width: 100%;
   height: 100%;
   object-fit: contain;
   object-position: center;
+  display: block;
+}
+
+#carouselExample .carousel-control-prev,
+#carouselExample .carousel-control-next {
+  top: 50%;
+  transform: translateY(-50%);
+  height: 48px;
+  opacity: 1;
+}
+
+.display-media {
+  margin-top: 3rem;
+  max-width: 100%;
+  height: auto;
   display: block;
 }
 

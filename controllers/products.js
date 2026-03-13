@@ -2,6 +2,7 @@ const Design = require("../models/design");
 const { throwError } = require("../utils/AppError");
 const cloudinary = require("../cloudinary");
 const { uploadToS3 } = require("../utils/s3Upload");
+const { deleteFromS3 } = require("../utils/s3Delete");
 const Variant = require("../models/variant");
 
 const mkS3Files = async (files, prefix) => {
@@ -372,12 +373,35 @@ module.exports.updateProduct = async (req, res) => {
   res.redirect(`/products/${product._id}`);
 };
 
-module.exports.deleteProduct = async (req, res) => {
-  const { id } = req.params;
-  const product = await Design.findByIdAndDelete(id);
+module.exports.deleteProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const product = await Design.findById(id);
+    throwError(product);
 
-  throwError(product);
+    for (const media of product.images || []) {
+      if (media.filename) {
+        await cloudinary.uploader.destroy(media.filename, {
+          resource_type: media.type === "video" ? "video" : "image",
+        });
+      }
+    }
+    const variants = await Variant.find({ productId: id });
 
-  req.flash("success", "Delete product sucessfully");
-  res.redirect("/products");
+    for (const variant of variants) {
+      for (const file of variant.file || []) {
+        await deleteFromS3({
+          bucket: file.bucket,
+          key: file.key,
+        });
+      }
+    }
+    await Variant.deleteMany({ productId: id });
+    await Design.findByIdAndDelete(id);
+
+    req.flash("success", "Delete product sucessfully");
+    res.redirect("/products");
+  } catch (err) {
+    next(err);
+  }
 };

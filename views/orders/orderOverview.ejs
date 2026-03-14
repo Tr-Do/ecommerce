@@ -51,8 +51,14 @@
           /100).toFixed(2))):'Unpaid' %>
         </td>
 
-        <td rowspan="<%=o.items.length%>">
-          <a href="" class="text-decoration-none">Refund</a>
+        <td rowspan="<%=o.items.length%>" id="refundBtn">
+          <form
+            action="/admin/orders/<%=o.orderNumber%>/refund"
+            method="POST"
+            onsubmit="return confirm('Refund the order?');"
+          >
+            <button class="btn btn-warning" <%=o.payment?.status==='paid'?'':'disabled'%>>Refund</button>
+          </form>
         </td>
 
         <%}%>

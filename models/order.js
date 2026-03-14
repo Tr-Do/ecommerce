@@ -75,7 +75,7 @@ const orderSchema = new Schema(
       },
       status: {
         type: String,
-        enum: ["pending", "paid", "failed", "refunded"],
+        enum: ["pending", "paid", "failed", "refund_requested"],
         default: "pending",
       },
       amountCharged: {
@@ -134,6 +134,23 @@ const orderSchema = new Schema(
         type: String,
         default: null,
         sparse: true,
+      },
+      refundId: {
+        type: String,
+        default: null,
+      },
+      refundStatus: {
+        type: String,
+        default: null,
+      },
+      refundedAt: {
+        type: Date,
+        default: null,
+      },
+      refundAmount: {
+        type: Number,
+        default: null,
+        min: 0,
       },
     },
   },

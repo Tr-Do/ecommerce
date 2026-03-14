@@ -1,10 +1,20 @@
-const express = require('express');
+const express = require("express");
+// mergeParams lets controller access query
 const router = express.Router({ mergeParams: true });
-const reviews = require('../controllers/reviews');
-const { requireLogin, isAuthorOrAdmin, validateReview } = require('../middleware');
+const reviews = require("../controllers/reviews");
+const {
+  requireLogin,
+  isAuthorOrAdmin,
+  validateReview,
+} = require("../middleware");
 
-router.post('/', requireLogin, validateReview, reviews.reviewPost)
+router.post("/", requireLogin, validateReview, reviews.reviewPost);
 
-router.delete('/:reviewId', requireLogin, isAuthorOrAdmin, reviews.reviewDelete);
+router.delete(
+  "/:reviewId",
+  requireLogin,
+  isAuthorOrAdmin,
+  reviews.reviewDelete,
+);
 
 module.exports = router;

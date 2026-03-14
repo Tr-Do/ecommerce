@@ -16,6 +16,7 @@ const checkoutRoute = require("./routes/checkout.js");
 const downloadRoute = require("./routes/download.js");
 const reviewRoute = require("./routes/review.js");
 const adminRoute = require("./routes/admin.js");
+const refundRoute = require("./routes/refund.js");
 const session = require("express-session");
 const flash = require("connect-flash");
 const passport = require("passport");
@@ -165,6 +166,7 @@ app.use("/products", productsRoute);
 app.use("/products/:id/reviews", reviewRoute);
 app.use("/cart", cartRoute);
 app.use("/admin", adminRoute);
+app.use("/admin/:orderId/refund", refundRoute);
 
 app.get("/", (req, res) => {
   res.render("home");

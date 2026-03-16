@@ -46,7 +46,9 @@
         <% if (idx===0) {%>
         <td rowspan="<%=o.items.length%>">$<%=(o.payment.amountTotal)/100%></td>
          <% const status = o.payment?.status==='paid'?'PAID':'UNPAID' %>
-
+        <td rowspan="<%=o.items.length%>" style="color:<%=status==='PAID'?'green':'red'%>">
+         <%=status%>
+        </td>
         <td rowspan="<%=o.items.length%>" id="refundBtn">
           <form
             action="/admin/orders/<%=o.orderNumber%>/refund"

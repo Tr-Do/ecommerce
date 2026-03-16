@@ -17,7 +17,7 @@ module.exports.createSession = async (req, res, next) => {
     }
     const successUrl = new URL(
       "/checkout/success?session_id={CHECKOUT_SESSION_ID}",
-      baseUrl
+      baseUrl,
     ).toString();
     const cancelUrl = new URL("/cart", baseUrl).toString();
 
@@ -45,6 +45,7 @@ module.exports.createSession = async (req, res, next) => {
         amountCharged: null,
         paymentIntentId: null,
         paidAt: null,
+        attemptedAt: new Date(),
         emailSentAt: null,
         card: {
           brand: null,
@@ -70,7 +71,7 @@ module.exports.webhook = async (req, res) => {
     event = stripe.webhooks.constructEvent(
       req.body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET
+      process.env.STRIPE_WEBHOOK_SECRET,
     );
   } catch (err) {
     return res.status(400).send(`Webhook signature failed`);

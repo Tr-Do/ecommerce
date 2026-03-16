@@ -78,6 +78,10 @@ const orderSchema = new Schema(
         enum: ["pending", "paid", "failed", "refund_requested"],
         default: "pending",
       },
+      attemptedAt: {
+        type: Date,
+        default: null,
+      },
       amountCharged: {
         // amount in cents
         type: Number,

@@ -1,51 +1,43 @@
 <% layout('layouts/boilerplate') %>
 
-    <h1 class="text-center my-3">Order History</h1>
-    <div class="table-wrap mb-5">
-        <table class="text-center" id="orderList">
-            <thead>
-                <tr>
-                    <th>Order #</th>
-                    <th>Product</th>
-                    <th>Size</th>
-                    <th>Email</th>
-                    <th>Amount Paid</th>
-                    <th>Order date</th>
-                    <th>Payment information</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% orders.forEach(o=> { %>
-                    <% o.items.forEach((item, idx)=> {%>
-                        <tr>
-                            <% if (idx===0) {%>
-                                <td rowspan="<%=o.items.length%>">
-                                    <%=o.orderNumber%>
-                                </td>
-                                <%}%>
-                                    <td>
-                                        <%=item.name%>
-                                    </td>
-                                    <td>
-                                        <%=item.size%>
-                                    </td>
-                                    <% if (idx===0) {%>
-                                        <td rowspan="<%=o.items.length%>">
-                                            <%=o.email%>
-                                        </td>
-                                        <td rowspan="<%=o.items.length%>">
-                                            <%=(o.email)?('$'+(o.payment.amountTotal /100).toFixed(2)):'Unpaid' %>
-                                        </td>
-                                        <td rowspan="<%=o.items.length%>">
-                                            <%=o.payment.emailSentAt%>
-                                        </td>
-                                        <td rowspan="<%=o.items.length%>">
-                                            <%= o.payment.card.brand%> - <%=o.payment.card.last4%>
-                                        </td>
-                                        <%}%>
-                        </tr>
-                        <%})%>
-                            <%})%>
-            </tbody>
-        </table>
-    </div>
+<h1 class="text-center my-3">Order History</h1>
+<div class="table-wrap mb-5">
+  <table class="text-center" id="orderList">
+    <thead>
+      <tr>
+        <th>Order #</th>
+        <th>Product</th>
+        <th>Size</th>
+        <th>Email</th>
+        <th>Amount Paid</th>
+        <th>Order date</th>
+        <th>Payment information</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% orders.forEach(o=> { %> <% o.items.forEach((item, idx)=> {%>
+      <tr>
+        <% if (idx===0) {%>
+        <td rowspan="<%=o.items.length%>"><%=o.orderNumber%></td>
+        <%}%>
+        <td><%=item.name%></td>
+        <td><%=item.size%></td>
+        <% if (idx===0) {%>
+        <td rowspan="<%=o.items.length%>"><%=o.email%></td>
+        <td rowspan="<%=o.items.length%>">
+          <%=(o.email)?('$'+(o.payment.amountTotal /100).toFixed(2)):'Unpaid' %>
+        </td>
+        <td rowspan="<%=o.items.length%>">
+          <%=(o.payment.paidAt?o.payment.paidAt:o.payment.attemptedAt).toLocaleString('en-us',
+          { year: 'numeric', month:'short', day:'numeric', hour: 'numeric',
+          minute: '2-digit'})%>
+        </td>
+        <td rowspan="<%=o.items.length%>">
+          <%= o.payment.card.brand%> - <%=o.payment.card.last4%>
+        </td>
+        <%}%>
+      </tr>
+      <%})%> <%})%>
+    </tbody>
+  </table>
+</div>

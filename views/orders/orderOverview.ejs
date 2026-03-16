@@ -32,12 +32,12 @@
         <td rowspan="<%=o.items.length%>">
           <a
             href="/admin/orders/<%=o.orderNumber%>"
-            style="text-decoration: none"
+            style="text-decoration: none" class="btn btn-primary"
           >
             <%=o.orderNumber%>
           </a>
         </td>
-        <td rowspan="<%=o.items.length%>"><%=o.payment.emailSentAt%></td>
+        <td rowspan="<%=o.items.length%>"><%=(o.payment.paidAt?o.payment.paidAt:o.payment.attemptedAt).toLocaleString('en-us', { year: 'numeric', month:'short', day:'numeric', hour: 'numeric', minute: '2-digit'})%></td>
         <td rowspan="<%=o.items.length%>"><%=o.email%></td>
 
         <%}%>
@@ -45,11 +45,7 @@
         <td><%=item.size%></td>
         <% if (idx===0) {%>
         <td rowspan="<%=o.items.length%>">$<%=(o.payment.amountTotal)/100%></td>
-        <td rowspan="<%=o.items.length%>">
-          <%= (o.payment?.status==='paid' )?
-          ('$'+(((o.payment.amountCharged??o.payment.amountTotal)
-          /100).toFixed(2))):'Unpaid' %>
-        </td>
+         <% const status = o.payment?.status==='paid'?'PAID':'UNPAID' %>
 
         <td rowspan="<%=o.items.length%>" id="refundBtn">
           <form

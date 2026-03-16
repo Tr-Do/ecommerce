@@ -1,6 +1,6 @@
 <% layout('layouts/boilerplate') %>
 
-    <div><button onclick="location.href='/admin/dashboard'" class="btn btn-lg btn-success mt-3">Order Overview</button>
+    <div><button onclick="location.href='/admin/orderOverview'" class="btn btn-lg btn-success mt-3">Order Overview</button>
     </div>
     <h2 class="text-center mt-5">
         <%=order.orderNumber%>
@@ -12,6 +12,9 @@
         </li>
         <li>
             IP: <a href="https://whatismyipaddress.com/ip/<%=order.ip%>"><%=order.ip%></a>
+        </li>
+        <li>
+            Date: <%=(order.payment.paidAt?order.payment.paidAt:order.payment.attemptedAt).toLocaleString('en-us', { year: 'numeric', month:'short', day:'numeric', hour: 'numeric', minute: '2-digit'})%>
         </li>
         <li>
             Payment provider: <%=order.payment.provider%>

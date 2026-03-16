@@ -19,6 +19,7 @@ module.exports.createPaypalOrder = async (req, res) => {
         status: "pending",
         currency,
         amountTotal: amountTotalCents,
+        attemptedAt: new Date(),
       },
       email: null,
     });
@@ -49,7 +50,7 @@ module.exports.createPaypalOrder = async (req, res) => {
             cancel_url: `${process.env.BASE_URL}/cart`,
           },
         }),
-      }
+      },
     );
 
     const ppOrder = await ppRes
@@ -59,14 +60,14 @@ module.exports.createPaypalOrder = async (req, res) => {
     if (!ppRes.ok) {
       await Order.updateOne(
         { _id: order._id },
-        { $set: { "payment.status": "failed", paypalError: ppOrder } }
+        { $set: { "payment.status": "failed", paypalError: ppOrder } },
       );
       return res.status(502).json(ppOrder);
     }
 
     await Order.updateOne(
       { _id: order._id },
-      { $set: { "payment.paypalOrderId": ppOrder.id } }
+      { $set: { "payment.paypalOrderId": ppOrder.id } },
     );
 
     const approveLink = ppOrder.links?.find((l) => l.rel === "approve");
@@ -116,7 +117,7 @@ module.exports.paypalReturn = async (req, res) => {
           "payment.paypalCaptureId": final.captureId,
           "payment.amountCharged": final.chargedCents,
         },
-      }
+      },
     );
     req.session.cart = { items: [] };
     await deliverFiles(final.dbOrderId);

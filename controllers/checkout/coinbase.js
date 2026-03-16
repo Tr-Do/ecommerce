@@ -26,6 +26,7 @@ module.exports.createCoinbaseCharge = async (req, res) => {
       payment: {
         provider: "coinbase",
         status: "pending",
+        attemptedAt: new Date(),
         currency: localCurrency,
         amountTotal: amountTotalCents,
         coinbaseChargeId: null,
@@ -67,7 +68,7 @@ module.exports.createCoinbaseCharge = async (req, res) => {
             "payment.status": "failed",
             coinbaseError: json,
           },
-        }
+        },
       );
       return res.status(502).json({
         error: "Coinbase charge create failed",
@@ -87,7 +88,7 @@ module.exports.createCoinbaseCharge = async (req, res) => {
         $set: {
           "payment.coinbaseChargeId": charge.id,
         },
-      }
+      },
     );
     return res.json({
       orderId: String(order._id),

@@ -11,16 +11,13 @@
             Email: <%=order.email%>
         </li>
         <li>
-            IP: <a href="https://whatismyipaddress.com/ip/<%=order.ip%>"><%=order.ip%></a>
+            IP: <a href="https://whatismyipaddress.com/ip/<%=order.ip%>" target="_blank""><%=order.ip%></a>
         </li>
         <li>
             Date: <%=(order.payment.paidAt?order.payment.paidAt:order.payment.attemptedAt).toLocaleString('en-us', { year: 'numeric', month:'short', day:'numeric', hour: 'numeric', minute: '2-digit'})%>
         </li>
         <li>
-            Payment provider: <%=order.payment.provider%>
-        </li>
-        <li>
-            Stripe session: <%=order.payment.stripeSessionId%>
+            Payment provider: <%=order.payment.provider.toUpperCase()%>
         </li>
         <li>
             Payment card: <%=order.payment.card?.brand??'-'%>

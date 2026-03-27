@@ -37,19 +37,41 @@ module.exports.index = async (req, res, next) => {
     let products, total, totalPages;
 
     if (view === "all") {
-      products = await Design.find(filter).sort({ createdAt: 1 }).lean();
-      total = (await products).length;
+      products = await Design.aggregate([
+        { $match: filter },
+        {
+          $addFields: {
+            projectNumber: {
+              $toInt: {
+                $arrayElemAt: [{ $split: ["$name", " "] }, 1],
+              },
+            },
+          },
+        },
+        { $sort: { projectNumber: 1 } },
+      ]);
+      total = products.length;
       totalPages = 1;
     } else {
       const limit = 8;
       const skip = (currentPage - 1) * limit;
 
       [products, total] = await Promise.all([
-        await Design.find(filter)
-          .sort({ createdAt: 1 })
-          .skip(skip)
-          .limit(limit)
-          .lean(),
+        Design.aggregate([
+          { $match: filter },
+          {
+            $addFields: {
+              projectNumber: {
+                $toInt: {
+                  $arrayElemAt: [{ $split: ["$name", " "] }, 1],
+                },
+              },
+            },
+          },
+          { $sort: { projectNumber: 1 } },
+          { $skip: skip },
+          { $limit: limit },
+        ]),
         Design.countDocuments(filter),
       ]);
 

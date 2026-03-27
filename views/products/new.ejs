@@ -65,11 +65,11 @@
             class="form-check-input size-check"
             type="checkbox"
             name="product[size][]"
-            data-target="uploadS"
-            value="S"
-            id="size-s"
+            data-target="uploadXS"
+            value="XS"
+            id="size-xs"
           />
-          <label for="size-s">XS</label>
+          <label for="size-xs">XS</label>
         </div>
         <div class="form-check">
           <input
@@ -127,6 +127,17 @@
           multiple
         />
         <ul class="file-list mt-3" id="file"></ul>
+      </div>
+      <div id="uploadXS" class="d-none mb-2">
+        <label for="file" class="form-label">Upload XS files:</label>
+        <input
+          class="form-control fileUpload"
+          type="file"
+          name="designFileXS"
+          data-size="XS"
+          multiple
+        />
+        <ul class="file-list mt-3" id="file-S"></ul>
       </div>
       <div id="uploadS" class="d-none mb-2">
         <label for="file" class="form-label">Upload S files:</label>

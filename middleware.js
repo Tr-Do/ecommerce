@@ -8,6 +8,7 @@ module.exports.splitFiles = (req, res, next) => {
 
   req.designFilesByField = {
     designFileStandard: req.files?.designFileStandard || [],
+    designFileXS: req.files?.designFileXS || [],
     designFileS: req.files?.designFileS || [],
     designFileM: req.files?.designFileM || [],
     designFileL: req.files?.designFileL || [],

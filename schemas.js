@@ -33,7 +33,7 @@ module.exports.productSchema = Joi.object({
     image: Joi.string().allow("").optional(),
     imageOrder: Joi.string().allow("").optional(),
     size: Joi.array()
-      .items(Joi.string().valid("S", "M", "L", "XL"))
+      .items(Joi.string().valid("XS", "S", "M", "L", "XL"))
       .optional(),
   }).required(),
   deleteImages: Joi.array(),

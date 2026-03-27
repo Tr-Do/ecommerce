@@ -6,24 +6,23 @@ const { deleteFromS3 } = require("../utils/s3Delete");
 const Variant = require("../models/variant");
 
 const mkS3Files = async (files, prefix) => {
-  const out = [];
-  for (const file of files || []) {
-    const { bucket, key } = await uploadToS3({
-      buffer: file.buffer,
-      contentType: file.mimetype,
-      originalName: file.originalname,
-      prefix,
-    });
-
-    out.push({
-      bucket,
-      key,
-      originalName: file.originalname,
-      contentType: file.mimetype,
-      size: file.size,
-    });
-  }
-  return out;
+  return Promise.all(
+    (files || []).map(async (file) => {
+      const { bucket, key } = await uploadToS3({
+        buffer: file.buffer,
+        contentType: file.mimetype,
+        originalName: file.originalname,
+        prefix,
+      });
+      return {
+        bucket,
+        key,
+        originalName: file.originalname,
+        contentType: file.mimetype,
+        size: file.size,
+      };
+    }),
+  );
 };
 
 module.exports.index = async (req, res, next) => {
@@ -80,19 +79,19 @@ module.exports.createProduct = async (req, res, next) => {
 
     // upload images to cloudinary
     const imageUploads = req.imageFiles || [];
-    const cloudinaryImages = [];
+    const cloudinaryImages = await Promise.all(
+      imageUploads.map(
+        (file) =>
+          new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              { folder: "product", resource_type: "auto" },
+              (error, result) => (error ? reject(error) : resolve(result)),
+            );
+            stream.end(file.buffer);
+          }),
+      ),
+    );
 
-    for (const file of imageUploads) {
-      const result = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: "product", resource_type: "auto" },
-
-          (error, result) => (error ? reject(error) : resolve(result)),
-        );
-        stream.end(file.buffer);
-      });
-      cloudinaryImages.push(result);
-    }
     product.images = cloudinaryImages.map((f) => ({
       url: f.secure_url || f.url,
       filename: f.public_id,
@@ -107,7 +106,6 @@ module.exports.createProduct = async (req, res, next) => {
       const byFilename = new Map(
         product.images.map((img) => [img.filename, img]),
       );
-
       const ordered = order.map((fn) => byFilename.get(fn)).filter(Boolean);
       const orderedSet = new Set(order);
       const remaining = product.images.filter(
@@ -129,47 +127,50 @@ module.exports.createProduct = async (req, res, next) => {
     const hasStandard = sizes.includes("Standard");
     const nonStandardSizes = sizes.filter((s) => s !== "Standard");
 
-    if (sizes.length === 0) throw new Error("Select at least one size");
-
+    if (!sizes.length) throw new Error("Select at least one size");
     if (hasStandard && nonStandardSizes.length > 0) {
       throw new Error("Do not mix standard size with others");
     }
 
-    const variantDocs = [];
+    let variantDocs = [];
 
     if (hasStandard) {
       const standardFiles = await mkS3Files(
         req.designFilesByField?.designFileStandard,
         prefix,
       );
+
       if (!standardFiles.length)
         throw new Error("Standard variant files are required");
 
-      variantDocs.push({
-        productId: product._id,
-        size: "Standard",
-        price: product.price,
-        files: standardFiles,
-      });
-    } else {
-      for (const size of nonStandardSizes) {
-        const fieldName = `designFile${size}`;
-        const files = await mkS3Files(
-          req.designFilesByField?.[fieldName],
-          prefix,
-        );
-
-        if (!files.length) throw new Error(`Missing upload files for ${size}`);
-
-        variantDocs.push({
+      variantDocs = [
+        {
           productId: product._id,
-          size,
+          size: "Standard",
           price: product.price,
-          files,
-        });
-      }
-      req.flash("success", "Add product sucessfully");
-      return res.redirect(`/products/${product._id}`);
+          files: standardFiles,
+        },
+      ];
+    } else {
+      variantDocs = await Promise.all(
+        nonStandardSizes.map(async (size) => {
+          const fieldName = `designFile${size}`;
+          const files = await mkS3Files(
+            req.designFilesByField?.[fieldName],
+            prefix,
+          );
+
+          if (!files.length)
+            throw new Error(`Missing upload files for ${size}`);
+
+          return {
+            productId: product._id,
+            size,
+            price: product.price,
+            files,
+          };
+        }),
+      );
     }
 
     await product.save();
@@ -408,7 +409,7 @@ module.exports.deleteProduct = async (req, res, next) => {
         });
       }
     }
-    await Variant.deleteMany({ productId: id, size: { $nin: sizes } });
+    await Variant.deleteMany({ productId: id });
     await Design.findByIdAndDelete(id);
 
     req.flash("success", "Delete product sucessfully");

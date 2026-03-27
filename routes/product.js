@@ -23,6 +23,7 @@ router
     upload.fields([
       { name: "image", maxCount: 10 },
       { name: "designFileStandard", maxCount: 4 },
+      { name: "designFileXS", maxCount: 3 },
       { name: "designFileS", maxCount: 3 },
       { name: "designFileM", maxCount: 3 },
       { name: "designFileL", maxCount: 3 },

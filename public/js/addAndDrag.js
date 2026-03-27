@@ -143,3 +143,27 @@ Sortable.create(imgTile, {
     syncOrder();
   },
 });
+
+["dragenter", "dragover"].forEach((event) => {
+  imgTile.addEventListener(event, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    imgTile.classList.add("border-primary");
+  });
+});
+
+["dragleave", "drop"].forEach((event) => {
+  imgTile.addEventListener(event, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    imgTile.classList.remove("border-primary");
+  });
+});
+imgTile.addEventListener("drop", (e) => {
+  const files = Array.from(e.dataTransfer.files).filter(
+    (file) => file.type.startsWith("image/") || file.type.startsWith("video/"),
+  );
+
+  if (!files.length) return;
+  addNewFiles(files);
+});

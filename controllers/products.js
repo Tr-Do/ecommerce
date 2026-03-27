@@ -74,104 +74,112 @@ module.exports.renderNewForm = (req, res) => {
   res.render("products/new");
 };
 
-module.exports.createProduct = async (req, res) => {
-  const product = new Design(req.body.product);
+module.exports.createProduct = async (req, res, next) => {
+  try {
+    const product = new Design(req.body.product);
 
-  // upload images to cloudinary
-  const imageUploads = req.imageFiles || [];
-  const cloudinaryImages = [];
+    // upload images to cloudinary
+    const imageUploads = req.imageFiles || [];
+    const cloudinaryImages = [];
 
-  for (const file of imageUploads) {
-    const result = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: "product", resource_type: "auto" },
+    for (const file of imageUploads) {
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "product", resource_type: "auto" },
 
-        (error, result) => (error ? reject(error) : resolve(result)),
+          (error, result) => (error ? reject(error) : resolve(result)),
+        );
+        stream.end(file.buffer);
+      });
+      cloudinaryImages.push(result);
+    }
+    product.images = cloudinaryImages.map((f) => ({
+      url: f.secure_url || f.url,
+      filename: f.public_id,
+      type: f.resource_type,
+      format: f.format,
+    }));
+
+    // Arrange image order
+    let order = req.body.product?.imageOrder; // after your split() this is an array
+    if (typeof order === "string") order = order.split(",").filter(Boolean);
+    if (Array.isArray(order) && order.length) {
+      const byFilename = new Map(
+        product.images.map((img) => [img.filename, img]),
       );
-      stream.end(file.buffer);
-    });
-    cloudinaryImages.push(result);
-  }
-  product.images = cloudinaryImages.map((f) => ({
-    url: f.secure_url || f.url,
-    filename: f.public_id,
-    type: f.resource_type,
-    format: f.format,
-  }));
 
-  // Arrange image order
-  let order = req.body.product?.imageOrder; // after your split() this is an array
-  if (typeof order === "string") order = order.split(",").filter(Boolean);
-  if (Array.isArray(order) && order.length) {
-    const byFilename = new Map(
-      product.images.map((img) => [img.filename, img]),
-    );
+      const ordered = order.map((fn) => byFilename.get(fn)).filter(Boolean);
+      const orderedSet = new Set(order);
+      const remaining = product.images.filter(
+        (img) => !orderedSet.has(img.filename),
+      );
 
-    const ordered = order.map((fn) => byFilename.get(fn)).filter(Boolean);
+      product.images = [...ordered, ...remaining];
+    }
 
-    const orderedSet = new Set(order);
-    const remaining = product.images.filter(
-      (img) => !orderedSet.has(img.filename),
-    );
+    const prefix = `products/${product._id}`;
 
-    product.images = [...ordered, ...remaining];
-  }
+    const sizesRaw = req.body.product?.size;
+    const sizes = Array.isArray(sizesRaw)
+      ? sizesRaw
+      : sizesRaw
+        ? [sizesRaw]
+        : ["Standard"];
 
-  const prefix = `products/${product._id}`;
+    const hasStandard = sizes.includes("Standard");
+    const nonStandardSizes = sizes.filter((s) => s !== "Standard");
 
-  const sizesRaw = req.body.product?.size;
-  const sizes = Array.isArray(sizesRaw)
-    ? sizesRaw
-    : sizesRaw
-      ? [sizesRaw]
-      : ["Standard"];
+    if (sizes.length === 0) throw new Error("Select at least one size");
 
-  const hasStandard = sizes.includes("Standard");
-  const nonStandardSizes = sizes.filter((s) => s !== "Standard");
+    if (hasStandard && nonStandardSizes.length > 0) {
+      throw new Error("Do not mix standard size with others");
+    }
 
-  if (sizes.length === 0) throw new Error("Select at least one size");
+    const variantDocs = [];
 
-  if (hasStandard && nonStandardSizes.length > 0) {
-    throw new Error("Do not mix standard size with others");
-  }
+    if (hasStandard) {
+      const standardFiles = await mkS3Files(
+        req.designFilesByField?.designFileStandard,
+        prefix,
+      );
+      if (!standardFiles.length)
+        throw new Error("Standard variant files are required");
 
-  await product.save();
+      variantDocs.push({
+        productId: product._id,
+        size: "Standard",
+        price: product.price,
+        files: standardFiles,
+      });
+    } else {
+      for (const size of nonStandardSizes) {
+        const fieldName = `designFile${size}`;
+        const files = await mkS3Files(
+          req.designFilesByField?.[fieldName],
+          prefix,
+        );
 
-  if (hasStandard) {
-    const standardFiles = await mkS3Files(
-      req.designFilesByField?.designFileStandard,
-      prefix,
-    );
-    if (!standardFiles.length)
-      throw new Error("Standard variant files are required");
+        if (!files.length) throw new Error(`Missing upload files for ${size}`);
 
-    await Variant.create({
-      productId: product._id,
-      size: "Standard",
-      price: product.price,
-      files: standardFiles,
-    });
+        variantDocs.push({
+          productId: product._id,
+          size,
+          price: product.price,
+          files,
+        });
+      }
+      req.flash("success", "Add product sucessfully");
+      return res.redirect(`/products/${product._id}`);
+    }
+
+    await product.save();
+    await Variant.insertMany(variantDocs);
 
     req.flash("success", "Add product sucessfully");
-    return res.redirect(`/products/${product._id}`);
+    res.redirect(`/products/${product._id}`);
+  } catch (err) {
+    next(err);
   }
-
-  for (const size of nonStandardSizes) {
-    const fileName = `designFile${size}`;
-    const files = await mkS3Files(req.designFilesByField?.[fileName], prefix);
-
-    if (!files.length) throw new Error(`Missing upload files for ${size}`);
-
-    await Variant.create({
-      productId: product._id,
-      size,
-      price: product.price,
-      files,
-    });
-  }
-
-  req.flash("success", "Add product sucessfully");
-  res.redirect(`/products/${product._id}`);
 };
 
 module.exports.showProduct = async (req, res) => {
@@ -197,180 +205,184 @@ module.exports.editForm = async (req, res) => {
   res.render("products/edit", { product, variants });
 };
 
-module.exports.updateProduct = async (req, res) => {
-  const { id } = req.params;
+module.exports.updateProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
 
-  if (
-    req.body.product?.imageOrder &&
-    typeof req.body.product.imageOrder === "string"
-  ) {
-    req.body.product.imageOrder = req.body.product.imageOrder
-      .split(",")
-      .filter(Boolean);
-  }
-
-  const product = await Design.findByIdAndUpdate(
-    id,
-    { ...req.body.product },
-    { new: true, runValidators: true },
-  );
-
-  if (!product) {
-    req.flash("error", "Product not found");
-    return res.redirect("/products");
-  }
-
-  const prefix = `products/${product._id}`;
-
-  const standardFiles = await mkS3Files(
-    req.designFilesByField?.designFileStandard,
-    prefix,
-  );
-  if (standardFiles.length) {
-    let price;
     if (
-      req.body.product &&
-      req.body.product.price !== undefined &&
-      req.body.product.price !== null
+      req.body.product?.imageOrder &&
+      typeof req.body.product.imageOrder === "string"
     ) {
-      price = req.body.product.price;
-    } else price = product.price;
+      req.body.product.imageOrder = req.body.product.imageOrder
+        .split(",")
+        .filter(Boolean);
+    }
 
-    await Variant.findOneAndUpdate(
-      {
-        productId: product._id,
-        size: "Standard",
-      },
-      {
-        $set: {
-          productId: product._id,
-          size: "Standard",
-          price,
-          files: standardFiles,
-        },
-      },
-      { upsert: true, new: true },
+    const product = await Design.findByIdAndUpdate(
+      id,
+      { ...req.body.product },
+      { new: true, runValidators: true },
     );
-  }
 
-  const sizesRaw = req.body.product?.size;
-  // if no box is checked, default is Standard
-  const sizes = Array.isArray(sizesRaw)
-    ? sizesRaw
-    : sizesRaw
-      ? [sizesRaw]
-      : ["Standard"];
+    if (!product) {
+      req.flash("error", "Product not found");
+      return res.redirect("/products");
+    }
 
-  const hasStandard = sizes.includes("Standard");
-  const nonStandardSizes = sizes.filter((s) => s !== "Standard");
+    const prefix = `products/${product._id}`;
 
-  if (hasStandard && nonStandardSizes.length > 0)
-    throw new Error("Do not mix standard size with others");
-
-  for (const size of sizes) {
-    if (size === "Standard") continue;
-    const fieldName = `designFile${size}`;
-    const uploaded = await mkS3Files(
-      req.designFilesByField?.[fieldName],
+    const standardFiles = await mkS3Files(
+      req.designFilesByField?.designFileStandard,
       prefix,
     );
+    if (standardFiles.length) {
+      let price;
+      if (
+        req.body.product &&
+        req.body.product.price !== undefined &&
+        req.body.product.price !== null
+      ) {
+        price = req.body.product.price;
+      } else price = product.price;
 
-    if (!uploaded.length) continue;
+      await Variant.findOneAndUpdate(
+        {
+          productId: product._id,
+          size: "Standard",
+        },
+        {
+          $set: {
+            productId: product._id,
+            size: "Standard",
+            price,
+            files: standardFiles,
+          },
+        },
+        { upsert: true, new: true },
+      );
+    }
 
-    let price;
-    if (
-      req.body.product &&
-      req.body.product.price !== undefined &&
-      req.body.product.price !== null
-    ) {
-      price = req.body.product.price;
-    } else price = product.price;
+    const sizesRaw = req.body.product?.size;
+    // if no box is checked, default is Standard
+    const sizes = Array.isArray(sizesRaw)
+      ? sizesRaw
+      : sizesRaw
+        ? [sizesRaw]
+        : ["Standard"];
 
-    await Variant.findOneAndUpdate(
-      {
-        productId: product._id,
-        size,
-      },
-      {
-        $set: {
+    const hasStandard = sizes.includes("Standard");
+    const nonStandardSizes = sizes.filter((s) => s !== "Standard");
+
+    if (hasStandard && nonStandardSizes.length > 0)
+      throw new Error("Do not mix standard size with others");
+
+    for (const size of sizes) {
+      if (size === "Standard") continue;
+      const fieldName = `designFile${size}`;
+      const uploaded = await mkS3Files(
+        req.designFilesByField?.[fieldName],
+        prefix,
+      );
+
+      if (!uploaded.length) continue;
+
+      let price;
+      if (
+        req.body.product &&
+        req.body.product.price !== undefined &&
+        req.body.product.price !== null
+      ) {
+        price = req.body.product.price;
+      } else price = product.price;
+
+      await Variant.findOneAndUpdate(
+        {
           productId: product._id,
           size,
-          price,
-          files: uploaded,
         },
-      },
-      { upsert: true, new: true },
-    );
-  }
-
-  // image upload logic
-  const imageUploads = req.imageFiles || [];
-  const cloudinaryImages = [];
-  for (const file of imageUploads) {
-    const result = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: "product", resource_type: "auto" },
-        (error, result) => (error ? reject(error) : resolve(result)),
+        {
+          $set: {
+            productId: product._id,
+            size,
+            price,
+            files: uploaded,
+          },
+        },
+        { upsert: true, new: true },
       );
-      stream.end(file.buffer);
-    });
-    cloudinaryImages.push(result);
-  }
-
-  const imgs = cloudinaryImages.map((f) => {
-    const url = f.secure_url || f.url;
-    const filename = f.public_id;
-    const type = f.resource_type;
-    const format = f.format;
-    if (!url) throw new Error("No url found");
-    return { url, filename, type, format };
-  });
-  product.images.push(...imgs);
-
-  // delete images in deleteImage array
-  let deleteImages = [];
-  if (req.body.deleteImages) {
-    if (Array.isArray(req.body.deleteImages)) {
-      deleteImages = req.body.deleteImages;
-    } else {
-      deleteImages = [req.body.deleteImages];
     }
+
+    // image upload logic
+    const imageUploads = req.imageFiles || [];
+    const cloudinaryImages = [];
+    for (const file of imageUploads) {
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "product", resource_type: "auto" },
+          (error, result) => (error ? reject(error) : resolve(result)),
+        );
+        stream.end(file.buffer);
+      });
+      cloudinaryImages.push(result);
+    }
+
+    const imgs = cloudinaryImages.map((f) => {
+      const url = f.secure_url || f.url;
+      const filename = f.public_id;
+      const type = f.resource_type;
+      const format = f.format;
+      if (!url) throw new Error("No url found");
+      return { url, filename, type, format };
+    });
+    product.images.push(...imgs);
+
+    // delete images in deleteImage array
+    let deleteImages = [];
+    if (req.body.deleteImages) {
+      if (Array.isArray(req.body.deleteImages)) {
+        deleteImages = req.body.deleteImages;
+      } else {
+        deleteImages = [req.body.deleteImages];
+      }
+    }
+    for (const filename of deleteImages) {
+      await cloudinary.uploader.destroy(filename);
+    }
+
+    // loop through product[image] array because it hasn't been saved
+    const keptImages = [];
+    for (let i = 0; i < product.images.length; i++) {
+      const img = product.images[i];
+      if (!deleteImages.includes(img.filename)) keptImages.push(img);
+    }
+
+    product.images = keptImages;
+
+    // arrange image order
+    const order = req.body.product?.imageOrder; // after your split() this is an array
+    if (Array.isArray(order) && order.length) {
+      const byFilename = new Map(
+        product.images.map((img) => [img.filename, img]),
+      );
+
+      const ordered = order.map((fn) => byFilename.get(fn)).filter(Boolean);
+
+      // Append any remaining images not listed in order (e.g., newly uploaded ones)
+      const orderedSet = new Set(order);
+      const remaining = product.images.filter(
+        (img) => !orderedSet.has(img.filename),
+      );
+
+      product.images = [...ordered, ...remaining];
+    }
+
+    await product.save();
+
+    req.flash("success", "Update product sucessfully");
+    res.redirect(`/products/${product._id}`);
+  } catch (err) {
+    next(err);
   }
-  for (const filename of deleteImages) {
-    await cloudinary.uploader.destroy(filename);
-  }
-
-  // loop through product[image] array because it hasn't been saved
-  const keptImages = [];
-  for (let i = 0; i < product.images.length; i++) {
-    const img = product.images[i];
-    if (!deleteImages.includes(img.filename)) keptImages.push(img);
-  }
-
-  product.images = keptImages;
-
-  // arrange image order
-  const order = req.body.product?.imageOrder; // after your split() this is an array
-  if (Array.isArray(order) && order.length) {
-    const byFilename = new Map(
-      product.images.map((img) => [img.filename, img]),
-    );
-
-    const ordered = order.map((fn) => byFilename.get(fn)).filter(Boolean);
-
-    // Append any remaining images not listed in order (e.g., newly uploaded ones)
-    const orderedSet = new Set(order);
-    const remaining = product.images.filter(
-      (img) => !orderedSet.has(img.filename),
-    );
-
-    product.images = [...ordered, ...remaining];
-  }
-
-  await product.save();
-
-  req.flash("success", "Update product sucessfully");
-  res.redirect(`/products/${product._id}`);
 };
 
 module.exports.deleteProduct = async (req, res, next) => {
@@ -389,14 +401,14 @@ module.exports.deleteProduct = async (req, res, next) => {
     const variants = await Variant.find({ productId: id });
 
     for (const variant of variants) {
-      for (const file of variant.file || []) {
+      for (const file of variant.files || []) {
         await deleteFromS3({
           bucket: file.bucket,
           key: file.key,
         });
       }
     }
-    await Variant.deleteMany({ productId: id });
+    await Variant.deleteMany({ productId: id, size: { $nin: sizes } });
     await Design.findByIdAndDelete(id);
 
     req.flash("success", "Delete product sucessfully");
